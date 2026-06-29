@@ -1,23 +1,14 @@
 import { Link } from "react-router-dom";
+import TiltedCard from "../components/ui/TiltedCard"; // Sesuaikan path
 
 export default function Hero() {
   return (
     <section className="min-h-screen flex items-center pt-23">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 w-full">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-
-          {/* LEFT */}
+          {/* LEFT - Content */}
           <div>
-            <h1
-              className="
-              text-5xl
-              md:text-6xl
-              lg:text-7xl
-              font-bold
-              leading-tight
-              tracking-tight
-            "
-            >
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight">
               Temukan Laptop
               <br />
               Terbaik untuk
@@ -26,91 +17,74 @@ export default function Hero() {
             </h1>
 
             <p className="mt-6 text-zinc-800 text-lg max-w-xl">
-              Cari laptop berdasarkan kebutuhan, budget,
-              performa, desain, dan spesifikasi terbaik
-              yang cocok untuk aktivitasmu.
+              Cari laptop berdasarkan kebutuhan, budget, performa, desain, dan
+              spesifikasi terbaik yang cocok untuk aktivitasmu.
             </p>
 
             <div className="flex flex-wrap gap-4 mt-10">
-              <Link to="/rekomendasi"
-                className="
-                px-8 py-4
-                rounded-full
-                bg-black
-                text-white
-                font-medium
-                cursor-pointer">Jelajahi Laptop →</Link>
-
-              <button
-                className="
-                px-8 py-4
-                rounded-full
-                bg-white/60
-                backdrop-blur-xl
-                border border-white/30
-              "
+              <Link
+                to="/rekomendasi"
+                className="px-8 py-4 rounded-full bg-black text-white font-medium cursor-pointer hover:bg-zinc-800 transition-colors"
               >
+                Jelajahi Laptop →
+              </Link>
+
+              <button className="px-8 py-4 rounded-full bg-white/60 backdrop-blur-xl border border-white/30 hover:bg-white/80 transition-colors">
                 Cara Memilih
               </button>
             </div>
           </div>
 
-          {/* RIGHT */}
-          <div className="relative">
+          {/* RIGHT - TiltedCard */}
+          <div className="relative flex justify-center items-center">
+            {/* Background glow effect */}
+            <div className="absolute inset-0 bg-linear-to-br from-blue-200/50 via-purple-200/30 to-pink-200/40 rounded-full blur-3xl scale-75" />
 
-            <div
-              className="
-              absolute
-              inset-0
-              bg-white/30
-              rounded-full
-              blur-3xl
-            "
-            />
-
-            <img
-              src="https://cdsassets.apple.com/live/7WUAS350/images/tech-specs/mbp16-2024.png"
-              alt="Laptop"
-              className="
-              relative
-              z-10
-              w-full
-              drop-shadow-[0_30px_60px_rgba(0,0,0,0.25)]
-            "
+            <TiltedCard
+              imageSrc="https://cdsassets.apple.com/live/7WUAS350/images/tech-specs/mbp16-2024.png"
+              altText="Laptop Rekomendasi Terbaik"
+              captionText='MacBook Pro 16" - M4 Max'
+              containerHeight="500px"
+              containerWidth="100%"
+              imageHeight="400px"
+              imageWidth="100%"
+              rotateAmplitude={8}
+              scaleOnHover={1.03}
+              showMobileWarning={false}
+              showTooltip={true}
+              displayOverlayContent={true}
+              overlayContent={
+                <div>
+                  <span >
+                  </span>
+                </div>
+              }
             />
           </div>
-
         </div>
 
         {/* STATS */}
-        <div className=" mt-10 grid md:grid-cols-4 gap-6 p-8 rounded-[40px] bg-white/40 backdrop-blur-2xl border border-white/20"
-        >
-          <div>
+        <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-6 p-8 rounded-[40px] bg-white/40 backdrop-blur-2xl border border-white/20">
+          <div className="text-center md:text-left">
             <h2 className="text-4xl font-bold">250+</h2>
-            <p className="text-zinc-500">
+            <p className="text-zinc-500 text-sm mt-1">
               Laptop Direkomendasikan
             </p>
           </div>
 
-          <div>
+          <div className="text-center md:text-left">
             <h2 className="text-4xl font-bold">50+</h2>
-            <p className="text-zinc-500">
-              Brand Terpercaya
-            </p>
+            <p className="text-zinc-500 text-sm mt-1">Brand Terpercaya</p>
           </div>
 
-          <div>
+          <div className="text-center md:text-left">
             <h2 className="text-4xl font-bold">10K+</h2>
-            <p className="text-zinc-500">
-              Pengguna Terbantu
-            </p>
+            <p className="text-zinc-500 text-sm mt-1">Pengguna Terbantu</p>
           </div>
 
-          <div>
+          <div className="text-center md:text-left">
             <h2 className="text-4xl font-bold">100%</h2>
-            <p className="text-zinc-500">
-              Rekomendasi Akurat
-            </p>
+            <p className="text-zinc-500 text-sm mt-1">Rekomendasi Akurat</p>
           </div>
         </div>
       </div>
