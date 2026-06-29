@@ -1,22 +1,21 @@
+import { useOutletContext } from "react-router-dom";
 import HeroSection from "./HeroSection";
 import ProductSection from "../components/ui/ProductSection";
 import Footer from "../components/Footer";
-import { useState } from "react";
-import Header from "../components/Header";
+
+type OutletContextType = {
+  search: string;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
+};
 
 export default function Home() {
-  const [search, setSearch] = useState("");
+  const { search } = useOutletContext<OutletContextType>();
+
   return (
-    <>
-      <main className="overflow-hidden">
-        <Header
-          search={search}
-          setSearch={setSearch}/>
-        <HeroSection />
-        <ProductSection 
-        search={search}/>
-        <Footer />
-      </main>
-    </>
+    <main className="overflow-hidden">
+      <HeroSection />
+      <ProductSection search={search} />
+      <Footer />
+    </main>
   );
 }

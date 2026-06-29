@@ -32,7 +32,6 @@ export default function Header({
           <nav className="hidden lg:flex items-center gap-10 text-sm font-medium ">
             <Link to="/" className="transition-transform duration-300 hover:scale-105">Home</Link>
             <Link to="/rekomendasi" className="transition-transform duration-300 hover:scale-105">Rekomendasi</Link>
-            <Link to="/" className="transition-transform duration-300 hover:scale-105">Kategori</Link>
             <Link to="/" className="transition-transform duration-300 hover:scale-105">Tentang</Link>
           </nav>
 
