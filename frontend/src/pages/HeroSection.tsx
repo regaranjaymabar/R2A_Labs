@@ -3,7 +3,7 @@ import TiltedCard from "../components/ui/TiltedCard"; // Sesuaikan path
 
 export default function Hero() {
   return (
-    <section className="min-h-screen flex items-center pt-23">
+    <section className="min-h-screen flex items-center pt-29">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 w-full">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* LEFT - Content */}
@@ -60,31 +60,6 @@ export default function Hero() {
                 </div>
               }
             />
-          </div>
-        </div>
-
-        {/* STATS */}
-        <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-6 p-8 rounded-[40px] bg-white/40 backdrop-blur-2xl border border-white/20">
-          <div className="text-center md:text-left">
-            <h2 className="text-4xl font-bold">250+</h2>
-            <p className="text-zinc-500 text-sm mt-1">
-              Laptop Direkomendasikan
-            </p>
-          </div>
-
-          <div className="text-center md:text-left">
-            <h2 className="text-4xl font-bold">50+</h2>
-            <p className="text-zinc-500 text-sm mt-1">Brand Terpercaya</p>
-          </div>
-
-          <div className="text-center md:text-left">
-            <h2 className="text-4xl font-bold">10K+</h2>
-            <p className="text-zinc-500 text-sm mt-1">Pengguna Terbantu</p>
-          </div>
-
-          <div className="text-center md:text-left">
-            <h2 className="text-4xl font-bold">100%</h2>
-            <p className="text-zinc-500 text-sm mt-1">Rekomendasi Akurat</p>
           </div>
         </div>
       </div>

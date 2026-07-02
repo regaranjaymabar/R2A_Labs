@@ -1,4 +1,7 @@
+import { Link } from "react-router-dom";
+
 type RecommendationCardProps = {
+  id:number;
   name: string;
   image: string;
   price: string;
@@ -8,6 +11,7 @@ type RecommendationCardProps = {
 };
 
 export default function RecommendationCard({
+  id,
   name,
   image,
   price,
@@ -66,19 +70,24 @@ export default function RecommendationCard({
           {price}
         </span>
 
-        <button
+        <Link
+          to={`/product/${id}`}
           className="
-          w-10
-          h-10
+          flex
+          items-center
+          justify-center
+          w-11
+          h-11
           rounded-full
           bg-black
           text-white
           hover:scale-110
-          transition
+          transition-all
+          duration-300
         "
-        >
-          →
-        </button>
+      >
+        →
+      </Link>
       </div>
     </div>
   );

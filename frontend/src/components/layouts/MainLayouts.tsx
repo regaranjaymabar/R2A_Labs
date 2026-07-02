@@ -2,22 +2,34 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Header from "../Header";
 import BackgroundEffect from "../ui/background/BackgroundEffect";
+import bg from "../../assets/85430.jpg";
 
 export default function MainLayout() {
   const [search, setSearch] = useState("");
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      <BackgroundEffect />
 
-      {/* Overlay putih transparan */}
-      <div className="fixed inset-0 bg-white/40 backdrop-blur-[2px] -z-10" />
+      {/* Background */}
+      <div
+        className="fixed inset-0 -z-20 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url("${bg}")`,
+        }}
+      />
 
-      {/* Header dengan search state */}
-      <Header search={search} setSearch={setSearch} />
+      {/* Overlay */}
+      <div className="fixed inset-0 -z-10 bg-white/35" />
 
-      {/* Passing search ke child pages via context */}
+      {/* Header */}
+      <Header
+        search={search}
+        setSearch={setSearch}
+      />
+
+      {/* Content */}
       <Outlet context={{ search, setSearch }} />
+
     </div>
   );
 }
