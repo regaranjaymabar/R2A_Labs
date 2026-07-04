@@ -4,7 +4,7 @@ import { z } from "zod";
 import { productService } from "../../../../services/productService";
 import { useCreate } from "../../../../hooks/useCreate";
 
-// 1. Skema Validasi Zod untuk tabel brands di database
+// 1. Skema Validasi Zod untuk tabel products di database
 export const productSchema = z.object({
   brand_id: z.coerce.number().min(1, "Pilih merek laptop terlebih dahulu!"),
   model_name: z.string().min(1, "Nama model laptop wajib diisi!"),
@@ -34,13 +34,13 @@ export function useAddProduct() {
 
   const isActive = watch("is_active");
 
-  // Mutasi dengan Generic Hook useCreate + Brand Service (Sangat Ringkas & Reusable)
+  // Mutasi dengan Generic Hook useCreate + Product Service (Sangat Ringkas & Reusable)
   const createMutation = useCreate<ProductFormData>({
     mutationFn: (payload) => productService.create(payload),
     queryKey: ["products"],
     navigateTo: "/admin/products",
     successMessage: (variables) =>
-      `Merek "${variables.model_name}" berhasil didaftarkan dengan status: ${variables.is_active ? "Aktif (Live)" : "Nonaktif (Draft)"
+      `Produk "${variables.model_name}" berhasil didaftarkan dengan status: ${variables.is_active ? "Aktif (Live)" : "Nonaktif (Draft)"
       }!`,
     errorMessage: (variables, err) =>
       `Gagal menyimpan produk "${variables.model_name}": ${err?.response?.data?.message || err?.message || "Error"

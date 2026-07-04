@@ -10,7 +10,7 @@ import {
     Loader2,
 } from "lucide-react";
 import { DataTable, DataTableColumnHeader } from "../../../../components/ui/common/DataTable";
-import type { Product } from "../ProductIndex";
+import type { Product } from "../../../../types/product";
 
 interface TabelProductIndexProps {
     data: Product[];

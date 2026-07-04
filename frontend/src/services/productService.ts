@@ -1,6 +1,6 @@
 
 import { api } from "../lib/axios";
-import { type Product } from "../pages/admin/products/ProductIndex";
+import { type Product } from "../types/product";
 import { type ProductFormData } from "../pages/admin/products/hooks/useAddProduct";
 
 

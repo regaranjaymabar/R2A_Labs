@@ -12,6 +12,11 @@ import {
 import { DataTable, DataTableColumnHeader } from "../../../components/ui/common/DataTable";
 import { Button } from "../../../components/ui/common/Button";
 import { Modal } from "../../../components/ui/common/Modal";
+import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
+import { useDeleteCriteria } from "./hooks/useDeleteCriteria";
+import { useGet } from "../../../hooks/useGet";
+import { criteriaService } from "../../../services/criteriaService";
+import { useQueryClient } from "@tanstack/react-query";
 
 // 1. Definisi Interface Dimensi Penilaian (Criteria)
 // Sesuai persis 4 kolom di database MySQL kamu: id, code, name, type
@@ -77,7 +82,25 @@ const initialCriterias: Criteria[] = [
 const columnHelper = createColumnHelper<Criteria>();
 
 export default function CriteriaIndex() {
-  const [data, setData] = useState<Criteria[]>(initialCriterias);
+  const queryClient = useQueryClient();
+
+  // Fetch data kriteria dari backend via useGet (React Query + offline fallback)
+  const { data: fetchedData, isLoading } = useGet<Criteria[]>({
+    queryKey: ["criterias"],
+    queryFn: criteriaService.getAll,
+    offlineFallbackData: initialCriterias,
+  });
+
+  const data = fetchedData || initialCriterias;
+
+  // Custom Hook Hapus Data (Delete dengan Modal Confirm)
+  const {
+    handleDelete,
+    confirmDelete,
+    cancelDelete,
+    deleteTarget,
+    deletingId,
+  } = useDeleteCriteria();
 
   // State Modal Edit / Update Dimensi Kriteria
   const [editingItem, setEditingItem] = useState<Criteria | null>(null);
@@ -98,8 +121,8 @@ export default function CriteriaIndex() {
     e.preventDefault();
     if (!editingItem) return;
 
-    setData((prev) =>
-      prev.map((item) =>
+    queryClient.setQueryData<Criteria[]>(["criterias"], (prev) =>
+      (prev || []).map((item) =>
         item.id === editingItem.id
           ? {
               ...item,
@@ -111,13 +134,6 @@ export default function CriteriaIndex() {
       )
     );
     setEditingItem(null);
-  };
-
-  // Hapus Kriteria
-  const handleDelete = (id: number, code: string, name: string) => {
-    if (window.confirm(`Apakah kamu yakin ingin menghapus dimensi penilaian [${code}] "${name}"?`)) {
-      setData((prev) => prev.filter((item) => item.id !== id));
-    }
   };
 
   // 3. Definisi Kolom Tabel
@@ -179,12 +195,14 @@ export default function CriteriaIndex() {
         header: () => <span className="font-semibold">Aksi</span>,
         cell: (info) => {
           const item = info.row.original;
+          const isDeleting = deletingId === item.id;
           return (
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => handleOpenEdit(item)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/60 font-semibold text-xs rounded-xl border border-blue-200 dark:border-blue-800/60 transition-all active:scale-95 shadow-2xs cursor-pointer"
+                disabled={isDeleting}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/60 font-semibold text-xs rounded-xl border border-blue-200 dark:border-blue-800/60 transition-all active:scale-95 shadow-2xs cursor-pointer disabled:opacity-50"
                 title="Edit Kriteria"
               >
                 <span>Update</span>
@@ -192,7 +210,8 @@ export default function CriteriaIndex() {
               <button
                 type="button"
                 onClick={() => handleDelete(item.id, item.code, item.name)}
-                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-950/40 rounded-lg transition-colors cursor-pointer"
+                disabled={isDeleting}
+                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-950/40 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
                 title="Hapus Kriteria"
               >
                 <Trash2 className="w-4 h-4" />
@@ -256,7 +275,7 @@ export default function CriteriaIndex() {
         columns={columns}
         data={data}
         searchPlaceholder="Cari kode kriteria (misal: C1, C2) atau nama (misal: Harga, RAM)..."
-        emptyMessage="Tidak ada dimensi penilaian yang ditemukan"
+        emptyMessage={isLoading ? "Sedang memuat dimensi penilaian..." : "Tidak ada dimensi penilaian yang ditemukan"}
       />
 
       {/* MODAL UPDATE DIMENSI PENILAIAN */}
@@ -367,6 +386,22 @@ export default function CriteriaIndex() {
           </form>
         )}
       </Modal>
+
+      {/* MODAL KONFIRMASI HAPUS KRITERIA */}
+      <ModalConfirm
+        isOpen={Boolean(deleteTarget)}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Hapus Dimensi Penilaian?"
+        message={
+          <span>
+            Apakah kamu yakin ingin menghapus dimensi penilaian <strong className="font-bold text-gray-900 dark:text-white">{deleteTarget?.name}</strong>? Seluruh sub-kriteria dan bobot produk yang terkait akan terpengaruh.
+          </span>
+        }
+        confirmLabel="Ya, Hapus Kriteria"
+        cancelLabel="Batal"
+        variant="danger"
+      />
     </div>
   );
 }

@@ -1,34 +1,33 @@
 import { useState } from "react";
+import { productWeightService } from "../../../../services/productWeightService";
 import { useDelete } from "../../../../hooks/useDelete";
+import { type ProductCriteria } from "../ProductWeightIndex";
 import { useQueryClient } from "@tanstack/react-query";
-import { productService } from "../../../../services/productService";
-import type { Product } from "../../../../types/product";
 
-export function useDeleteProduct() {
+export function useDeleteProductWeight() {
   const queryClient = useQueryClient();
   const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string } | null>(null);
 
   const deleteMutation = useDelete<{ id: number; name: string }>({
-    mutationFn: ({ id }) => productService.delete(id),
-    queryKey: ["products"],
-    successMessage: ({ name }) => `Produk "${name}" berhasil dihapus dari database!`,
+    mutationFn: ({ id }) => productWeightService.delete(id),
+    queryKey: ["productweights"],
+    successMessage: ({ name }) => `Bobot spesifikasi "${name}" berhasil dihapus!`,
     errorMessage: ({ name }, err) =>
-      `Gagal menghapus produk "${name}": ${
+      `Gagal menghapus bobot spesifikasi "${name}": ${
         err?.response?.data?.message || err?.message || "Error"
       }`,
     onOfflineFallback: ({ id }) => {
-      queryClient.setQueryData<Product[]>(["products"], (old) =>
+      queryClient.setQueryData<ProductCriteria[]>(["productweights"], (old) =>
         old ? old.filter((item) => item.id !== id) : []
       );
     },
   });
 
-  // 1. Dipanggil saat tombol ikon tong sampah di tabel diklik -> Buka Modal Confirm
-  const handleDelete = (id: number, name: string) => {
-    setDeleteTarget({ id, name });
+  const handleDelete = (id: number, prodName: string, critName: string) => {
+    const displayName = `${prodName} [${critName}]`;
+    setDeleteTarget({ id, name: displayName });
   };
 
-  // 2. Dipanggil saat tombol Ya, Hapus di dalam modal diklik -> Jalankan API Delete
   const confirmDelete = () => {
     if (deleteTarget) {
       deleteMutation.mutate(deleteTarget, {
@@ -39,7 +38,6 @@ export function useDeleteProduct() {
     }
   };
 
-  // 3. Dipanggil saat tombol Batal atau X diklik -> Tutup Modal
   const cancelDelete = () => {
     setDeleteTarget(null);
   };

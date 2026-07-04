@@ -5,7 +5,7 @@ import { Link, useNavigate, type ErrorResponse } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useAuthStore } from "../../store/useAuthStore";
-import type { LoginInput, LoginRespone } from "../../types/auth";
+import type { LoginInput, LoginResponse } from "../../types/auth";
 import { api } from "../../lib/axios";
 import { InputText } from "../../components/ui/common/InputText";
 import { InputPassword } from "../../components/ui/common/InputPassword";
@@ -37,7 +37,7 @@ export default function Login() {
     const loginMutation = useMutation({
         mutationFn: async (credentials: LoginInput) => {
             //logic awal
-            const response = await api.post<LoginRespone>("/auth/login", credentials);
+            const response = await api.post<LoginResponse>("/auth/login", credentials);
             return response.data;
         },
         onSuccess: (data) => {

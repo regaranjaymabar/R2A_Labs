@@ -10,6 +10,11 @@ import {
 import { TabelProductWeightIndex } from "./components/TabelProductWeightIndex";
 import { Button } from "../../../components/ui/common/Button";
 import { Modal } from "../../../components/ui/common/Modal";
+import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
+import { useGet } from "../../../hooks/useGet";
+import { productWeightService } from "../../../services/productWeightService";
+import { useDeleteProductWeight } from "./hooks/useDeleteProductWeight";
+import { useQueryClient } from "@tanstack/react-query";
 
 // 1. Definisi Interface Pembobotan Produk (product_criteria)
 export interface ProductCriteria {
@@ -84,7 +89,22 @@ const initialProductCriterias: ProductCriteria[] = [
 ];
 
 export default function ProductWeightIndex() {
-  const [data, setData] = useState<ProductCriteria[]>(initialProductCriterias);
+  const queryClient = useQueryClient();
+  const { data: fetchedData, isLoading } = useGet<ProductCriteria[]>({
+    queryKey: ["productweights"],
+    queryFn: productWeightService.getAll,
+    offlineFallbackData: initialProductCriterias,
+  });
+
+  const data = fetchedData || initialProductCriterias;
+
+  const {
+    handleDelete,
+    confirmDelete,
+    cancelDelete,
+    deleteTarget,
+    deletingId,
+  } = useDeleteProductWeight();
   
   // Filter berdasarkan Produk
   const [selectedProductFilter, setSelectedProductFilter] = useState<string>("ALL");
@@ -129,8 +149,8 @@ export default function ProductWeightIndex() {
     const selectedSub = subCriteriaOptions.find((opt) => opt.id === Number(selectedSubCriteriaId));
     if (!selectedSub) return;
 
-    setData((prev) =>
-      prev.map((item) =>
+    queryClient.setQueryData<ProductCriteria[]>(["productweights"], (prev: ProductCriteria[] | undefined) =>
+      (prev || []).map((item) =>
         item.id === editingItem.id
           ? {
               ...item,
@@ -142,13 +162,6 @@ export default function ProductWeightIndex() {
       )
     );
     setEditingItem(null);
-  };
-
-  // Hapus Bobot Spek
-  const handleDelete = (id: number, prodName: string, critName: string) => {
-    if (window.confirm(`Hapus bobot spesifikasi [${critName}] untuk laptop "${prodName}"?`)) {
-      setData((prev) => prev.filter((item) => item.id !== id));
-    }
   };
 
   // Opsi Dropdown khusus kriteria yang sedang diedit
@@ -222,8 +235,10 @@ export default function ProductWeightIndex() {
       {/* Tabel Pembobotan (Modular) */}
       <TabelProductWeightIndex
         data={filteredData}
+        isLoading={isLoading}
         onEdit={handleOpenEdit}
         onDelete={handleDelete}
+        deletingId={deletingId}
       />
 
       {/* MODAL UPDATE PEMBOBOTAN PRODUK */}
@@ -301,6 +316,22 @@ export default function ProductWeightIndex() {
           </form>
         )}
       </Modal>
+
+      {/* MODAL KONFIRMASI HAPUS BOBOT */}
+      <ModalConfirm
+        isOpen={Boolean(deleteTarget)}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Hapus Bobot Spesifikasi?"
+        message={
+          <span>
+            Apakah kamu yakin ingin menghapus bobot spesifikasi <strong className="font-bold text-gray-900 dark:text-white">{deleteTarget?.name}</strong>? Data perhitungan SPK yang terkait dengan spesifikasi ini akan berubah.
+          </span>
+        }
+        confirmLabel="Ya, Hapus Bobot"
+        cancelLabel="Batal"
+        variant="danger"
+      />
     </div>
   );
 }

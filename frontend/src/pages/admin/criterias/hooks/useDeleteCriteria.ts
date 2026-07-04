@@ -1,31 +1,32 @@
-import { useState } from "react";
+import { criteriaService } from "../../../../services/criteriaService";
 import { useDelete } from "../../../../hooks/useDelete";
+import { type Criteria } from "../CriteriaIndex";
 import { useQueryClient } from "@tanstack/react-query";
-import { productService } from "../../../../services/productService";
-import type { Product } from "../../../../types/product";
+import { useState } from "react";
 
-export function useDeleteProduct() {
+export function useDeleteCriteria() {
   const queryClient = useQueryClient();
   const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string } | null>(null);
 
   const deleteMutation = useDelete<{ id: number; name: string }>({
-    mutationFn: ({ id }) => productService.delete(id),
-    queryKey: ["products"],
-    successMessage: ({ name }) => `Produk "${name}" berhasil dihapus dari database!`,
+    mutationFn: ({ id }) => criteriaService.delete(id),
+    queryKey: ["criterias"],
+    successMessage: ({ name }) => `Kriteria "${name}" berhasil dihapus dari sistem!`,
     errorMessage: ({ name }, err) =>
-      `Gagal menghapus produk "${name}": ${
+      `Gagal menghapus kriteria "${name}": ${
         err?.response?.data?.message || err?.message || "Error"
       }`,
     onOfflineFallback: ({ id }) => {
-      queryClient.setQueryData<Product[]>(["products"], (old) =>
+      queryClient.setQueryData<Criteria[]>(["criterias"], (old) =>
         old ? old.filter((item) => item.id !== id) : []
       );
     },
   });
 
   // 1. Dipanggil saat tombol ikon tong sampah di tabel diklik -> Buka Modal Confirm
-  const handleDelete = (id: number, name: string) => {
-    setDeleteTarget({ id, name });
+  const handleDelete = (id: number, code: string, name: string) => {
+    const displayName = `[${code}] ${name}`;
+    setDeleteTarget({ id, name: displayName });
   };
 
   // 2. Dipanggil saat tombol Ya, Hapus di dalam modal diklik -> Jalankan API Delete

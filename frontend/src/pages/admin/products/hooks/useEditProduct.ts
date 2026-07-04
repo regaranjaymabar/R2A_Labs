@@ -3,10 +3,10 @@ import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { productService } from "../../../../services/productService";
-import { useQuery } from "@tanstack/react-query";
+import { useGet } from "../../../../hooks/useGet";
 import { useUpdate } from "../../../../hooks/useUpdate";
 import { productSchema, type ProductFormData } from "./useAddProduct";
-import type { Product } from "../ProductIndex";
+import type { Product } from "../../../../types/product";
 
 export function useEditProduct() {
   const { id } = useParams<{ id: string }>();
@@ -20,31 +20,33 @@ export function useEditProduct() {
     reset,
     formState: { errors },
   } = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema) as any
+    resolver: zodResolver(productSchema) as any,
   });
 
   const isActive = watch("is_active");
 
-  // 2. Fetch Data Eksisting menggunakan Generic Hook useGet + brandService: GET /brands/:id
+  // 2. Fetch Data Eksisting menggunakan Generic Hook useGet + productService: GET /products/:id
   const {
     data: productData,
     isLoading: isLoadingData,
     isError: isFetchError,
-  } = useQuery<Product>({
+  } = useGet<Product>({
     queryKey: ["products", id || ""],
-    queryFn: async () => {
-      try {
-        return await productService.getById(id!);
-      }catch (err: any) {
-        if (!err.response) {
-           console.warn(`Server offline, menggunakan data dummy untuk product ID #${id}`);
-          return { id: Number(id), brand_id: 0, model_name: "ASUS (Dummy)", processor: "", ram: "", storage: "", screen_size: 0, battery: 0, weight: 0, release_year: 0, is_active: 1 };
-        }
-        throw err;
-      }
-    },
+    queryFn: () => productService.getById(id!),
     enabled: Boolean(id),
-    
+    offlineFallbackData: {
+      id: Number(id),
+      brand_id: 1,
+      model_name: "ASUS (Dummy)",
+      processor: "",
+      ram: "",
+      storage: "",
+      screen_size: 0,
+      battery: 0,
+      weight: 0,
+      release_year: new Date().getFullYear(),
+      is_active: 1,
+    },
   });
 
   // 3. Populate form begitu data berhasil dimuat
@@ -65,14 +67,15 @@ export function useEditProduct() {
     }
   }, [productData, reset]);
 
-  // 4. Mutasi Update ke Backend menggunakan Generic Hook useUpdate + brandService: PUT /brands/:id
+  // 4. Mutasi Update ke Backend menggunakan Generic Hook useUpdate + productService: PUT /products/:id
   const updateMutation = useUpdate<ProductFormData>({
     mutationFn: (payload) => productService.update(id!, payload),
     queryKey: ["products"],
     navigateTo: "/admin/products",
     successMessage: (variables) => `Produk "${variables.model_name}" berhasil diperbarui!`,
     errorMessage: (variables, err) =>
-      `Gagal memperbarui produk "${variables.model_name}": ${err?.response?.data?.message || err?.message || "Error"
+      `Gagal memperbarui produk "${variables.model_name}": ${
+        err?.response?.data?.message || err?.message || "Error"
       }`,
   });
 

@@ -1,34 +1,34 @@
-import { useState } from "react";
+import { recommendationService } from "../../../../services/recommendationService";
 import { useDelete } from "../../../../hooks/useDelete";
+import { type RecommendationRequest } from "../ReqHistory";
 import { useQueryClient } from "@tanstack/react-query";
-import { productService } from "../../../../services/productService";
-import type { Product } from "../../../../types/product";
+import { useState } from "react";
 
-export function useDeleteProduct() {
+export function useDeleteReqHistory() {
   const queryClient = useQueryClient();
   const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string } | null>(null);
 
   const deleteMutation = useDelete<{ id: number; name: string }>({
-    mutationFn: ({ id }) => productService.delete(id),
-    queryKey: ["products"],
-    successMessage: ({ name }) => `Produk "${name}" berhasil dihapus dari database!`,
+    mutationFn: ({ id }) => recommendationService.delete(id),
+    queryKey: ["recommendations"],
+    successMessage: ({ name }) => `Riwayat pencarian SPK dari "${name}" berhasil dihapus!`,
     errorMessage: ({ name }, err) =>
-      `Gagal menghapus produk "${name}": ${
+      `Gagal menghapus riwayat "${name}": ${
         err?.response?.data?.message || err?.message || "Error"
       }`,
     onOfflineFallback: ({ id }) => {
-      queryClient.setQueryData<Product[]>(["products"], (old) =>
+      queryClient.setQueryData<RecommendationRequest[]>(["recommendations"], (old) =>
         old ? old.filter((item) => item.id !== id) : []
       );
     },
   });
 
   // 1. Dipanggil saat tombol ikon tong sampah di tabel diklik -> Buka Modal Confirm
-  const handleDelete = (id: number, name: string) => {
-    setDeleteTarget({ id, name });
+  const handleDelete = (id: number, userName: string) => {
+    setDeleteTarget({ id, name: userName });
   };
 
-  // 2. Dipanggil saat tombol Ya, Hapus di dalam modal diklik -> Jalankan API Delete
+  // 2. Dipanggil saat tombol "Ya, Hapus" di dalam modal diklik -> Jalankan API Delete
   const confirmDelete = () => {
     if (deleteTarget) {
       deleteMutation.mutate(deleteTarget, {

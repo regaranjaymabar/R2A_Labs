@@ -10,6 +10,7 @@ import {
 import { TabelManageAccess } from "./components/TabelManageAccess";
 import { Button } from "../../../components/ui/common/Button";
 import { Modal } from "../../../components/ui/common/Modal";
+import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
 import { GlowingCards, GlowingCard } from "../../../components/ui/glowing-cards";
 
 // 1. Definisi Interface Hak Akses Toko (user_stores)
@@ -102,17 +103,21 @@ export default function ManageAccess() {
   const [selectedUserId, setSelectedUserId] = useState<number>(availableStoreAdmins[0].id);
   const [selectedStoreId, setSelectedStoreId] = useState<number>(availableStores[0].id);
 
-  // Aksi Cabut Akses (Revoke) / Pulihkan Akses (Grant)
-  const handleToggleRevoke = (item: UserStoreAccess) => {
-    const isRevoking = item.is_active;
-    const confirmMsg = isRevoking
-      ? ` Cabut Akses (Revoke) dari "${item.user_name}" untuk "${item.store_name}"?\n\nAlur Logika: Status akan berubah menjadi tidak aktif (is_active = FALSE). Pegawai ini otomatis TIDAK BISA LAGI mengedit stok dan harga di toko ini, meskipun akun loginnya masih aktif.`
-      : ` Pulihkan kembali akses (Grant) "${item.user_name}" untuk mengelola cabang "${item.store_name}"?`;
+  // State Modal Confirm Cabut/Pulihkan Akses
+  const [revokeTarget, setRevokeTarget] = useState<UserStoreAccess | null>(null);
 
-    if (window.confirm(confirmMsg)) {
+  // Aksi Cabut Akses (Revoke) / Pulihkan Akses (Grant) - Buka Modal
+  const handleToggleRevoke = (item: UserStoreAccess) => {
+    setRevokeTarget(item);
+  };
+
+  // Eksekusi perubahan dari ModalConfirm
+  const confirmToggleRevoke = () => {
+    if (revokeTarget) {
       setData((prev) =>
-        prev.map((d) => (d.id === item.id ? { ...d, is_active: !isRevoking } : d))
+        prev.map((d) => (d.id === revokeTarget.id ? { ...d, is_active: !revokeTarget.is_active } : d))
       );
+      setRevokeTarget(null);
     }
   };
 
@@ -138,17 +143,9 @@ export default function ManageAccess() {
         alert(`⚠️ Pegawai "${adminObj.name}" SUDAH memiliki akses aktif ke toko ini!`);
         return;
       } else {
-        // Jika sebelumnya dicabut, pulihkan saja
-        if (
-          window.confirm(
-            `Pegawai "${adminObj.name}" sebelumnya pernah ditugaskan di toko ini namun aksesnya dicabut. Pulihkan kembali aksesnya sekarang?`
-          )
-        ) {
-          setData((prev) =>
-            prev.map((d) => (d.id === existing.id ? { ...d, is_active: true } : d))
-          );
-          setIsAddModalOpen(false);
-        }
+        // Jika sebelumnya dicabut, pulihkan saja melalui Modal Confirm
+        setIsAddModalOpen(false);
+        setRevokeTarget(existing);
         return;
       }
     }
@@ -391,6 +388,28 @@ export default function ManageAccess() {
           </div>
         </form>
       </Modal>
+
+      {/* MODAL 2: KONFIRMASI CABUT / PULIHKAN AKSES TOKO */}
+      <ModalConfirm
+        isOpen={Boolean(revokeTarget)}
+        onClose={() => setRevokeTarget(null)}
+        onConfirm={confirmToggleRevoke}
+        title={revokeTarget?.is_active ? "Cabut Hak Akses Toko?" : "Pulihkan Hak Akses Toko?"}
+        message={
+          revokeTarget?.is_active ? (
+            <span>
+              Apakah kamu yakin ingin mencabut akses <strong className="font-bold text-gray-900 dark:text-white">{revokeTarget.user_name}</strong> untuk mengelola toko <strong className="font-bold text-gray-900 dark:text-white">{revokeTarget.store_name}</strong>? Pegawai ini tidak akan bisa lagi mengedit stok dan harga di toko ini.
+            </span>
+          ) : (
+            <span>
+              Apakah kamu yakin ingin memulihkan kembali akses <strong className="font-bold text-gray-900 dark:text-white">{revokeTarget?.user_name}</strong> untuk mengelola toko <strong className="font-bold text-gray-900 dark:text-white">{revokeTarget?.store_name}</strong>?
+            </span>
+          )
+        }
+        confirmLabel={revokeTarget?.is_active ? "Ya, Cabut Akses" : "Ya, Pulihkan Akses"}
+        cancelLabel="Batal"
+        variant={revokeTarget?.is_active ? "danger" : "info"}
+      />
     </div>
   );
 }

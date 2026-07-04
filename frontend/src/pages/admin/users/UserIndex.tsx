@@ -14,6 +14,7 @@ import {
 import { TabelUserIndex } from "./components/TabelUserIndex";
 import { Button } from "../../../components/ui/common/Button";
 import { Modal } from "../../../components/ui/common/Modal";
+import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
 import { GlowingCards, GlowingCard } from "../../../components/ui/glowing-cards";
 
 // 1. Definisi Interface Pengguna (User) sesuai skema tabel users di database MySQL
@@ -102,6 +103,9 @@ export default function UserIndex() {
   const [editRole, setEditRole] = useState<"admin" | "store_admin" | "user">("user");
   const [editIsActive, setEditIsActive] = useState(true);
 
+  // State untuk Modal Confirm Status Akun (Soft Delete)
+  const [statusTarget, setStatusTarget] = useState<UserData | null>(null);
+
   // Buka Modal Edit
   const handleOpenEdit = (user: UserData) => {
     setEditingUser(user);
@@ -166,23 +170,24 @@ export default function UserIndex() {
     setEditingUser(null);
   };
 
-  // Aksi Soft Delete / Restore Akses (Toggle is_active)
+  // Aksi Soft Delete / Restore Akses (Toggle is_active) - Buka Modal
   const handleToggleSoftDelete = (user: UserData) => {
     if (user.role === "admin" && user.id === 1) {
       alert("⚠️ Akun Super Admin Utama (#1) tidak boleh dinonaktifkan!");
       return;
     }
+    setStatusTarget(user);
+  };
 
-    const confirmMsg = user.is_active
-      ? `⚠️ Nonaktifkan akun "${user.name}"?\n\nAlur Soft Delete: Akun ini tidak akan bisa login lagi ke dalam sistem, namun ID mereka tetap terikat aman dengan tabel riwayat recommendation_requests (SPK).`
-      : `✅ Aktifkan kembali akun "${user.name}" agar bisa login kembali?`;
-
-    if (window.confirm(confirmMsg)) {
+  // Eksekusi perubahan status dari ModalConfirm
+  const confirmToggleStatus = () => {
+    if (statusTarget) {
       setData((prev) =>
         prev.map((item) =>
-          item.id === user.id ? { ...item, is_active: !user.is_active } : item
+          item.id === statusTarget.id ? { ...item, is_active: !statusTarget.is_active } : item
         )
       );
+      setStatusTarget(null);
     }
   };
 
@@ -637,6 +642,28 @@ export default function UserIndex() {
           </form>
         )}
       </Modal>
+
+      {/* MODAL 3: KONFIRMASI NONAKTIFKAN / AKTIFKAN AKUN (SOFT DELETE) */}
+      <ModalConfirm
+        isOpen={Boolean(statusTarget)}
+        onClose={() => setStatusTarget(null)}
+        onConfirm={confirmToggleStatus}
+        title={statusTarget?.is_active ? "Nonaktifkan Akun Pengguna?" : "Aktifkan Kembali Akun?"}
+        message={
+          statusTarget?.is_active ? (
+            <span>
+              Apakah kamu yakin ingin menonaktifkan akun <strong className="font-bold text-gray-900 dark:text-white">{statusTarget.name}</strong>? Akun ini tidak akan bisa login ke dalam sistem, namun data riwayat SPK mereka tetap aman (Soft Delete).
+            </span>
+          ) : (
+            <span>
+              Apakah kamu yakin ingin mengaktifkan kembali akses login untuk akun <strong className="font-bold text-gray-900 dark:text-white">{statusTarget?.name}</strong>?
+            </span>
+          )
+        }
+        confirmLabel={statusTarget?.is_active ? "Ya, Nonaktifkan Akun" : "Ya, Aktifkan Akun"}
+        cancelLabel="Batal"
+        variant={statusTarget?.is_active ? "danger" : "info"}
+      />
     </div>
   );
 }

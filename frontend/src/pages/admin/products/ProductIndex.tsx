@@ -4,22 +4,10 @@ import { useQuery } from "@tanstack/react-query";
 import { productService } from "../../../services/productService";
 import { TabelProductIndex } from "./components/TabelProductIndex";
 import { useDeleteProduct } from "./hooks/useDeleteProduct";
+import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
 
-// 1. Definisi Tipe Data Product (Sesuai kolom tabel products di MySQL)
-export interface Product {
-  id: number;
-  brand_id: number;
-  brand_name?: string; // Opsional: nama brand hasil JOIN dengan tabel brands (misal "ASUS")
-  model_name: string;
-  screen_size?: number; // decimal(5,2)
-  processor?: string;
-  ram?: string;
-  storage?: string;
-  battery?: number; // int(11) dalam Wh / mAH
-  weight?: number; // decimal(5,2) dalam Kg
-  release_year?: number; // int(11)
-  is_active: number | boolean; // tinyint(1) di MySQL: 1 = aktif, 0 = non-aktif
-}
+import type { Product } from "../../../types/product";
+export type { Product };
 
 // 2. Data Dummy Awal (Sesuai skema tabel products MySQL)
 const initialProducts: Product[] = [
@@ -148,7 +136,14 @@ export default function ProductIndex() {
   const data = productsData || initialProducts;
 
   // 2. Gunakan custom hook untuk hapus produk
-  const { handleDelete, deletingId } = useDeleteProduct();
+  const {
+    handleDelete,
+    confirmDelete,
+    cancelDelete,
+    deleteTarget,
+    isDeleting,
+    deletingId,
+  } = useDeleteProduct();
 
   return (
     <div className="space-y-6 pb-10">
@@ -178,6 +173,28 @@ export default function ProductIndex() {
         onDelete={handleDelete}
         deletingId={deletingId}
       />
+
+      {/* Modal Konfirmasi Hapus Produk */}
+      <ModalConfirm
+        isOpen={Boolean(deleteTarget)}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Hapus Produk dari Katalog?"
+        message={
+          <span>
+            Apakah kamu yakin ingin menghapus produk{" "}
+            <strong className="text-gray-900 dark:text-white font-semibold">
+              {deleteTarget?.name}
+            </strong>{" "}
+            (ID: #{deleteTarget?.id})? Data yang dihapus tidak dapat dikembalikan.
+          </span>
+        }
+        confirmLabel="Ya, Hapus Produk"
+        cancelLabel="Batal"
+        variant="danger"
+        isLoading={isDeleting}
+      />
     </div>
   );
 }
+
