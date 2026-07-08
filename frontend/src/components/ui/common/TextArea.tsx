@@ -6,7 +6,9 @@ interface TextAreaProps<T extends FieldValues> {
     register: UseFormRegister<T>;
     error?: string;
     placeholder?: string;
-    className?: string; 
+    className?: string;
+    rows?: number;
+    helperText?: React.ReactNode;
 }
 
 export const TextArea = <T extends FieldValues> ({
@@ -15,19 +17,26 @@ export const TextArea = <T extends FieldValues> ({
     register,
     error,
     placeholder,
-    className = ""
+    className = "",
+    rows = 4,
+    helperText,
 }: TextAreaProps<T>) => {
     return (
         <div className={`flex flex-col gap-1 ${className}`}>
-            <label className="text-sm font-medium text-gray-700">{label}</label>
+            <label htmlFor={nama} className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {label}
+            </label>
             <textarea 
+                id={nama}
+                rows={rows}
                 {...register(nama)}
-                placeholder={placeholder}
-                className={`border rounded px-3 py-2 min-h-25 w-full outline-none transition-colors ${
-                    error ? "border-blue-500 focus:ring-1 focus:ring-blue-500" : "border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                placeholder={placeholder || label}
+                className={`w-full border border-gray-300 dark:border-gray-700 rounded-xl px-3.5 py-3 outline-none transition-all font-semibold text-sm bg-white dark:bg-[#181519] text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500/20 dark:focus:border-purple-500 ${
+                    error ? "border-red-500 focus:ring-red-500" : ""
                 }`}
             />
-            {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
+            {error && <p className="text-xs font-semibold text-red-500 dark:text-red-400 animate-fadeIn">{error}</p>}
+            {helperText && !error && <div className="text-xs text-gray-500 dark:text-gray-400">{helperText}</div>}
         </div>
-    )
-}
+    );
+};

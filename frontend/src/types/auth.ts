@@ -1,4 +1,4 @@
-export type LoginRespone = {
+export type LoginResponse = {
     token: string
     user:User
 }
@@ -10,6 +10,7 @@ export type LoginInput = {
 }
 
 export type User = {
-    nme: string
-    email:string
+    name: string
+    email: string
+    role?: "admin" | "super_admin" | "store_admin" | "user" | string
 }

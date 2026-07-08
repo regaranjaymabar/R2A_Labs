@@ -5,13 +5,13 @@ import AdminSidebar from "../admin/AdminSidebar";
 
 export default function AdminLayout() {
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex flex-col sm:flex-row min-h-screen bg-gray-100 overflow-x-hidden w-full">
       <AdminSidebar />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 min-w-0 w-full flex flex-col sm:ml-64 transition-all duration-300">
          {/* <AdminHeader /> */}
          
          {/* Konten Halaman akan muncul di sini (menyesuaikan URL) */}
-         <main className="p-6 flex-1">
+         <main className="p-4 sm:p-6 flex-1 min-w-0 w-full">
             <Outlet />
          </main>
       </div>

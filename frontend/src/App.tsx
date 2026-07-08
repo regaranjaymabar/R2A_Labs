@@ -26,7 +26,6 @@ import AddCriteria from "./pages/admin/criterias/AddCriteria";
 import EditCriteria from "./pages/admin/criterias/EditCriteria";
 import SubCriteriaIndex from "./pages/admin/subcriterias/SubCriteriaIndex";
 import AddSubCriteria from "./pages/admin/subcriterias/AddSubCriteria";
-import EditSubCriteria from "./pages/admin/subcriterias/EditSubCriteria";
 import ProductWeightIndex from "./pages/admin/productweights/ProductWeightIndex";
 import AddProductWeight from "./pages/admin/productweights/AddProductWeight";
 import EditProductWeight from "./pages/admin/productweights/EditProductWeight";
@@ -98,7 +97,6 @@ function App() {
               <Route path="subcriterias">
                 <Route index element={<SubCriteriaIndex />} />
                 <Route path="add" element={<AddSubCriteria />} />
-                <Route path="edit/:id" element={<EditSubCriteria />} />
               </Route>
 
               <Route path="productweights">
