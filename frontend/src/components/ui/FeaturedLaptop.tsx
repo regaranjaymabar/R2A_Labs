@@ -1,11 +1,14 @@
+import { Link } from "react-router-dom";
+import { id } from "zod/v4/locales";
+
 export default function FeaturedLaptop() {
   return (
     <div
       className="
       rounded-[40px]
-      bg-white/25
-      backdrop-blur-3xl
-      border border-white/20
+      bg-white/20
+      backdrop-blur-xl
+      border border-white/40
       p-10
       overflow-hidden"
     >
@@ -71,17 +74,26 @@ export default function FeaturedLaptop() {
             Rp 36.999.000
           </h3>
 
-          <button
+          <Link
+            to={`/product/${id}`}
             className="
             mt-6
-            px-8 py-4
+            flex
+            w-fit
+            items-center
+            justify-center
+            px-8
+            h-12
             rounded-full
             bg-black
             text-white
-          "
+            font-medium
+            hover:opacity-90
+            transition-all
+            "
           >
             Lihat Detail →
-          </button>
+          </Link>
         </div>
 
       </div>

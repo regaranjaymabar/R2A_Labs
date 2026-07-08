@@ -1,4 +1,7 @@
+import { Link } from "react-router-dom";
+
 type ProductCardProps = {
+  id: number;
   name: string;
   image: string;
   price: string;
@@ -8,6 +11,7 @@ type ProductCardProps = {
 };
 
 export default function ProductCard({
+  id,
   name,
   image,
   price,
@@ -85,16 +89,24 @@ export default function ProductCard({
           {price}
         </span>
 
-        <button
+        <Link
+          to={`/product/${id}`}
           className="
-          w-11 h-11
+          flex
+          items-center
+          justify-center
+          w-11
+          h-11
           rounded-full
           bg-black
           text-white
+          hover:scale-110
+          transition-all
+          duration-300
         "
-        >
-          →
-        </button>
+      >
+        →
+      </Link>
       </div>
     </div>
   );

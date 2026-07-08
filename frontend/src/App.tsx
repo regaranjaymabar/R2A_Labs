@@ -35,6 +35,8 @@ import UserIndex from "./pages/admin/users/UserIndex";
 import AddUser from "./pages/admin/users/AddUser";
 import EditUser from "./pages/admin/users/EditUser";
 import ManageAccess from "./pages/admin/userstores/ManageAccess";
+import ProductDetail from "./pages/ProductDetail";
+import Marketplace from "./pages/Marketplace";
 
 const queryClient = new QueryClient();
 
@@ -47,7 +49,10 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/rekomendasi" element={<Recommendation />} />
+            <Route path="/product/:id"element={<ProductDetail />}/>
+            <Route path="/toko/:id" element={<Marketplace />} />
           </Route>
+          
 
           <Route element={<AuthLayout />}>
             <Route path='/login' element={<Login />} />
@@ -112,8 +117,6 @@ function App() {
               </Route>
 
               <Route path="user-stores" element={<ManageAccess />} />
-{/* 
-            </Route> */}
 
           </Route>
 

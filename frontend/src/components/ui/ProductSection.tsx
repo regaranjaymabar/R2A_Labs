@@ -32,7 +32,7 @@ export default function ProductSection({ search }: ProductSectionProps) {
       : filteredLaptops; // Kalau ada filter/search: tampilkan semua hasil
 
   return (
-    <section className="py-32">
+    <section className="py-15">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="text-center mb-5">
           <h2 className="text-6xl font-bold">Produk Terbaik</h2>
