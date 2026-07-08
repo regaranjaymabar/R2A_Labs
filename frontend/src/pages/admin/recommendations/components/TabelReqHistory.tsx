@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Trash2, Loader2 } from "lucide-react";
 import { DataTable, DataTableColumnHeader } from "../../../../components/ui/common/DataTable";
-import type { RecommendationRequest } from "../ReqHistory";
+import type { RecommendationRequest } from "../../../../types/recomendation";
+
 
 export interface TabelReqHistoryProps {
     data: RecommendationRequest[];

@@ -1,6 +1,6 @@
 import { recommendationService } from "../../../../services/recommendationService";
 import { useDelete } from "../../../../hooks/useDelete";
-import { type RecommendationRequest } from "../ReqHistory";
+import { type RecommendationRequest } from "../../../../types/recomendation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 

@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useDelete } from "../../../../hooks/useDelete";
 import { useQueryClient } from "@tanstack/react-query";
 import { productStoreService } from "../../../../services/productStoreService";
-import type { ProductStore } from "../ProductStoreIndex";
+import type { ProductStore } from "../../../../types/productStore";
+
 
 export function useDeleteProductStore() {
   const queryClient = useQueryClient();

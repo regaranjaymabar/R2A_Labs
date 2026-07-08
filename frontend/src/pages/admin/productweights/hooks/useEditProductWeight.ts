@@ -2,11 +2,13 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { productWeightService } from "../../../../services/productWeightService";
-import { productWeightSchema, type ProductWeightFormData } from "./useAddProductWeight";
-import { type ProductCriteria } from "../ProductWeightIndex";
 import { useGet } from "../../../../hooks/useGet";
 import { useUpdate } from "../../../../hooks/useUpdate";
+import { productWeightService } from "../../../../services/productWeightService";
+import { productWeightSchema, type ProductWeightFormData } from "./useAddProductWeight";
+import type { ProductCriteria } from "../../../../types/productWeight";
+
+
 
 export function useEditProductWeight() {
   const { id } = useParams<{ id: string }>();

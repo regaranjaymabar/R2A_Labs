@@ -4,23 +4,23 @@ import {
   UserPlus,
   ShieldCheck,
   Store,
-  User as UserIcon,
   Filter,
   Save,
   Edit,
+  UserIcon,
 } from "lucide-react";
 import { TabelUserIndex } from "./components/TabelUserIndex";
 import { Button } from "../../../components/ui/common/Button";
 import { Modal } from "../../../components/ui/common/Modal";
 import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
 import { GlowingCards, GlowingCard } from "../../../components/ui/glowing-cards";
-import type { User } from "../../../types/user";
+import type { UserData } from "../../../types/user";
 
-// 1. Definisi Interface Pengguna (User) sesuai skema tabel users di database MySQL
+// 1. Definisi Interface Pengguna (UserData) sesuai skema tabel users di database MySQL
 
 
 // 2. Data Dummy Awal (Merepresentasikan Kondisi Nyata di Sistem SPK Laptop)
-const initialUsers: User[] = [
+const initialUsers: UserData[] = [
   {
     id: 1,
     name: "Adies (Super Admin)",
@@ -73,7 +73,7 @@ const initialUsers: User[] = [
 
 
 export default function UserIndex() {
-  const [data, setData] = useState<User[]>(initialUsers);
+  const [data, setData] = useState<UserData[]>(initialUsers);
 
   // State Filter
   const [filterRole, setFilterRole] = useState<"all" | "admin" | "store_admin" | "user">("all");
@@ -82,7 +82,7 @@ export default function UserIndex() {
 
 
   // State Modal Edit Pengguna
-  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editingUser, setEditingUser] = useState<UserData | null>(null);
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editPassword, setEditPassword] = useState("");
@@ -90,10 +90,10 @@ export default function UserIndex() {
   const [editIsActive, setEditIsActive] = useState(true);
 
   // State untuk Modal Confirm Status Akun (Soft Delete)
-  const [statusTarget, setStatusTarget] = useState<User | null>(null);
+  const [statusTarget, setStatusTarget] = useState<UserData | null>(null);
 
   // Buka Modal Edit
-  const handleOpenEdit = (user: User) => {
+  const handleOpenEdit = (user: UserData) => {
     setEditingUser(user);
     setEditName(user.name);
     setEditEmail(user.email);
@@ -129,7 +129,7 @@ export default function UserIndex() {
   };
 
   // Aksi Soft Delete / Restore Akses (Toggle is_active) - Buka Modal
-  const handleToggleSoftDelete = (user: User) => {
+  const handleToggleSoftDelete = (user: UserData) => {
     if (user.role === "admin" && user.id === 1) {
       alert("⚠️ Akun Super Admin Utama (#1) tidak boleh dinonaktifkan!");
       return;
@@ -213,7 +213,7 @@ export default function UserIndex() {
           <span className="text-2xl font-extrabold text-blue-900 dark:text-blue-100 mt-1 block">{stats.storeAdmins}</span>
         </GlowingCard>
         <GlowingCard glowColor="#10b981" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block uppercase font-mono">User Biasa</span>
+          <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block uppercase font-mono">UserData Biasa</span>
           <span className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 mt-1 block">{stats.users}</span>
         </GlowingCard>
         <GlowingCard glowColor="#ef4444" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
@@ -234,7 +234,7 @@ export default function UserIndex() {
               all: "Semua Role",
               admin: "Super Admin",
               store_admin: "Admin Toko",
-              user: "User Biasa",
+              user: "UserData Biasa",
             };
             const isActive = filterRole === role;
             return (
@@ -346,7 +346,7 @@ export default function UserIndex() {
                   [
                     { id: "store_admin", label: "Admin Toko", desc: "Mengelola stok & harga cabang", icon: Store, color: "blue" },
                     { id: "admin", label: "Super Admin", desc: "Kontrol penuh sistem SPK", icon: ShieldCheck, color: "purple" },
-                    { id: "user", label: "User Biasa", desc: "Konsumen pencari laptop", icon: UserIcon, color: "gray" },
+                    { id: "user", label: "UserData Biasa", desc: "Konsumen pencari laptop", icon: UserIcon, color: "gray" },
                   ] as const
                 ).map((roleOpt) => {
                   const IconComponent = roleOpt.icon;

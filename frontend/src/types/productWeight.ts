@@ -1,4 +1,4 @@
-export type ProductWeight = {
+export type ProductCriteria = {
   id: number;
   product_id: number;
   criteria_id: number;

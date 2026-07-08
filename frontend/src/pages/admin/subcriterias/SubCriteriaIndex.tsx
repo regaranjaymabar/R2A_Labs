@@ -2,12 +2,10 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   Plus,
-  Sliders,
   Filter,
 } from "lucide-react";
 import { TabelSubCriteriaIndex } from "./components/TabelSubCriteriaIndex";
-import { Button } from "../../../components/ui/common/Button";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { subCriteriaService } from "../../../services/subCriteriaService";
 import { useDeleteSubCriteria } from "./hooks/useDeleteSubCriteria";
 import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
