@@ -5,11 +5,11 @@ export interface Laptop {
   image: string;
   brand: string;
   price: string;
-  priceValue: number; // Untuk filter budget
+  priceValue: number;
   cpu: string;
   ram: string;
   storage: string;
-  images: string[]; // Optional, untuk galeri
+  images: string[]; 
   gpu: string;
   display: string;
   refreshRate: string;
@@ -36,7 +36,7 @@ export interface Laptop {
 }
 
 export const laptops: Laptop[] = [
-  {
+    {
   id: 1,
   brand: "ASUS",
   category: "Pelajar",
@@ -112,8 +112,6 @@ export const laptops: Laptop[] = [
     image:
       "https://dlcdnwebimgs.asus.com/gain/7583764C-92E3-413D-A5AD-4CB7D9713802/w1000/h732",
     images: [
-      "https://dlcdnwebimgs.asus.com/gain/7583764C-92E3-413D-A5AD-4CB7D9713802/w1000/h732",
-      "https://dlcdnwebimgs.asus.com/gain/7583764C-92E3-413D-A5AD-4CB7D9713802/w1000/h732",
       "https://dlcdnwebimgs.asus.com/gain/7583764C-92E3-413D-A5AD-4CB7D9713802/w1000/h732"
     ],
     price: "Rp 24.999.000",

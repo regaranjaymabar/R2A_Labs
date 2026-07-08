@@ -6,6 +6,7 @@ import ProductGallery from "../components/ui/detailProduct/ProductGallery";
 import ProductInfo from "../components/ui/detailProduct/ProductInfo";
 import QuickSpecs from "../components/ui/detailProduct/QuickSpecs";
 import { useEffect } from "react";
+import MarketplaceSection from "../components/marketplace/MarketplaceSection";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -48,7 +49,7 @@ export default function ProductDetail() {
         </div>
 
         <QuickSpecs laptop={laptop} />
-
+        <MarketplaceSection laptopId={laptop.id} />
       </div>
     </main>
   );

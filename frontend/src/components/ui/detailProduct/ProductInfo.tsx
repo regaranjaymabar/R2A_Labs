@@ -109,10 +109,15 @@ export default function ProductInfo({
   {/* Buttons */}
   <div className="flex gap-3 mt-6">
 
-    <a
-      href={laptop.marketplace}
-      target="_blank"
-      rel="noopener noreferrer"
+    <button
+        onClick={() => {
+      document
+        .getElementById("marketplace")
+        ?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+    }}
       className="
         flex-1
         h-11
@@ -129,7 +134,7 @@ export default function ProductInfo({
       "
     >
       Lihat Marketplace
-    </a>
+    </button>
 
     <button
       className="

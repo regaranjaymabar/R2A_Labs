@@ -162,7 +162,7 @@ export default function Recommendation() {
               )}
               <button
                 onClick={handleReset}
-                className="text-red-500 hover:text-red-700 underline ml-auto"
+                className="px-6 py-3 ml-260 bg-black text-white rounded-full hover:opacity-90 transition"
               >
                 Reset Filter
               </button>

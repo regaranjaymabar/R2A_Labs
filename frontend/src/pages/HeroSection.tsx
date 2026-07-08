@@ -3,7 +3,7 @@ import TiltedCard from "../components/ui/TiltedCard"; // Sesuaikan path
 
 export default function Hero() {
   return (
-    <section className="min-h-screen flex items-center pt-29">
+    <section className="min-h-screen flex items-center pt-23">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 w-full">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* LEFT - Content */}

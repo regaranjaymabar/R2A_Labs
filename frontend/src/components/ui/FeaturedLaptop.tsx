@@ -6,9 +6,9 @@ export default function FeaturedLaptop() {
     <div
       className="
       rounded-[40px]
-      bg-white/25
-      backdrop-blur-3xl
-      border border-white/20
+      bg-white/20
+      backdrop-blur-xl
+      border border-white/40
       p-10
       overflow-hidden"
     >

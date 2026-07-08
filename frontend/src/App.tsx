@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import AuthLayout from "./components/layouts/AuthLayout";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
-import ProtectedRoute from "./routes/ProtectedRoute";
+// import ProtectedRoute from "./routes/ProtectedRoute";
 import AdminLayout from "./components/layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import BrandIndex from "./pages/admin/brands/BrandIndex";
@@ -37,6 +37,7 @@ import AddUser from "./pages/admin/users/AddUser";
 import EditUser from "./pages/admin/users/EditUser";
 import ManageAccess from "./pages/admin/userstores/ManageAccess";
 import ProductDetail from "./pages/ProductDetail";
+import Marketplace from "./pages/Marketplace";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/rekomendasi" element={<Recommendation />} />
             <Route path="/product/:id"element={<ProductDetail />}/>
+            <Route path="/toko/:id" element={<Marketplace />} />
           </Route>
           
 
