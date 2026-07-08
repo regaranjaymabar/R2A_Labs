@@ -10,7 +10,7 @@ import type { Product } from "../../../types/product";
 export type { Product };
 
 // 2. Data Dummy Awal (Sesuai skema tabel products MySQL)
-const initialProducts: Product[] = [
+export const initialProducts: Product[] = [
   {
     id: 1,
     brand_id: 1,

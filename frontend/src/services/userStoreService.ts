@@ -1,6 +1,6 @@
 import { api } from "../lib/axios";
 import type { UserStoreFormData } from "../pages/admin/userstores/hooks/useAddUserStore";
-import type { UserStoreAccess } from "../pages/admin/userstores/ManageAccess";
+import type { UserStoreAccess } from "../types/userStore";
 
 export const userStoreService = {
 

@@ -2,7 +2,6 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { TabelReqHistory } from "./components/TabelReqHistory";
 import {
-  History,
   Filter,
   Calculator,
   ArrowRight,
@@ -13,35 +12,10 @@ import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
 import { useDeleteReqHistory } from "./hooks/useDeleteReqHistory";
 import { useGet } from "../../../hooks/useGet";
 import { recommendationService } from "../../../services/recommendationService";
+import type { RecommendationRequest } from "../../../types/recomendation";
 
-// 1. Definisi Interface Riwayat Rekomendasi SPK
-export interface RecommendationRequest {
-  id: number;
-  user_name: string; // Misal: "Andi Pratama"
-  user_email?: string;
-  usage_purpose: string; // Misal: "Coding & Software Development"
-  budget_range: string; // Misal: "Rp 6.000.000 - Rp 10.000.000"
-  
-  // Rincian Bobot yang digeser oleh user (dalam %):
-  weights: {
-    ram: number; // Misal: 30%
-    price: number; // Misal: 40%
-    processor?: number; // Misal: 20%
-    storage?: number; // Misal: 10%
-  };
 
-  // Hasil Rekomendasi Tertinggi Sistem SAW (Peringkat 1):
-  top_recommendation: {
-    product_name: string; // Misal: "Lenovo IdeaPad Slim 3"
-    saw_score: number; // Misal: 0.895
-    rank: number; // 1
-  };
 
-  // Pilihan Akhir User:
-  user_choice?: string; // Misal: "Lenovo IdeaPad Slim 3" (Jika user memilih rekomendasi ini)
-  status: "CHOSEN" | "COMPLETED" | "ABANDONED";
-  created_at: string; // Misal: "2026-07-02 14:30:25"
-}
 
 // 2. Data Dummy Awal (Termasuk studi kasus Andi Pratama sesuai contoh)
 const initialHistory: RecommendationRequest[] = [
@@ -159,7 +133,7 @@ export default function ReqHistory() {
   }, [data, statusFilter]);
 
   // Definisi Kolom Tabel
-  
+
 
   return (
     <div className="space-y-6 pb-12">
@@ -168,12 +142,8 @@ export default function ReqHistory() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
-              <History className="w-7 h-7 text-purple-600 dark:text-purple-400" />
-              <span>Riwayat Rekomendasi (Pemantauan SPK)</span>
+              <span>Riwayat Rekomendasi</span>
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border border-purple-200 dark:border-purple-800 font-mono">
-              recommendation_requests & results
-            </span>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Pantau preferensi nyata yang dicari oleh user biasa. Lihat bagaimana geseran bobot slider memengaruhi rekomendasi sistem SAW dan pilihan keputusan mereka.
@@ -185,41 +155,38 @@ export default function ReqHistory() {
       {/* Bar Filter & Statistik Ringkas */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50 dark:bg-[#181519] p-4 rounded-2xl border border-gray-200 dark:border-gray-800">
         <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-purple-600" />
+          <Filter className="w-4 h-4 text-black" />
           <span className="font-semibold text-sm text-gray-700 dark:text-gray-300">Filter Status Pilihan:</span>
           <div className="flex items-center gap-1.5 ml-2">
             <button
               type="button"
               onClick={() => setStatusFilter("ALL")}
-              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                statusFilter === "ALL"
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${statusFilter === "ALL"
                   ? "bg-purple-600 text-white shadow-sm"
                   : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700"
-              }`}
+                }`}
             >
               Semua ({data.length})
             </button>
             <button
               type="button"
               onClick={() => setStatusFilter("CHOSEN")}
-              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                statusFilter === "CHOSEN"
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${statusFilter === "CHOSEN"
                   ? "bg-emerald-600 text-white shadow-sm"
                   : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700"
-              }`}
+                }`}
             >
               Dipilih User ({data.filter((d) => d.status === "CHOSEN").length})
             </button>
             <button
               type="button"
               onClick={() => setStatusFilter("COMPLETED")}
-              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                statusFilter === "COMPLETED"
+              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${statusFilter === "COMPLETED"
                   ? "bg-blue-600 text-white shadow-sm"
                   : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700"
-              }`}
+                }`}
             >
-              👁️ Hanya Dilihat ({data.filter((d) => d.status === "COMPLETED").length})
+              Hanya Dilihat ({data.filter((d) => d.status === "COMPLETED").length})
             </button>
           </div>
         </div>
@@ -244,7 +211,7 @@ export default function ReqHistory() {
         onClose={() => setSelectedDetail(null)}
         maxWidth="xl"
         badge={
-          <span className="text-purple-600 dark:text-purple-400 flex items-center gap-1.5">
+          <span className="text-black dark:text-purple-400 flex items-center gap-1.5">
             <span>Analisis Preferensi User SPK</span>
           </span>
         }
@@ -275,7 +242,7 @@ export default function ReqHistory() {
                 <span>Rentang Budget:</span>
               </div>
               <div className="flex items-center justify-between font-bold text-gray-900 dark:text-white">
-                <span className="text-purple-600 dark:text-purple-400">{selectedDetail.usage_purpose}</span>
+                <span className="text-black dark:text-purple-400">{selectedDetail.usage_purpose}</span>
                 <span className="text-emerald-600 dark:text-emerald-400 font-mono">{selectedDetail.budget_range}</span>
               </div>
             </div>
@@ -287,7 +254,7 @@ export default function ReqHistory() {
               </span>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <div className="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/80 text-center">
-                  <span className="text-[11px] font-bold text-purple-600 block">RAM</span>
+                  <span className="text-[11px] font-bold text-black block">RAM</span>
                   <span className="text-lg font-extrabold text-purple-900 dark:text-purple-200 font-mono">{selectedDetail.weights.ram}%</span>
                 </div>
                 <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 text-center">

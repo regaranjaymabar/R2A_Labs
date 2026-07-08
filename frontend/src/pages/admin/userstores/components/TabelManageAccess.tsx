@@ -2,7 +2,8 @@ import { useMemo } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Loader2 } from "lucide-react";
 import { DataTable, DataTableColumnHeader } from "../../../../components/ui/common/DataTable";
-import type { UserStoreAccess } from "../ManageAccess";
+import type { UserStoreAccess } from "../../../../types/userStore";
+
 
 export interface TabelManageAccessProps {
     data: UserStoreAccess[];
@@ -73,11 +74,11 @@ export function TabelManageAccess({
                     const isActive = info.getValue();
                     return isActive ? (
                         <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shadow-2xs">
-                            <span>Akses Aktif (Granted)</span>
+                            <span>Akses Aktif</span>
                         </span>
                     ) : (
                         <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 shadow-2xs">
-                            <span>Dicabut (Revoked)</span>
+                            <span>Tidak AKtif</span>
                         </span>
                     );
                 },

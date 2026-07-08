@@ -1,6 +1,7 @@
 import { api } from "../lib/axios";
 import type { CriteriaFormData } from "../pages/admin/criterias/hooks/useAddCriteria";
-import type { Criteria } from "../pages/admin/criterias/CriteriaIndex";
+import type { Criteria } from "../types/criteria";
+
 
 export const criteriaService = {
   getAll: async (): Promise<Criteria[]> => {

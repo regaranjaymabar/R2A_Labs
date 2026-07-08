@@ -1,15 +1,15 @@
-// Definisi Tipe Data Product (Sesuai kolom tabel products di MySQL)
-export interface Product {
+
+export type Product = {
   id: number;
   brand_id: number;
-  brand_name?: string; // Opsional: nama brand hasil JOIN dengan tabel brands (misal "ASUS")
+  brand_name?: string; 
   model_name: string;
-  screen_size?: number; // decimal(5,2)
+  screen_size?: number;   
   processor?: string;
   ram?: string;
   storage?: string;
-  battery?: number; // int(11) dalam Wh / mAH
-  weight?: number; // decimal(5,2) dalam Kg
-  release_year?: number; // int(11)
-  is_active: number | boolean; // tinyint(1) di MySQL: 1 = aktif, 0 = non-aktif
+  battery?: number; 
+  weight?: number; 
+  release_year?: number;  
+  is_active: number | boolean; 
 }

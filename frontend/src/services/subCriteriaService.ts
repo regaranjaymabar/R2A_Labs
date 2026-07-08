@@ -1,6 +1,6 @@
 import { api } from "../lib/axios";
 import type { SubCriteriaFormData } from "../pages/admin/subcriterias/hooks/useAddSubCriteria";
-import type { SubCriteria } from "../pages/admin/subcriterias/SubCriteriaIndex";
+import type { SubCriteria } from "../types/subCriteria";
 
 
 export const subCriteriaService = {

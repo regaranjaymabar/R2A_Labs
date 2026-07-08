@@ -108,7 +108,7 @@ export default function ResultDetail() {
       <div className="bg-white dark:bg-[#151216] p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-950/60 flex items-center justify-center text-purple-600 dark:text-purple-300 border border-purple-200 dark:border-purple-800 shadow-2xs shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-950/60 flex items-center justify-center text-black dark:text-purple-300 border border-purple-200 dark:border-purple-800 shadow-2xs shrink-0">
               <User className="w-6 h-6" />
             </div>
             <div>
@@ -152,7 +152,7 @@ export default function ResultDetail() {
               Bobot Preferensi Slider (%):
             </span>
             <div className="grid grid-cols-4 gap-2 text-center font-mono font-bold">
-              <div className="bg-white dark:bg-[#151216] p-1.5 rounded-lg border border-purple-200 dark:border-purple-800 text-purple-600">RAM: {session.weights_applied.ram}%</div>
+              <div className="bg-white dark:bg-[#151216] p-1.5 rounded-lg border border-purple-200 dark:border-purple-800 text-black">RAM: {session.weights_applied.ram}%</div>
               <div className="bg-white dark:bg-[#151216] p-1.5 rounded-lg border border-purple-200 dark:border-purple-800 text-amber-600">Harga: {session.weights_applied.price}%</div>
               <div className="bg-white dark:bg-[#151216] p-1.5 rounded-lg border border-purple-200 dark:border-purple-800 text-blue-600">CPU: {session.weights_applied.processor}%</div>
               <div className="bg-white dark:bg-[#151216] p-1.5 rounded-lg border border-purple-200 dark:border-purple-800 text-emerald-600">SSD: {session.weights_applied.storage}%</div>
@@ -164,7 +164,7 @@ export default function ResultDetail() {
       {/* Rincian Peringkat Hasil SAW */}
       <div className="space-y-4">
         <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-purple-600" />
+          <TrendingUp className="w-5 h-5 text-black" />
           <span>Rincian Peringkat (Top 3 Hasil Perhitungan Matriks SAW)</span>
         </h2>
 
@@ -172,17 +172,15 @@ export default function ResultDetail() {
           {session.ranked_laptops.map((laptop) => (
             <div
               key={laptop.rank}
-              className={`p-6 rounded-3xl border transition-all ${
-                laptop.is_chosen_by_user
+              className={`p-6 rounded-3xl border transition-all ${laptop.is_chosen_by_user
                   ? "bg-linear-to-r from-purple-950/40 via-[#181519] to-[#151216] border-purple-500 shadow-xl ring-2 ring-purple-500/20"
                   : "bg-white dark:bg-[#151216] border-gray-200 dark:border-gray-800 hover:border-gray-300"
-              }`}
+                }`}
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-4">
                 <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-extrabold text-lg shadow-md shrink-0 ${
-                    laptop.rank === 1 ? "bg-amber-500 text-white" : laptop.rank === 2 ? "bg-gray-400 text-white" : "bg-amber-700 text-white"
-                  }`}>
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-extrabold text-lg shadow-md shrink-0 ${laptop.rank === 1 ? "bg-amber-500 text-white" : laptop.rank === 2 ? "bg-gray-400 text-white" : "bg-amber-700 text-white"
+                    }`}>
                     #{laptop.rank}
                   </div>
                   <div>
@@ -204,7 +202,7 @@ export default function ResultDetail() {
 
                 <div className="shrink-0 text-right bg-gray-50 dark:bg-[#181519] px-4 py-2.5 rounded-2xl border border-gray-200 dark:border-gray-800">
                   <span className="text-[10px] font-bold text-gray-400 uppercase block">Total Skor Preferensi (Vi)</span>
-                  <span className="text-2xl font-extrabold text-purple-600 dark:text-purple-400 font-mono">
+                  <span className="text-2xl font-extrabold text-black dark:text-purple-400 font-mono">
                     {laptop.saw_score.toFixed(3)}
                   </span>
                 </div>

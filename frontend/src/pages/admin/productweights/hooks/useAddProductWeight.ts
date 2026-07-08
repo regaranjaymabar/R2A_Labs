@@ -3,6 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { productWeightService } from "../../../../services/productWeightService";
 import { useCreate } from "../../../../hooks/useCreate";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 // Skema Validasi Zod untuk pembobotan kriteria produk (product_criteria)
 export const productWeightSchema = z.object({
@@ -15,6 +17,9 @@ export const productWeightSchema = z.object({
 export type ProductWeightFormData = z.infer<typeof productWeightSchema>;
 
 export function useAddProductWeight() {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -41,6 +46,16 @@ export function useAddProductWeight() {
       `Gagal menambahkan pembobotan untuk produk "${variables.product_id}": ${err?.message || "Unknown error"}`,
   });
 
+  const batchMutation = useMutation({
+    mutationFn: async (payloads: ProductWeightFormData[]) => {
+      return Promise.all(payloads.map((p) => productWeightService.create(p)));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["productweights"] });
+      navigate("/admin/productweights");
+    },
+  });
+
   const onSubmit = (data: ProductWeightFormData) => {
     createMutation.mutate(data);
   };
@@ -51,6 +66,7 @@ export function useAddProductWeight() {
     setValue,
     watch,
     errors,
-    isSubmitting: createMutation.isPending,
+    isSubmitting: createMutation.isPending || batchMutation.isPending,
+    mutateBatch: batchMutation.mutateAsync,
   };
 }

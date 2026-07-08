@@ -10,7 +10,6 @@ export const brandSchema = z.object({
     .string()
     .min(1, "Nama merek laptop wajib diisi!")
     .min(2, "Nama merek minimal terdiri dari 2 karakter"),
-  is_active: z.boolean(),
 });
 
 export type BrandFormData = z.infer<typeof brandSchema>;
@@ -21,29 +20,22 @@ export function useAddBrand() {
     register,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<BrandFormData>({
     resolver: zodResolver(brandSchema),
     defaultValues: {
       name: "",
-      is_active: true, // Default diatur ke "Aktif" (true)
     },
   });
 
-  const isActive = watch("is_active");
-
-  // Mutasi dengan Generic Hook useCreate + Brand Service (Sangat Ringkas & Reusable)
   const createMutation = useCreate<BrandFormData>({
     mutationFn: (payload) => brandService.create(payload),
     queryKey: ["brands"],
     navigateTo: "/admin/brands",
     successMessage: (variables) =>
-      `Merek "${variables.name}" berhasil didaftarkan dengan status: ${
-        variables.is_active ? "Aktif (Live)" : "Nonaktif (Draft)"
-      }!`,
+      `Brand "${variables.name}" berhasil ditambahkan!`,
     errorMessage: (variables, err) =>
-      `Gagal menyimpan brand "${variables.name}": ${
+      `Gagal menambahkan brand "${variables.name}": ${
         err?.response?.data?.message || err?.message || "Error"
       }`,
   });
@@ -58,6 +50,5 @@ export function useAddBrand() {
     setValue,
     errors,
     isSubmitting: createMutation.isPending,
-    isActive,
   };
 }

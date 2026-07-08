@@ -4,9 +4,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userStoreService } from "../../../../services/userStoreService";
 import { userStoreSchema, type UserStoreFormData } from "./useAddUserStore";
-import { type UserStoreAccess } from "../ManageAccess";
+
 import { useGet } from "../../../../hooks/useGet";
 import { useUpdate } from "../../../../hooks/useUpdate";
+import type { UserStoreAccess } from "../../../../types/userStore";
 
 export function useEditUserStore() {
   const { id } = useParams<{ id: string }>();

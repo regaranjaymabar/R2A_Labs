@@ -1,16 +1,17 @@
 import { api } from "../lib/axios";
 import type { ProductWeightFormData } from "../pages/admin/productweights/hooks/useAddProductWeight";
+import type { ProductWeight } from "../types/productWeight";
 
-import type { ProductCriteria } from "../pages/admin/productweights/ProductWeightIndex";
+
 
 export const productWeightService = {
-  getAll: async (): Promise<ProductCriteria[]> => {
-    const response = await api.get<ProductCriteria[]>("/productweights");
+  getAll: async (): Promise<ProductWeight[]> => {
+    const response = await api.get<ProductWeight[]>("/productweights");
     return response.data;
   },
 
-  getById: async (id: number | string): Promise<ProductCriteria> => {
-    const response = await api.get<ProductCriteria>(`/productweights/${id}`);
+  getById: async (id: number | string): Promise<ProductWeight> => {
+    const response = await api.get<ProductWeight>(`/productweights/${id}`);
     return response.data;
   },
 

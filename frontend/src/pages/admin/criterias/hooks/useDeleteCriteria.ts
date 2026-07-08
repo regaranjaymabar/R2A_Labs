@@ -1,6 +1,6 @@
 import { criteriaService } from "../../../../services/criteriaService";
 import { useDelete } from "../../../../hooks/useDelete";
-import { type Criteria } from "../CriteriaIndex";
+import type { Criteria } from "../../../../types/criteria";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 

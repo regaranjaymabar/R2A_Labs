@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, Hash, Loader2 } from "lucide-react";
 import { Button } from "../../../components/ui/common/Button";
+import { InputSelect } from "../../../components/ui/common/InputSelect";
 import { useEditProductWeight } from "./hooks/useEditProductWeight";
 import { useQuery } from "@tanstack/react-query";
 import { productService } from "../../../services/productService";
@@ -69,7 +70,7 @@ export default function EditProductWeight() {
   if (isLoadingData) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-black" />
       </div>
     );
   }
@@ -99,74 +100,75 @@ export default function EditProductWeight() {
       {/* Form Edit Bobot */}
       <form onSubmit={handleSubmit} className="bg-white dark:bg-[#151216] border border-gray-200 dark:border-gray-800 rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
         {/* 1. Pilih Produk Laptop */}
-        <div className="space-y-2">
-          <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
-            Produk Laptop (<code className="font-mono text-purple-600">product_id</code>)
-          </label>
-          <select
-            {...register("product_id")}
-            disabled
-            className="w-full px-4 py-2.5 text-sm font-semibold bg-gray-100 dark:bg-[#181519] border border-gray-200 dark:border-gray-700 rounded-xl text-gray-500 cursor-not-allowed"
-          >
-            <option value={selectedProductId}>
-              #{selectedProductId} - {weightData?.product_name || `Product #${selectedProductId}`}
+        <InputSelect
+          label={
+            <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
+              Produk Laptop (<code className="font-mono text-black">product_id</code>)
+            </span>
+          }
+          register={register}
+          nama="product_id"
+          disabled={true}
+          helperText="* Produk dan kriteria tidak dapat diubah agar ID riwayat tetap konsisten."
+          className="bg-gray-100! dark:bg-[#181519]! text-gray-500! cursor-not-allowed!"
+        >
+          <option value={selectedProductId}>
+            #{selectedProductId} - {weightData?.product_name || `Product #${selectedProductId}`}
+          </option>
+          {products.map((p: any) => (
+            <option key={p.id} value={p.id}>
+              #{p.id} - {p.brand_name || ""} {p.model_name}
             </option>
-            {products.map((p: any) => (
-              <option key={p.id} value={p.id}>
-                #{p.id} - {p.brand_name || ""} {p.model_name}
-              </option>
-            ))}
-          </select>
-          <p className="text-[11px] text-gray-400">* Produk dan kriteria tidak dapat diubah agar ID riwayat tetap konsisten.</p>
-        </div>
+          ))}
+        </InputSelect>
 
         {/* 2. Pilih Kriteria Penilaian */}
-        <div className="space-y-2">
-          <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
-            Kriteria Penilaian (<code className="font-mono text-purple-600">criteria_id</code>)
-          </label>
-          <select
-            {...register("criteria_id")}
-            disabled
-            className="w-full px-4 py-2.5 text-sm font-semibold bg-gray-100 dark:bg-[#181519] border border-gray-200 dark:border-gray-700 rounded-xl text-gray-500 cursor-not-allowed"
-          >
-            <option value={selectedCriteriaId}>
-              #{selectedCriteriaId} - {weightData?.criteria_name || `Criteria #${selectedCriteriaId}`}
+        <InputSelect
+          label={
+            <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
+              Kriteria Penilaian (<code className="font-mono text-black">criteria_id</code>)
+            </span>
+          }
+          register={register}
+          nama="criteria_id"
+          disabled={true}
+          className="bg-gray-100! dark:bg-[#181519]! text-gray-500! cursor-not-allowed!"
+        >
+          <option value={selectedCriteriaId}>
+            #{selectedCriteriaId} - {weightData?.criteria_name || `Criteria #${selectedCriteriaId}`}
+          </option>
+          {criterias.map((c: any) => (
+            <option key={c.id} value={c.id}>
+              [{c.code}] {c.name} ({c.type?.toUpperCase()})
             </option>
-            {criterias.map((c: any) => (
-              <option key={c.id} value={c.id}>
-                [{c.code}] {c.name} ({c.type?.toUpperCase()})
-              </option>
-            ))}
-          </select>
-        </div>
+          ))}
+        </InputSelect>
 
         {/* 3. Pilih Spesifikasi (Sub-Kriteria) */}
-        <div className="space-y-2">
-          <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
-            Pilih Spesifikasi Baru (<code className="font-mono text-purple-600">sub_criteria_id</code>)
-          </label>
-          <select
-            value={selectedSubCriteriaId || 0}
-            onChange={handleSubCriteriaChange}
-            className="w-full px-4 py-2.5 text-sm font-semibold bg-gray-50 dark:bg-[#181519] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 dark:text-white transition-all"
-          >
-            <option value={0}>-- Pilih Spesifikasi --</option>
-            {availableSubCriterias.map((sub: any) => (
-              <option key={sub.id} value={sub.id}>
-                {sub.name || sub.description} (Skala: {sub.value || sub.value_numeric || 0})
-              </option>
-            ))}
-          </select>
-          {errors.sub_criteria_id && (
-            <p className="text-xs text-red-500 font-medium mt-1">{errors.sub_criteria_id.message}</p>
-          )}
-        </div>
+        <InputSelect
+          label={
+            <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
+              Pilih Spesifikasi Baru (<code className="font-mono text-black">sub_criteria_id</code>)
+            </span>
+          }
+          value={selectedSubCriteriaId || 0}
+          onChange={handleSubCriteriaChange}
+          placeholder="-- Pilih Spesifikasi --"
+          placeholderValue={0}
+          error={errors.sub_criteria_id?.message}
+          className="bg-gray-50! dark:bg-[#181519]! dark:text-white!"
+        >
+          {availableSubCriterias.map((sub: any) => (
+            <option key={sub.id} value={sub.id}>
+              {sub.name || sub.description} (Skala: {sub.value || sub.value_numeric || 0})
+            </option>
+          ))}
+        </InputSelect>
 
         {/* 4. Nilai Numeric (Otomatis dari Sub-Kriteria) */}
         <div className="space-y-2">
           <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
-            Nilai Numerik Konversi (<code className="font-mono text-purple-600">value_numeric</code>)
+            Nilai Numerik Konversi (<code className="font-mono text-black">value_numeric</code>)
           </label>
           <div className="relative">
             <input

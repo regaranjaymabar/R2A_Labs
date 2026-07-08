@@ -3,36 +3,23 @@ import { Link } from "react-router-dom";
 import {
   Plus,
   Sliders,
-  Save,
   Filter,
 } from "lucide-react";
 import { TabelSubCriteriaIndex } from "./components/TabelSubCriteriaIndex";
 import { Button } from "../../../components/ui/common/Button";
-import { Modal } from "../../../components/ui/common/Modal";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { subCriteriaService } from "../../../services/subCriteriaService";
 import { useDeleteSubCriteria } from "./hooks/useDeleteSubCriteria";
 import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
-import { useUpdate } from "../../../hooks/useUpdate";
-import type { SubCriteriaFormData } from "./hooks/useAddSubCriteria";
+import EditSubCriteria from "./EditSubCriteria";
 
-// 1. Definisi Interface Sub-Kriteria (sub_criteria)
-// Persis sesuai 5 kolom di tabel MySQL kamu: id, criteria_id, description, value_numeric, created_at
-export interface SubCriteria {
-  id: number;
-  criteria_id: number;
-  description: string; // Misal: "4 GB", "8 GB", "<= Rp 6.000.000"
-  value_numeric: number; // Misal: 1.00, 2.00, 5.00
-  created_at?: string; // Misal: "2026-06-30 07:10:47"
+import type { SubCriteria } from "../../../types/subCriteria";
 
-  // Properti Opsional Hasil JOIN dengan tabel criteria (agar admin gampang membaca):
-  criteria_code?: string; // Misal: "C1", "C2", "C3"
-  criteria_name?: string; // Misal: "Harga", "RAM", "Storage"
-  criteria_type?: "benefit" | "cost" | string;
-}
+// Re-export type SubCriteria agar import di komponen lain tetap aman dan terpusat
+export type { SubCriteria };
 
 // 2. Data Dummy Awal (Persis sesuai data di screenshot phpMyAdmin kamu)
-const initialSubCriterias: SubCriteria[] = [
+export const initialSubCriterias: SubCriteria[] = [
   // criteria_id: 1 -> C1: Harga (Cost)
   {
     id: 1,
@@ -272,7 +259,6 @@ const initialSubCriterias: SubCriteria[] = [
 
 
 export default function SubCriteriaIndex() {
-  const queryClient = useQueryClient();
 
   // Fetch Data Sub-Kriteria dari backend menggunakan React Query + subCriteriaService
   const {
@@ -302,8 +288,6 @@ export default function SubCriteriaIndex() {
 
   // State Modal Edit Sub-Kriteria
   const [editingItem, setEditingItem] = useState<SubCriteria | null>(null);
-  const [editDescription, setEditDescription] = useState<string>("");
-  const [editValueNumeric, setEditValueNumeric] = useState<number>(1);
 
   // 1. Filter Data Berdasarkan Dropdown Kriteria
   const filteredData = useMemo(() => {
@@ -330,50 +314,6 @@ export default function SubCriteriaIndex() {
   // Buka Modal Update
   const handleOpenEdit = (item: SubCriteria) => {
     setEditingItem(item);
-    setEditDescription(item.description);
-    setEditValueNumeric(item.value_numeric);
-  };
-
-  // Mutasi Update Sub-Kriteria dari dalam Modal
-  const updateMutation = useUpdate<SubCriteriaFormData>({
-    mutationFn: (payload) => subCriteriaService.update(editingItem!.id, payload),
-    queryKey: ["subcriterias"],
-    successMessage: (variables) => `Konversi "${variables.description}" berhasil diperbarui!`,
-    errorMessage: (variables, err) =>
-      `Gagal memperbarui konversi "${variables.description}": ${err?.response?.data?.message || err?.message || "Error"}`,
-    onOfflineFallback: () => {
-      queryClient.setQueryData<SubCriteria[]>(["subcriterias"], (old) =>
-        old
-          ? old.map((item) =>
-              item.id === editingItem?.id
-                ? {
-                    ...item,
-                    description: editDescription,
-                    value_numeric: Number(editValueNumeric),
-                  }
-                : item
-            )
-          : []
-      );
-    },
-  });
-
-  // Simpan Perubahan Sub-Kriteria
-  const handleSaveEdit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingItem) return;
-
-    updateMutation.mutate(
-      {
-        criteria_id: Number(editingItem.criteria_id),
-        description: editDescription,
-        value_numeric: Number(editValueNumeric),
-      },
-      {
-        onSuccess: () => setEditingItem(null),
-        onSettled: () => setEditingItem(null),
-      }
-    );
   };
 
   // Custom Hook Hapus Data (Delete dengan Modal Confirm)
@@ -395,11 +335,8 @@ export default function SubCriteriaIndex() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Pemetaan Rentang Nilai (Sub-Kriteria)
+              Pemetaan Rentang Nilai 
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800 font-mono">
-              sub_criteria
-            </span>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Konversi tulisan spesifikasi fisik (`description`) menjadi angka skala numerik (`value_numeric`) agar dapat diproses oleh mesin perhitungan matriks SPK.
@@ -418,16 +355,6 @@ export default function SubCriteriaIndex() {
 
       {/* Banner Penjelasan Alur Konversi SPK */}
       <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/60 p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs text-blue-900 dark:text-blue-300">
-        <div className="flex items-start gap-3">
-          <Sliders className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <p className="font-bold text-sm">Mengapa Butuh Pemetaan Sub-Kriteria?</p>
-            <p className="text-blue-800 dark:text-blue-300/90 leading-relaxed">
-              Mesin komputer tidak dapat menghitung matematika dari teks spesifikasi mentah seperti <code className="bg-blue-100 dark:bg-blue-900/60 px-1 rounded font-mono">"16 GB"</code> atau <code className="bg-blue-100 dark:bg-blue-900/60 px-1 rounded font-mono">"Rp 8.000.000"</code>.<br />
-              Melalui tabel ini, setiap <code className="font-mono">description</code> diberi <strong>Nilai Numerik (<code className="font-mono">value_numeric</code>)</strong> yang siap diproses ke matriks SAW.
-            </p>
-          </div>
-        </div>
         
         {/* Dropdown Filter Kriteria */}
         <div className="flex items-center gap-2 bg-white dark:bg-[#181519] px-3.5 py-2 rounded-xl border border-blue-200 dark:border-blue-800 shadow-2xs shrink-0">
@@ -458,86 +385,11 @@ export default function SubCriteriaIndex() {
       />
 
       {/* MODAL UPDATE CONVERSION RULE */}
-      <Modal
+      <EditSubCriteria
         isOpen={Boolean(editingItem)}
         onClose={() => setEditingItem(null)}
-        maxWidth="lg"
-        badge={
-          <span className="text-blue-600 dark:text-blue-400">
-            Update Konversi (sub_criteria)
-          </span>
-        }
-        title={
-          editingItem
-            ? `[${editingItem.criteria_code || `ID:${editingItem.criteria_id}`}] ${editingItem.criteria_name || `Criteria #${editingItem.criteria_id}`}`
-            : ""
-        }
-        subtitle={
-          editingItem ? `id: ${editingItem.id} | criteria_id: ${editingItem.criteria_id}` : undefined
-        }
-      >
-        {editingItem && (
-          <form onSubmit={handleSaveEdit} className="space-y-5">
-            {/* 1. Deskripsi Spesifikasi / Rentang */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
-                Deskripsi Spesifikasi (<code className="font-mono">description</code>)
-              </label>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                Tulisan rentang spesifikasi fisik atau harga yang dibaca oleh admin/konsumen.
-              </p>
-              <input
-                type="text"
-                value={editDescription}
-                onChange={(e) => setEditDescription(e.target.value)}
-                placeholder="Misal: <= Rp 6.000.000, 8 GB, 512 GB SSD"
-                className="w-full px-4 py-2.5 text-sm font-semibold bg-gray-50 dark:bg-[#181519] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all shadow-2xs font-mono"
-                required
-              />
-            </div>
-
-            {/* 2. Nilai Numerik Skala Matriks */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 items-center gap-1.5">
-                <span>Nilai Numerik (<code className="font-mono">value_numeric</code>)</span>
-              </label>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                Angka skala konversi yang akan dimasukkan ke dalam matriks keputusan SAW (Misal: 1.00 - 5.00).
-              </p>
-              <div className="relative mt-1">
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={editValueNumeric}
-                  onChange={(e) => setEditValueNumeric(Number(e.target.value))}
-                  className="w-full px-4 py-2.5 text-base font-mono font-bold bg-blue-50/50 dark:bg-[#181519] border border-blue-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all shadow-2xs text-blue-700"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Action Buttons Menggunakan Komponen Button */}
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200 dark:border-gray-800">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => setEditingItem(null)}
-                label="Batal"
-                className="!text-xs! py-2! px-5! rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 cursor-pointer"
-              />
-              <Button
-                type="submit"
-                variant="info"
-                icon={<Save className="w-4 h-4" />}
-                label={updateMutation.isPending ? "Menyimpan..." : "Simpan Konversi"}
-                disabled={updateMutation.isPending}
-                className="text-xs! py-2! px-5! rounded-xl font-bold shadow-md cursor-pointer"
-              />
-            </div>
-          </form>
-        )}
-      </Modal>
+        item={editingItem}
+      />
 
       {/* MODAL CONFIRM DELETE */}
       <ModalConfirm

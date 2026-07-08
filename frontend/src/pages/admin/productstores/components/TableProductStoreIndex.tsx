@@ -1,9 +1,6 @@
 import { useMemo } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
-  Ban,
-  AlertTriangle,
-  CheckCircle2,
   Trash2,
   Loader2,
 } from "lucide-react";
@@ -106,30 +103,22 @@ export function TableProductStoreIndex({
           const item = info.row.original;
           const isAvail = item.is_available === 1 || item.is_available === true;
           const stockCount = item.stock;
-
-          // LOGIKA TEGAS SESUAI ALUR KERJA OPERASIONAL:
           if (isAvail === false) {
-            // 1. Dinonaktifkan secara manual / Discontinued
             return (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-400 border border-gray-300 dark:border-gray-700 shadow-2xs">
-                <Ban className="w-3.5 h-3.5 text-gray-500" />
-                Non-Aktif (Discontinued)
+                Non-Aktif
               </span>
             );
           } else if (stockCount <= 0) {
-            // 2. Peringatan merah bahwa barang kosong
             return (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-400 border border-red-300 dark:border-red-800/80 shadow-2xs animate-pulse">
-                <AlertTriangle className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
-                Stok Kosong (Habis!)
+                Stok Kosong
               </span>
             );
           } else if (stockCount > 0) {
-            // 3. Barang siap jual
             return (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 shadow-2xs">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                Siap Jual
+                Stok Tersedia
               </span>
             );
           }

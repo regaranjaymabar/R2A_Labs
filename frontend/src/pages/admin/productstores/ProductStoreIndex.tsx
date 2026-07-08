@@ -11,24 +11,10 @@ import { Button } from "../../../components/ui/common/Button";
 import { Modal } from "../../../components/ui/common/Modal";
 import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
 import { useDeleteProductStore } from "./hooks/useDeleteProductStore";
+import type { ProductStore } from "../../../types/productStore";
 
 
-// 1. Definisi Interface product_stores (Sesuai 7 kolom asli di database MySQL)
-export interface ProductStore {
-  id: number;
-  product_id: number;
-  store_id: number;
-  price: number;
-  stock: number;
-  is_available: boolean | number; // tinyint(1): 1 = aktif, 0 = non-aktif / discontinued
-  updated_at?: string;
 
-  // Properti Opsional (Biasanya ditambahkan oleh backend via SQL JOIN dengan tabel products & stores 
-  // agar admin dashboard tidak hanya menampilkan angka ID, tapi juga nama produk & toko)
-  product_name?: string;
-  brand_name?: string;
-  store_name?: string;
-}
 
 // 2. Data Dummy Awal (Disesuaikan dengan angka persis di screenshot database kamu)
 const initialProductStores: ProductStore[] = [

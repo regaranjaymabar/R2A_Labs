@@ -23,10 +23,8 @@ import {
 } from "lucide-react";
 
 export default function AdminSidebar() {
-    const { user, logout } = useAuthStore((state) => ({
-        user: state.user,
-        logout: state.logout,
-    }));
+    const user = useAuthStore((state) => state.user);
+    const logout = useAuthStore((state) => state.logout);
     // Hanya super_admin / admin yang bisa lihat master data & konfigurasi
     const isSuperAdmin = !user?.role || user?.role === "admin" || user?.role === "super_admin";
     const location = useLocation();
@@ -91,20 +89,6 @@ export default function AdminSidebar() {
                                     <X size={20} />
                                 </button>
                             </div>
-                            {user && (
-                                <div className="mt-1.5 flex items-center justify-between">
-                                    <span className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[140px] font-medium">
-                                        {user.name || user.email}
-                                    </span>
-                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                                        user.role === "store_admin" 
-                                            ? "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-400 border border-amber-300 dark:border-amber-800"
-                                            : "bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-400 border border-purple-300 dark:border-purple-800"
-                                    }`}>
-                                        {user.role === "store_admin" ? "Store Admin" : "Super Admin"}
-                                    </span>
-                                </div>
-                            )}
                         </div>
 
                         <ul className="space-y-1.5 font-medium">

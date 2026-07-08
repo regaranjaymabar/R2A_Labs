@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Edit, UserCheck, UserX, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { DataTable, DataTableColumnHeader } from "../../../../components/ui/common/DataTable";
 import { Button } from "../../../../components/ui/common/Button";
-import type { UserData } from "../UserIndex";
+import type { UserData } from "../../../../types/user";
 
 export interface TabelUserIndexProps {
   data: UserData[];
@@ -89,11 +89,11 @@ export function TabelUserIndex({
           const isActive = info.getValue();
           return isActive ? (
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-              <span>Aktif (Live)</span>
+              <span>Aktif</span>
             </span>
           ) : (
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800">
-              <span>Nonaktif (Soft Deleted)</span>
+              <span>Nonaktif</span>
             </span>
           );
         },
@@ -122,7 +122,6 @@ export function TabelUserIndex({
                   variant="info"
                   onClick={() => onEdit(item)}
                   disabled={isToggling}
-                  icon={<Edit className="w-3.5 h-3.5" />}
                   label="Edit Role"
                   className="text-xs! py-1.5! px-3! rounded-xl font-bold shadow-2xs cursor-pointer disabled:opacity-50"
                 />
@@ -144,12 +143,10 @@ export function TabelUserIndex({
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   ) : item.is_active ? (
                     <>
-                      <UserX className="w-3.5 h-3.5" />
                       <span>Nonaktifkan</span>
                     </>
                   ) : (
                     <>
-                      <UserCheck className="w-3.5 h-3.5" />
                       <span>Aktifkan</span>
                     </>
                   )}

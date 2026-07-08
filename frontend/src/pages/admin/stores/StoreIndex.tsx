@@ -5,17 +5,11 @@ import { storeService } from "../../../services/storeService";
 import { useDeleteStore } from "./hooks/useDeleteStore";
 import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
 import { useQuery } from "@tanstack/react-query";
+import type { Store } from "../../../types/store";
 
-export interface Store {
-  id: number;
-  name: string;
-  address: string;
-  city: string;
-  phone: string;
-  is_active: boolean | number;
-}
+export type { Store };
 
-const initialStores: Store[] = [
+export const initialStores: Store[] = [
   { id: 1, name: "Toko Asus Official Jakarta", address: "Mangga Dua Mall Lt. 2 No. 45", city: "Jakarta Pusat", phone: "081234567801", is_active: 1 },
   { id: 2, name: "Lenovo Exclusive Store", address: "Harco Mangga Dua Lt. 1 No. 12", city: "Jakarta Pusat", phone: "081234567802", is_active: 1 },
   { id: 3, name: "HP Store Bandung", address: "Bandung Electronic Center Lt. 3", city: "Bandung", phone: "081234567803", is_active: 1 },

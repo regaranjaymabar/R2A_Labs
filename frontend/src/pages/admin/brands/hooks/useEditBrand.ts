@@ -16,18 +16,16 @@ export function useEditBrand() {
     register,
     handleSubmit,
     setValue,
-    watch,
     reset,
     formState: { errors },
   } = useForm<BrandFormData>({
     resolver: zodResolver(brandSchema),
     defaultValues: {
       name: "",
-      is_active: true,
     },
   });
 
-  const isActive = watch("is_active");
+ 
 
   // 2. Fetch Data Eksisting menggunakan useQuery + brandService: GET /brands/:id
   const {
@@ -55,7 +53,6 @@ export function useEditBrand() {
     if (brandData) {
       reset({
         name: brandData.name,
-        is_active: Boolean(brandData.is_active),
       });
     }
   }, [brandData, reset]);
@@ -85,6 +82,5 @@ export function useEditBrand() {
     isSubmitting: updateMutation.isPending,
     isLoadingData,
     isFetchError,
-    isActive,
   };
 }

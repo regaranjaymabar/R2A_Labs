@@ -2,10 +2,7 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   Plus,
-  Sliders,
-  Save,
   Filter,
-  Hash,
 } from "lucide-react";
 import { TabelProductWeightIndex } from "./components/TabelProductWeightIndex";
 import { Button } from "../../../components/ui/common/Button";
@@ -13,24 +10,13 @@ import { Modal } from "../../../components/ui/common/Modal";
 import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
 import { useGet } from "../../../hooks/useGet";
 import { productWeightService } from "../../../services/productWeightService";
+import { productService } from "../../../services/productService";
+import { initialProducts } from "../products/ProductIndex";
 import { useDeleteProductWeight } from "./hooks/useDeleteProductWeight";
 import { useQueryClient } from "@tanstack/react-query";
+import type { ProductWeight } from "../../../types/productWeight";
 
-// 1. Definisi Interface Pembobotan Produk (product_criteria)
-export interface ProductCriteria {
-  id: number;
-  product_id: number;
-  criteria_id: number;
-  sub_criteria_id: number; // FK ke tabel sub_criteria (hasil pilihan dari dropdown)
-  value_numeric: number; // Skala numerik matematis hasil konversi (misal: 2.00, 4.00)
-  created_at?: string;
 
-  // Properti Opsional Hasil JOIN (agar admin mudah membaca):
-  product_name?: string; // Misal: "ASUS Vivobook 14"
-  criteria_code?: string; // Misal: "C2", "C1"
-  criteria_name?: string; // Misal: "RAM", "Harga"
-  sub_criteria_description?: string; // Teks spesifikasi misal: "8 GB", "512 GB SSD"
-}
 
 // Data Pilihan Sub-Kriteria yang Mapan dari Langkah 2 (Untuk pengisian dropdown)
 const subCriteriaOptions = [
@@ -65,7 +51,7 @@ const subCriteriaOptions = [
 ];
 
 // 2. Data Dummy Awal (Simulasi pemetaan 3 laptop ke dalam matriks product_criteria)
-const initialProductCriterias: ProductCriteria[] = [
+export const initialProductCriterias: ProductWeight[] = [
   // ASUS Vivobook 14 (product_id: 1)
   { id: 1, product_id: 1, product_name: "ASUS Vivobook 14 X1404", criteria_id: 1, criteria_code: "C1", criteria_name: "Harga", sub_criteria_id: 3, sub_criteria_description: "Rp 8.000.001 - Rp 10.000.000", value_numeric: 3.0 },
   { id: 2, product_id: 1, product_name: "ASUS Vivobook 14 X1404", criteria_id: 2, criteria_code: "C2", criteria_name: "RAM", sub_criteria_id: 7, sub_criteria_description: "8 GB", value_numeric: 2.0 },
@@ -90,13 +76,19 @@ const initialProductCriterias: ProductCriteria[] = [
 
 export default function ProductWeightIndex() {
   const queryClient = useQueryClient();
-  const { data: fetchedData, isLoading } = useGet<ProductCriteria[]>({
+  const { data: fetchedData, isLoading } = useGet<ProductWeight[]>({
     queryKey: ["productweights"],
     queryFn: productWeightService.getAll,
     offlineFallbackData: initialProductCriterias,
   });
-
   const data = fetchedData || initialProductCriterias;
+
+  const { data: fetchedProducts } = useGet<any[]>({
+    queryKey: ["products"],
+    queryFn: productService.getAll,
+    offlineFallbackData: initialProducts,
+  });
+  const products = fetchedProducts || initialProducts;
 
   const {
     handleDelete,
@@ -105,12 +97,12 @@ export default function ProductWeightIndex() {
     deleteTarget,
     deletingId,
   } = useDeleteProductWeight();
-  
+
   // Filter berdasarkan Produk
   const [selectedProductFilter, setSelectedProductFilter] = useState<string>("ALL");
 
   // State Modal Edit Spek Pembobotan
-  const [editingItem, setEditingItem] = useState<ProductCriteria | null>(null);
+  const [editingItem, setEditingItem] = useState<ProductWeight | null>(null);
   const [selectedSubCriteriaId, setSelectedSubCriteriaId] = useState<number>(0);
 
   // Filter Data
@@ -123,6 +115,17 @@ export default function ProductWeightIndex() {
 
   // Daftar produk unik untuk dropdown filter
   const uniqueProducts = useMemo(() => {
+    if (products && products.length > 0) {
+      return products.map((prod: any) => ({
+        id: prod.id,
+        name:
+          prod.product_name ||
+          prod.name ||
+          (prod.brand_name && prod.model_name
+            ? `${prod.brand_name} ${prod.model_name}`
+            : prod.model_name || `Laptop #${prod.id}`),
+      }));
+    }
     const list: { id: number; name: string }[] = [];
     const seen = new Set<number>();
     data.forEach((item) => {
@@ -132,10 +135,10 @@ export default function ProductWeightIndex() {
       }
     });
     return list;
-  }, [data]);
+  }, [data, products]);
 
   // Buka Modal Update
-  const handleOpenEdit = (item: ProductCriteria) => {
+  const handleOpenEdit = (item: ProductWeight) => {
     setEditingItem(item);
     setSelectedSubCriteriaId(item.sub_criteria_id);
   };
@@ -149,8 +152,22 @@ export default function ProductWeightIndex() {
     const selectedSub = subCriteriaOptions.find((opt) => opt.id === Number(selectedSubCriteriaId));
     if (!selectedSub) return;
 
-    queryClient.setQueryData<ProductCriteria[]>(["productweights"], (prev: ProductCriteria[] | undefined) =>
-      (prev || []).map((item) =>
+    queryClient.setQueryData<ProductWeight[]>(["productweights"], (prev: ProductWeight[] | undefined) => {
+      const list = prev || [];
+      if (editingItem.id === 0) {
+        const newId = Math.max(0, ...list.map((i) => i.id)) + 1;
+        return [
+          ...list,
+          {
+            ...editingItem,
+            id: newId,
+            sub_criteria_id: selectedSub.id,
+            sub_criteria_description: selectedSub.description,
+            value_numeric: selectedSub.value_numeric,
+          },
+        ];
+      }
+      return list.map((item) =>
         item.id === editingItem.id
           ? {
               ...item,
@@ -159,8 +176,8 @@ export default function ProductWeightIndex() {
               value_numeric: selectedSub.value_numeric,
             }
           : item
-      )
-    );
+      );
+    });
     setEditingItem(null);
   };
 
@@ -179,15 +196,9 @@ export default function ProductWeightIndex() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Pembobotan Produk (Matriks Keputusan)
+              Pembobotan Produk
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border border-purple-200 dark:border-purple-800 font-mono">
-              product_criteria
-            </span>
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Eksekusi pembobotan spesifikasi laptop. Admin diwajibkan memilih spesifikasi berdasarkan dropdown <code className="font-mono text-purple-600 font-bold">sub_criteria</code> yang sudah mapan, bukan mengetik angka manual.
-          </p>
         </div>
         <div>
           <Link
@@ -200,32 +211,21 @@ export default function ProductWeightIndex() {
         </div>
       </div>
 
-      {/* Banner Penjelasan Alur Pembobotan SPK */}
-      <div className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/60 p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs text-purple-900 dark:text-purple-300">
-        <div className="flex items-start gap-3">
-          <Sliders className="w-5 h-5 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <p className="font-bold text-sm">Alur Kerja Pembobotan Produk (Langkah 3):</p>
-            <p className="text-purple-800 dark:text-purple-300/90 leading-relaxed">
-              Saat admin mendaftarkan laptop seperti <strong className="underline">"ASUS Vivobook 14"</strong>, sistem memaksa admin memilih spesifikasinya dari dropdown Sub-Kriteria (misal: memilih <code className="bg-purple-100 dark:bg-purple-900/60 px-1 rounded font-mono font-bold">"8 GB"</code>).<br />
-              Sistem akan otomatis mengambil angka konversinya (<code className="font-mono font-bold">value_numeric = 2.00</code>) untuk diolah di matriks SAW.
-            </p>
-          </div>
-        </div>
-        
+      <div className="bg-gray-50 dark:bg-[#181519] border border-gray-200 dark:border-gray-800 p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs text-gray-800 dark:text-gray-300">
+
         {/* Dropdown Filter Produk */}
-        <div className="flex items-center gap-2 bg-white dark:bg-[#181519] px-3.5 py-2 rounded-xl border border-purple-200 dark:border-purple-800 shadow-2xs shrink-0">
-          <Filter className="w-4 h-4 text-purple-600" />
+        <div className="flex items-center gap-2 bg-white dark:bg-[#151216] px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xs shrink-0">
+          <Filter className="w-4 h-4 text-gray-600 dark:text-gray-400" />
           <span className="font-semibold text-gray-700 dark:text-gray-300">Filter Laptop:</span>
           <select
             value={selectedProductFilter}
             onChange={(e) => setSelectedProductFilter(e.target.value)}
-            className="bg-transparent font-bold text-purple-600 dark:text-purple-400 focus:outline-none cursor-pointer"
+            className="bg-transparent font-bold text-gray-900 dark:text-white focus:outline-none cursor-pointer"
           >
-            <option value="ALL">🌐 Semua Laptop ({uniqueProducts.length})</option>
+            <option value="ALL">Semua Laptop ({uniqueProducts.length})</option>
             {uniqueProducts.map((prod) => (
               <option key={prod.id} value={prod.id}>
-                💻 {prod.name}
+                {prod.name}
               </option>
             ))}
           </select>
@@ -235,6 +235,7 @@ export default function ProductWeightIndex() {
       {/* Tabel Pembobotan (Modular) */}
       <TabelProductWeightIndex
         data={filteredData}
+        products={products}
         isLoading={isLoading}
         onEdit={handleOpenEdit}
         onDelete={handleDelete}
@@ -247,7 +248,7 @@ export default function ProductWeightIndex() {
         onClose={() => setEditingItem(null)}
         maxWidth="lg"
         badge={
-          <span className="text-purple-600 dark:text-purple-400">
+          <span className="text-gray-900 dark:text-gray-100 font-bold">
             Pilih Spesifikasi dari Sub-Kriteria
           </span>
         }
@@ -258,15 +259,7 @@ export default function ProductWeightIndex() {
       >
         {editingItem && (
           <form onSubmit={handleSaveEdit} className="space-y-5">
-            {/* Dropdown Pilihan Sub-Kriteria */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
-                Pilih Spesifikasi (<code className="font-mono text-purple-600">sub_criteria_id</code>)
-              </label>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                Admin dilarang mengetik manual! Pilih spesifikasi dari aturan konversi yang sudah mapan:
-              </p>
-
               <div className="space-y-2.5 mt-2">
                 {availableSubCriteriaOptions.map((opt) => {
                   const isSelected = opt.id === Number(selectedSubCriteriaId);
@@ -274,21 +267,19 @@ export default function ProductWeightIndex() {
                     <div
                       key={opt.id}
                       onClick={() => setSelectedSubCriteriaId(opt.id)}
-                      className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
-                        isSelected
-                          ? "bg-purple-50 dark:bg-purple-950/40 border-purple-500 text-purple-900 dark:text-purple-200 ring-2 ring-purple-500/20 shadow-xs"
+                      className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${isSelected
+                          ? "bg-gray-100 dark:bg-gray-800 border-gray-900 dark:border-white text-gray-900 dark:text-white ring-2 ring-gray-900/10 dark:ring-white/20 shadow-xs"
                           : "bg-gray-50 dark:bg-[#181519] border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-300"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSelected ? "border-purple-600 bg-purple-600 text-white" : "border-gray-300 bg-white"}`}>
-                          {isSelected && <span className="w-2 h-2 rounded-full bg-white block" />}
+                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSelected ? "border-gray-900 bg-gray-900 dark:border-white dark:bg-white text-white dark:text-gray-900" : "border-gray-300 bg-white dark:bg-gray-800"}`}>
+                          {isSelected && <span className="w-2 h-2 rounded-full bg-white dark:bg-gray-900 block" />}
                         </div>
                         <span className="font-bold text-sm">{opt.description}</span>
                       </div>
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg font-mono font-bold text-xs bg-white dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-                        <Hash className="w-3 h-3 text-purple-500" />
-                        Skala: {opt.value_numeric.toFixed(2)}
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg font-mono font-bold text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700">
+                        {opt.value_numeric.toFixed(2)}
                       </span>
                     </div>
                   );
@@ -308,7 +299,6 @@ export default function ProductWeightIndex() {
               <Button
                 type="submit"
                 variant="info"
-                icon={<Save className="w-4 h-4" />}
                 label="Simpan Bobot Spek"
                 className="text-xs! py-2! px-5! rounded-xl font-bold shadow-md cursor-pointer"
               />

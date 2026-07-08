@@ -1,7 +1,8 @@
 
 import { api } from "../lib/axios";
 import { type ProductStoreFormData } from "../pages/admin/productstores/hooks/useAddProductStore";
-import type { ProductStore } from "../pages/admin/productstores/ProductStoreIndex";
+import type { ProductStore } from "../types/productStore";
+
 
 
 export const productStoreService = {

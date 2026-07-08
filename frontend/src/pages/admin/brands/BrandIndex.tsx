@@ -12,28 +12,24 @@ import { Button } from "../../../components/ui/common/Button";
 import { TableBrandIndex } from "./components/TableBrandIndex";
 import { useDeleteBrand } from "./hooks/useDeleteBrand";
 import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
+import type { Brand } from "../../../types/brand";
 
-// 1. Definisi Tipe Data Brand (Sesuai dengan tabel database MySQL: id, name, is_active)
-export interface Brand {
-    id: number;
-    name: string;
-    is_active: number | boolean; // tinyint(1) di MySQL: 1 = aktif, 0 = non-aktif
-}
+
 
 // Data Dummy Cadangan (Fallback jika server backend belum menyala saat development)
 const initialBrands: Brand[] = [
-    { id: 1, name: "ASUS", is_active: 1 },
-    { id: 2, name: "Lenovo", is_active: 1 },
-    { id: 3, name: "HP", is_active: 1 },
-    { id: 4, name: "Acer", is_active: 1 },
-    { id: 5, name: "Apple", is_active: 1 },
-    { id: 6, name: "MSI", is_active: 1 },
-    { id: 7, name: "Dell", is_active: 1 },
-    { id: 8, name: "Axioo", is_active: 1 },
-    { id: 9, name: "Razer", is_active: 0 },
-    { id: 10, name: "Samsung", is_active: 1 },
-    { id: 11, name: "Zyrex", is_active: 1 },
-    { id: 12, name: "Gigabyte", is_active: 0 },
+    { id: 1, name: "ASUS"},
+    { id: 2, name: "Lenovo"},
+    { id: 3, name: "HP"},
+    { id: 4, name: "Acer"},
+    { id: 5, name: "Apple"},
+    { id: 6, name: "MSI"},
+    { id: 7, name: "Dell"},
+    { id: 8, name: "Axioo"},
+    { id: 9, name: "Razer"},
+    { id: 10, name: "Samsung"},
+    { id: 11, name: "Zyrex"},
+    { id: 12, name: "Gigabyte"},
 ];
 
 export default function BrandIndex() {
@@ -87,7 +83,7 @@ export default function BrandIndex() {
                         )}
                     </div>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Kelola katalog merek laptop (`id`, `name`, `is_active`) yang terdaftar di sistem R2A LABS.
+                        Kelola katalog merek laptop (`id`, `name`,ang terdaftar di sistem R2A LABS.
                     </p>
                 </div>
                 <div className="flex items-center gap-2.5">

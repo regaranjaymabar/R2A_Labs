@@ -1,5 +1,5 @@
 import { api } from "../lib/axios";
-import type { RecommendationRequest } from "../pages/admin/recommendations/ReqHistory";
+import type { RecommendationRequest } from "../types/recomendation";
 
 export const recommendationService = {
   getAll: async (): Promise<RecommendationRequest[]> => {

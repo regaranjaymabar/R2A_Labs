@@ -55,6 +55,8 @@ interface DataTableProps<TData> {
   searchPlaceholder?: string;
   emptyMessage?: string;
   defaultPageSize?: number;
+  maxHeightClass?: string;
+  stickyHeader?: boolean;
 }
 
 export function DataTable<TData>({
@@ -63,6 +65,8 @@ export function DataTable<TData>({
   searchPlaceholder = "Cari data...",
   emptyMessage = "Tidak ada data yang ditemukan",
   defaultPageSize = 5,
+  maxHeightClass,
+  stickyHeader = false,
 }: DataTableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
@@ -117,13 +121,16 @@ export function DataTable<TData>({
       </div>
 
       {/* Tabel Utama */}
-      <div className="overflow-x-auto">
+      <div className={`overflow-auto relative ${maxHeightClass || ""}`}>
         <table className="w-full text-left text-sm">
-          <thead className="bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300">
+          <thead className={`bg-gray-50 dark:bg-[#181519] border-b border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300 ${stickyHeader ? "sticky top-0 z-10 shadow-xs" : ""}`}>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="py-3.5 px-6 font-semibold tracking-tight">
+                  <th
+                    key={header.id}
+                    className={`py-3.5 px-4 font-semibold tracking-tight ${(header.column.columnDef.meta as any)?.headerClassName || ""}`}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
@@ -140,7 +147,10 @@ export function DataTable<TData>({
                   className="hover:bg-gray-50/80 dark:hover:bg-gray-800/40 transition-colors group"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="py-4 px-6 text-gray-700 dark:text-gray-300">
+                    <td
+                      key={cell.id}
+                      className={`py-3 px-4 text-gray-700 dark:text-gray-300 ${(cell.column.columnDef.meta as any)?.cellClassName || ""}`}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}

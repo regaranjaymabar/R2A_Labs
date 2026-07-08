@@ -1,6 +1,6 @@
 import { api } from "../lib/axios";
-import { type Brand } from "../pages/admin/brands/BrandIndex";
 import { type BrandFormData } from "../pages/admin/brands/hooks/useAddBrand";
+import type { Brand } from "../types/brand";
 
 export const brandService = {
   // Read All Brands: GET /brands

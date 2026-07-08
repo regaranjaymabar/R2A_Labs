@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { criteriaService } from "../../../../services/criteriaService";
 import { criteriaSchema, type CriteriaFormData } from "./useAddCriteria";
-import { type Criteria } from "../CriteriaIndex";
+import type { Criteria } from "../../../../types/criteria";
 import { useGet } from "../../../../hooks/useGet";
 import { useUpdate } from "../../../../hooks/useUpdate";
 

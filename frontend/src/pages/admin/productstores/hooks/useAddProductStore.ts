@@ -56,6 +56,7 @@ export function useAddProductStore() {
     register,
     handleSubmit: handleSubmit(onSubmit),
     setValue,
+    watch,
     errors,
     isSubmitting: createMutation.isPending,
     isAvailable,

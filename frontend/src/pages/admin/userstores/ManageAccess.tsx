@@ -3,28 +3,16 @@ import { Link } from "react-router-dom";
 import {
   Filter,
   Plus,
-  Save,
-  Shield,
-  Info,
 } from "lucide-react";
 import { TabelManageAccess } from "./components/TabelManageAccess";
 import { Button } from "../../../components/ui/common/Button";
+import { InputSelect } from "../../../components/ui/common/InputSelect";
 import { Modal } from "../../../components/ui/common/Modal";
 import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
 import { GlowingCards, GlowingCard } from "../../../components/ui/glowing-cards";
+import type { UserStoreAccess } from "../../../types/userStore";
 
-// 1. Definisi Interface Hak Akses Toko (user_stores)
-export interface UserStoreAccess {
-  id: number;
-  user_id: number;
-  user_name: string;
-  user_email: string;
-  store_id: number;
-  store_name: string;
-  store_city: string;
-  is_active: boolean; // TRUE = Granted (bisa edit stok & harga), FALSE = Revoked (akses dicabut)
-  assigned_at: string;
-}
+
 
 // 2. Daftar Dummy Pegawai Khusus Role "store_admin" (Eksklusif)
 const availableStoreAdmins = [
@@ -200,12 +188,8 @@ export default function ManageAccess() {
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
-              <Shield className="w-7 h-7 text-blue-600 dark:text-blue-400" />
-              <span>Hak Akses & Penugasan Toko</span>
+              <span>Hak Akses Toko</span>
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800 font-mono">
-              tabel: user_stores
-            </span>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Jembatan penghubung antara identitas pegawai (<code className="font-mono text-xs">users</code>) dengan data fisik cabang (<code className="font-mono text-xs">stores</code>). Fokus murni pada delegasi role <code className="font-mono text-xs font-bold text-blue-600">store_admin</code>.
@@ -231,11 +215,11 @@ export default function ManageAccess() {
           <span className="text-2xl font-extrabold text-gray-900 dark:text-white mt-1 block">{stats.total}</span>
         </GlowingCard>
         <GlowingCard glowColor="#10b981" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 block uppercase font-mono">Akses Aktif (Granted)</span>
+          <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 block uppercase font-mono">Akses Aktif</span>
           <span className="text-2xl font-extrabold text-emerald-900 dark:text-emerald-100 mt-1 block">{stats.active}</span>
         </GlowingCard>
         <GlowingCard glowColor="#ef4444" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-red-700 dark:text-red-300 block uppercase font-mono">Dicabut (Revoked)</span>
+          <span className="text-xs font-bold text-red-700 dark:text-red-300 block uppercase font-mono">Dicabut</span>
           <span className="text-2xl font-extrabold text-red-900 dark:text-red-100 mt-1 block">{stats.revoked}</span>
         </GlowingCard>
         <GlowingCard glowColor="#3b82f6" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
@@ -271,19 +255,18 @@ export default function ManageAccess() {
             {(
               [
                 { id: "all", label: "Semua" },
-                { id: "active", label: "🟢 Aktif (Granted)" },
-                { id: "revoked", label: "🔴 Dicabut (Revoked)" },
+                { id: "active", label: "Aktif" },
+                { id: "revoked", label: "Tidak Aktif" },
               ] as const
             ).map((stOpt) => (
               <button
                 key={stOpt.id}
                 type="button"
                 onClick={() => setFilterStatus(stOpt.id)}
-                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                  filterStatus === stOpt.id
+                className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${filterStatus === stOpt.id
                     ? "bg-blue-600 text-white shadow-xs"
                     : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                }`}
+                  }`}
               >
                 {stOpt.label}
               </button>
@@ -303,71 +286,42 @@ export default function ManageAccess() {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         maxWidth="lg"
-        badge={
-          <span className="text-blue-600 dark:text-blue-400 flex items-center gap-1.5 font-mono">
-            <Plus className="w-3.5 h-3.5" />
-            <span>Delegasi Penugasan Baru</span>
-          </span>
-        }
         title="Beri Akses Operasional Toko"
-        subtitle="Hanya menampilkan pegawai dengan role 'store_admin'. Pasangkan dengan cabang toko yang sesuai."
       >
         <form onSubmit={handleCreateAccess} className="space-y-5">
           {/* 1. Pilih Pegawai Admin Toko (Hanya role store_admin) */}
-          <div className="space-y-2">
-            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 items-center justify-between">
-              <span>Pilih Pegawai Admin Toko (<code className="font-mono text-blue-600">user_id</code>)</span>
-              <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
-                ✓ Filtered: role = store_admin
+          <InputSelect
+            label="Pilih Pegawai Admin Toko"
+            nama="selectedUserId"
+            value={selectedUserId}
+            onChange={(e) => setSelectedUserId(Number(e.target.value))}
+            options={availableStoreAdmins.map((adm) => ({
+              value: adm.id,
+              label: `${adm.name} — (${adm.email})`,
+            }))}
+            placeholder=""
+            helperText={
+              <span>
+                *Ingin menugaskan pegawai baru? Daftarkan akunnya terlebih dahulu di menu{" "}
+                <Link to="/admin/users" className="underline font-bold text-blue-600 dark:text-blue-400">
+                  Daftar Pengguna (users)
+                </Link>.
               </span>
-            </label>
-            <select
-              value={selectedUserId}
-              onChange={(e) => setSelectedUserId(Number(e.target.value))}
-              className="w-full px-4 py-3 text-sm font-bold bg-blue-50/40 dark:bg-[#181519] border border-blue-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white cursor-pointer shadow-2xs text-blue-900"
-            >
-              {availableStoreAdmins.map((adm) => (
-                <option key={adm.id} value={adm.id}>
-                  {adm.name} — ({adm.email})
-                </option>
-              ))}
-            </select>
-            <p className="text-[11px] text-gray-500 dark:text-gray-400">
-              *Ingin menugaskan pegawai baru? Daftarkan akunnya terlebih dahulu di menu{" "}
-              <Link to="/admin/users" className="underline font-bold text-blue-600 dark:text-blue-400">
-                Daftar Pengguna (users)
-              </Link>.
-            </p>
-          </div>
+            }
+          />
 
           {/* 2. Pilih Cabang Toko Fisik */}
-          <div className="space-y-2">
-            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
-              Pilih Cabang Toko (<code className="font-mono text-purple-600">store_id</code>)
-            </label>
-            <select
-              value={selectedStoreId}
-              onChange={(e) => setSelectedStoreId(Number(e.target.value))}
-              className="w-full px-4 py-3 text-sm font-bold bg-purple-50/40 dark:bg-[#181519] border border-purple-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 dark:text-white cursor-pointer shadow-2xs text-purple-900"
-            >
-              {availableStores.map((st) => (
-                <option key={st.id} value={st.id}>
-                  {st.name} — Kota: {st.city}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Catatan Info Pindahtugas */}
-          <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800 space-y-2 text-xs">
-            <div className="font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
-              <Info className="w-4 h-4 text-blue-600 shrink-0" />
-              <span>Simulasi Rotasi / Transfer Pegawai:</span>
-            </div>
-            <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-[11px]">
-              Ketika akses baru ditambahkan, statusnya otomatis <strong className="text-emerald-600 dark:text-emerald-400 font-mono">Granted (is_active = TRUE)</strong>. Pegawai tersebut dapat segera memperbarui harga & stok produk pada cabang toko ini di dashboard mereka.
-            </p>
-          </div>
+          <InputSelect
+            label="Pilih Cabang Toko"
+            nama="selectedStoreId"
+            value={selectedStoreId}
+            onChange={(e) => setSelectedStoreId(Number(e.target.value))}
+            options={availableStores.map((st) => ({
+              value: st.id,
+              label: `${st.name} — Kota: ${st.city}`,
+            }))}
+            placeholder=""
+          />
 
           {/* Action Buttons */}
           <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200 dark:border-gray-800">
@@ -381,7 +335,6 @@ export default function ManageAccess() {
             <Button
               type="submit"
               variant="primary"
-              icon={<Save className="w-4 h-4" />}
               label="Simpan Akses Toko"
               className="text-xs! py-2! px-5! rounded-xl font-bold shadow-md cursor-pointer"
             />

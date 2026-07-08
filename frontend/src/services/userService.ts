@@ -1,18 +1,19 @@
 import { api } from "../lib/axios";
 import type { UserFormData } from "../pages/admin/users/hooks/useAddUser";
-import type { UserData } from "../pages/admin/users/UserIndex";
+import type { User } from "../types/user";
+
 
 
 
 export const userService = {
 
-    getAll: async (): Promise<UserData[]> => {
-        const response = await api.get<UserData[]>("/users");
+    getAll: async (): Promise<User[]> => {
+        const response = await api.get<User[]>("/users");
         return response.data;
     },
 
-    getById: async (id: number | string): Promise<UserData> => {
-        const response = await api.get<UserData>(`/users/${id}`);
+    getById: async (id: number | string): Promise<User> => {
+        const response = await api.get<User>(`/users/${id}`);
         return response.data;
 
     },

@@ -1,15 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { createColumnHelper } from "@tanstack/react-table";
 import {
   Plus,
-  Trash2,
   TrendingUp,
   TrendingDown,
-  Sliders,
   Save,
 } from "lucide-react";
-import { DataTable, DataTableColumnHeader } from "../../../components/ui/common/DataTable";
+import { TabelCriteriaIndex } from "./components/TabelCriteriaIndex";
 import { Button } from "../../../components/ui/common/Button";
 import { Modal } from "../../../components/ui/common/Modal";
 import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
@@ -17,18 +14,15 @@ import { useDeleteCriteria } from "./hooks/useDeleteCriteria";
 import { useGet } from "../../../hooks/useGet";
 import { criteriaService } from "../../../services/criteriaService";
 import { useQueryClient } from "@tanstack/react-query";
+import type { Criteria } from "../../../types/criteria";
+export type { Criteria };
 
 // 1. Definisi Interface Dimensi Penilaian (Criteria)
 // Sesuai persis 4 kolom di database MySQL kamu: id, code, name, type
-export interface Criteria {
-  id: number;
-  code: string; // Misal: C1, C2
-  name: string; // Misal: Harga, RAM, Storage
-  type: "benefit" | "cost" | string; // benefit atau cost
-}
+
 
 // 2. Data Dummy Awal (Persis 8 baris data dari screenshot database phpMyAdmin kamu)
-const initialCriterias: Criteria[] = [
+export const initialCriterias: Criteria[] = [
   {
     id: 1,
     code: "C1",
@@ -79,7 +73,6 @@ const initialCriterias: Criteria[] = [
   },
 ];
 
-const columnHelper = createColumnHelper<Criteria>();
 
 export default function CriteriaIndex() {
   const queryClient = useQueryClient();
@@ -136,93 +129,7 @@ export default function CriteriaIndex() {
     setEditingItem(null);
   };
 
-  // 3. Definisi Kolom Tabel
-  const columns = useMemo(
-    () => [
-      columnHelper.accessor("id", {
-        header: () => <span className="font-semibold">No</span>,
-        cell: (info) => (
-          <span className="text-gray-500 dark:text-gray-400 font-mono font-medium">
-            #{info.getValue()}
-          </span>
-        ),
-        size: 60,
-      }),
-      columnHelper.accessor("code", {
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Kode" />,
-        cell: (info) => (
-          <span className="inline-flex items-center justify-center px-3 py-1.5 rounded-xl text-sm font-mono font-bold text-blaxk">
-            {info.getValue()}
-          </span>
-        ),
-        size: 100,
-      }),
-      columnHelper.accessor("name", {
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Nama Dimensi Penilaian" />,
-        cell: (info) => (
-          <span className="font-bold text-gray-900 dark:text-white text-base">
-            {info.getValue()}
-          </span>
-        ),
-      }),
-      columnHelper.accessor("type", {
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Tipe Atribut (SAW)" />,
-        cell: (info) => {
-          const val = info.getValue();
-          const typeStr = String(val).toLowerCase();
-
-          // STRUKTUR ELSE IF MURNI SESUAI INSTRUKSI UNTUK BADGE WARNA:
-          if (typeStr === "benefit") {
-            // Badge Hijau: Semakin besar nilainya semakin bagus (contoh: RAM, Storage)
-            return (
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 shadow-2xs">
-                benefit
-              </span>
-            );
-          } else if (typeStr === "cost") {
-            // Badge Merah: Semakin kecil nilainya semakin bagus (contoh: Harga, Berat)
-            return (
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-400 border border-red-200 dark:border-red-800/60 shadow-2xs">
-                cost
-              </span>
-            );
-          }
-          return null;
-        },
-      }),
-      columnHelper.display({
-        id: "actions",
-        header: () => <span className="font-semibold">Aksi</span>,
-        cell: (info) => {
-          const item = info.row.original;
-          const isDeleting = deletingId === item.id;
-          return (
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => handleOpenEdit(item)}
-                disabled={isDeleting}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/60 font-semibold text-xs rounded-xl border border-blue-200 dark:border-blue-800/60 transition-all active:scale-95 shadow-2xs cursor-pointer disabled:opacity-50"
-                title="Edit Kriteria"
-              >
-                <span>Update</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDelete(item.id, item.code, item.name)}
-                disabled={isDeleting}
-                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-950/40 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
-                title="Hapus Kriteria"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          );
-        },
-      }),
-    ],
-    []
-  );
+  
 
   return (
     <div className="space-y-6 pb-12">
@@ -233,13 +140,7 @@ export default function CriteriaIndex() {
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
               Dimensi Penilaian (Kriteria SPK)
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border border-purple-200 dark:border-purple-800 font-mono">
-              criteria
-            </span>
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Kelola kode dimensi (`code`), nama (`name`), dan tipe atribut (`benefit` / `cost`) untuk perhitungan matematis algoritma Simple Additive Weighting (SAW).
-          </p>
         </div>
         <div>
           <Link
@@ -252,30 +153,13 @@ export default function CriteriaIndex() {
         </div>
       </div>
 
-      {/* Banner Penjelasan Algoritma SAW */}
-      <div className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/60 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-purple-900 dark:text-purple-300">
-        <div className="flex items-start gap-3">
-          <Sliders className="w-5 h-5 text-purple-600 dark:text-purple-400 shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <p className="font-bold text-sm">Panduan Tipe Atribut Algoritma SAW:</p>
-            <p className="text-purple-800 dark:text-purple-300/90 leading-relaxed">
-              • <strong className="text-emerald-700 dark:text-emerald-400">benefit</strong>: Semakin besar nilai spek laptop, maka semakin bagus skornya (Contoh: RAM, Storage, Battery, Processor).<br />
-              • <strong className="text-red-700 dark:text-red-400">cost</strong>: Semakin kecil nilainya, justru semakin bagus skor preferensinya (Contoh: Harga, Berat).
-            </p>
-          </div>
-        </div>
-        <div className="shrink-0 bg-white dark:bg-purple-900/50 px-3 py-2 rounded-xl border border-purple-200 dark:border-purple-800 font-mono text-center">
-          <span className="block text-[10px] text-gray-500 uppercase font-sans">Total Dimensi</span>
-          <span className="text-lg font-bold text-purple-600 dark:text-purple-300">{data.length} Kriteria</span>
-        </div>
-      </div>
-
       {/* Tabel Kriteria */}
-      <DataTable
-        columns={columns}
+      <TabelCriteriaIndex
         data={data}
-        searchPlaceholder="Cari kode kriteria (misal: C1, C2) atau nama (misal: Harga, RAM)..."
-        emptyMessage={isLoading ? "Sedang memuat dimensi penilaian..." : "Tidak ada dimensi penilaian yang ditemukan"}
+        isLoading={isLoading}
+        onEdit={handleOpenEdit}
+        onDelete={handleDelete}
+        deletingId={deletingId}
       />
 
       {/* MODAL UPDATE DIMENSI PENILAIAN */}

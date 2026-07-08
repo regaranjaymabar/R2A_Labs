@@ -1,14 +1,12 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
-  Users,
   UserPlus,
   ShieldCheck,
   Store,
   User as UserIcon,
   Filter,
   Save,
-  Info,
   Edit,
 } from "lucide-react";
 import { TabelUserIndex } from "./components/TabelUserIndex";
@@ -16,19 +14,13 @@ import { Button } from "../../../components/ui/common/Button";
 import { Modal } from "../../../components/ui/common/Modal";
 import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
 import { GlowingCards, GlowingCard } from "../../../components/ui/glowing-cards";
+import type { User } from "../../../types/user";
 
 // 1. Definisi Interface Pengguna (User) sesuai skema tabel users di database MySQL
-export interface UserData {
-  id: number;
-  name: string;
-  email: string;
-  role: "admin" | "store_admin" | "user";
-  is_active: boolean; // Soft Delete: FALSE = nonaktif (tidak bisa login, tapi data riwayat SPK tetap aman)
-  created_at: string;
-}
+
 
 // 2. Data Dummy Awal (Merepresentasikan Kondisi Nyata di Sistem SPK Laptop)
-const initialUsers: UserData[] = [
+const initialUsers: User[] = [
   {
     id: 1,
     name: "Adies (Super Admin)",
@@ -81,22 +73,16 @@ const initialUsers: UserData[] = [
 
 
 export default function UserIndex() {
-  const [data, setData] = useState<UserData[]>(initialUsers);
-  
+  const [data, setData] = useState<User[]>(initialUsers);
+
   // State Filter
   const [filterRole, setFilterRole] = useState<"all" | "admin" | "store_admin" | "user">("all");
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive">("all");
 
-  // State Modal Tambah Pengguna
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [newName, setNewName] = useState("");
-  const [newEmail, setNewEmail] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [newRole, setNewRole] = useState<"admin" | "store_admin" | "user">("store_admin");
-  const [newIsActive, setNewIsActive] = useState(true);
+
 
   // State Modal Edit Pengguna
-  const [editingUser, setEditingUser] = useState<UserData | null>(null);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editPassword, setEditPassword] = useState("");
@@ -104,10 +90,10 @@ export default function UserIndex() {
   const [editIsActive, setEditIsActive] = useState(true);
 
   // State untuk Modal Confirm Status Akun (Soft Delete)
-  const [statusTarget, setStatusTarget] = useState<UserData | null>(null);
+  const [statusTarget, setStatusTarget] = useState<User | null>(null);
 
   // Buka Modal Edit
-  const handleOpenEdit = (user: UserData) => {
+  const handleOpenEdit = (user: User) => {
     setEditingUser(user);
     setEditName(user.name);
     setEditEmail(user.email);
@@ -116,35 +102,7 @@ export default function UserIndex() {
     setEditIsActive(user.is_active);
   };
 
-  // Simpan Tambah Pengguna Baru
-  const handleCreateUser = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newName.trim() || !newEmail.trim() || !newPassword.trim()) {
-      alert("Harap lengkapi Nama, Email, dan Password!");
-      return;
-    }
 
-    const nextId = data.length > 0 ? Math.max(...data.map((u) => u.id)) + 1 : 1;
-    const now = new Date().toISOString().slice(0, 19).replace("T", " ");
-
-    const newUser: UserData = {
-      id: nextId,
-      name: newName.trim(),
-      email: newEmail.trim().toLowerCase(),
-      role: newRole,
-      is_active: newIsActive,
-      created_at: now,
-    };
-
-    setData((prev) => [newUser, ...prev]);
-    setIsAddModalOpen(false);
-    // Reset form
-    setNewName("");
-    setNewEmail("");
-    setNewPassword("");
-    setNewRole("store_admin");
-    setNewIsActive(true);
-  };
 
   // Simpan Perubahan Edit Pengguna
   const handleUpdateUser = (e: React.FormEvent) => {
@@ -158,12 +116,12 @@ export default function UserIndex() {
       prev.map((item) =>
         item.id === editingUser.id
           ? {
-              ...item,
-              name: editName.trim(),
-              email: editEmail.trim().toLowerCase(),
-              role: editRole,
-              is_active: editIsActive,
-            }
+            ...item,
+            name: editName.trim(),
+            email: editEmail.trim().toLowerCase(),
+            role: editRole,
+            is_active: editIsActive,
+          }
           : item
       )
     );
@@ -171,7 +129,7 @@ export default function UserIndex() {
   };
 
   // Aksi Soft Delete / Restore Akses (Toggle is_active) - Buka Modal
-  const handleToggleSoftDelete = (user: UserData) => {
+  const handleToggleSoftDelete = (user: User) => {
     if (user.role === "admin" && user.id === 1) {
       alert("⚠️ Akun Super Admin Utama (#1) tidak boleh dinonaktifkan!");
       return;
@@ -222,12 +180,8 @@ export default function UserIndex() {
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
-              <Users className="w-7 h-7 text-purple-600 dark:text-purple-400" />
               <span>Daftar Pengguna & Hak Akses</span>
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border border-purple-200 dark:border-purple-800 font-mono">
-              tabel: users
-            </span>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Pusat kendali keamanan sistem eksklusif Super Admin. Atur pembagian peran (<code className="font-mono text-xs">role</code>) dan manajemen status akses (<code className="font-mono text-xs">is_active</code>).
@@ -235,16 +189,15 @@ export default function UserIndex() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button
-            type="button"
-            variant="primary"
-            onClick={() => setIsAddModalOpen(true)}
-            icon={<UserPlus className="w-4 h-4" />}
-            label="Tambah Pengguna / Pegawai"
-            className="text-xs! py-2.5! px-4! rounded-xl font-bold shadow-md cursor-pointer"
-          />
+          <Link
+            to="/admin/users/add"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#151216] dark:bg-white text-white dark:text-gray-900 hover:bg-[#262128] dark:hover:bg-gray-200 font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer"
+          >
+            <UserPlus className="w-4 h-4" />
+            <span>Tambah Pengguna / Pegawai</span>
+          </Link>
         </div>
-     </div>
+      </div>
       {/* 3. KARTU STATISTIK RINGKAS (GLOWING CARDS) */}
       <GlowingCards gap="1rem" maxWidth="100%" padding="0">
         <GlowingCard glowColor="#6366f1" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
@@ -289,11 +242,10 @@ export default function UserIndex() {
                 key={role}
                 type="button"
                 onClick={() => setFilterRole(role)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  isActive
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${isActive
                     ? "bg-black text-white shadow-md"
                     : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-gray-300"
-                }`}
+                  }`}
               >
                 {labels[role]}
               </button>
@@ -323,164 +275,7 @@ export default function UserIndex() {
         onToggleStatus={handleToggleSoftDelete}
       />
 
-      {/* MODAL 1: TAMBAH PENGGUNA BARU */}
-      <Modal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        maxWidth="lg"
-        badge={
-          <span className="text-purple-600 dark:text-purple-400 flex items-center gap-1.5 font-mono">
-            <UserPlus className="w-3.5 h-3.5" />
-            <span>Registrasi Akun Baru</span>
-          </span>
-        }
-        title="Buat Akun Pegawai / Pengguna"
-        subtitle="Sesuai tabel users di database. Tentukan hak akses role secara presisi."
-      >
-        <form onSubmit={handleCreateUser} className="space-y-5">
-          {/* 1. Nama Lengkap */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
-              Nama Lengkap (<code className="font-mono">name</code>)
-            </label>
-            <input
-              type="text"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              placeholder="Misal: Budi Santoso"
-              className="w-full px-4 py-2.5 text-sm font-semibold bg-gray-50 dark:bg-[#181519] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 dark:text-white transition-all shadow-2xs"
-              required
-            />
-          </div>
 
-          {/* 2. Alamat Email */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
-              Alamat Email (<code className="font-mono">email</code>)
-            </label>
-            <input
-              type="email"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-              placeholder="Misal: budi.store@r2a-labs.com"
-              className="w-full px-4 py-2.5 text-sm font-mono bg-gray-50 dark:bg-[#181519] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 dark:text-white transition-all shadow-2xs"
-              required
-            />
-          </div>
-
-          {/* 3. Password Sementara */}
-          <div className="space-y-1.5">
-            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 items-center justify-between">
-              <span>Password Awal (<code className="font-mono">password</code>)</span>
-              <span className="text-[10px] text-gray-400 font-normal">Minimal 6 karakter</span>
-            </label>
-            <input
-              type="text"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Misal: Store#2026"
-              className="w-full px-4 py-2.5 text-sm font-mono font-bold bg-purple-50/50 dark:bg-[#181519] border border-purple-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 dark:text-white transition-all shadow-2xs text-purple-700"
-              required
-            />
-          </div>
-
-          {/* 4. Pemilihan Peran (Role Management) */}
-          <div className="space-y-2">
-            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
-              Pembagian Peran (<code className="font-mono text-purple-600">role</code>)
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {(
-                [
-                  { id: "store_admin", label: "Admin Toko", desc: "Mengelola stok & harga cabang", icon: Store, color: "blue" },
-                  { id: "admin", label: "Super Admin", desc: "Kontrol penuh sistem SPK", icon: ShieldCheck, color: "purple" },
-                  { id: "user", label: "User Biasa", desc: "Konsumen pencari laptop", icon: UserIcon, color: "gray" },
-                ] as const
-              ).map((roleOpt) => {
-                const IconComponent = roleOpt.icon;
-                const isSelected = newRole === roleOpt.id;
-                return (
-                  <button
-                    key={roleOpt.id}
-                    type="button"
-                    onClick={() => setNewRole(roleOpt.id as any)}
-                    className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
-                      isSelected
-                        ? roleOpt.color === "purple"
-                          ? "bg-purple-50 dark:bg-purple-950/50 border-purple-500 text-purple-900 dark:text-purple-200 ring-2 ring-purple-500/20"
-                          : roleOpt.color === "blue"
-                          ? "bg-blue-50 dark:bg-blue-950/50 border-blue-500 text-blue-900 dark:text-blue-200 ring-2 ring-blue-500/20"
-                          : "bg-gray-100 dark:bg-gray-800 border-gray-400 text-gray-900 dark:text-white ring-2 ring-gray-400/20"
-                        : "bg-gray-50 dark:bg-[#181519] border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-gray-300"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 font-bold text-xs">
-                      <IconComponent className="w-4 h-4 shrink-0" />
-                      <span>{roleOpt.label}</span>
-                    </div>
-                    <span className="text-[10px] opacity-75 mt-1.5 block leading-tight">
-                      {roleOpt.desc}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 5. Status Akun (is_active) */}
-          <div className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-200/80 dark:border-gray-800 flex items-center justify-between gap-4">
-            <div>
-              <label className="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
-                <span>Status Akun (<code className="font-mono text-[11px]">is_active</code>)</span>
-              </label>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
-                Aktifkan saklar agar pegawai/user bisa login ke sistem.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setNewIsActive(!newIsActive)}
-              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                newIsActive ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-700"
-              }`}
-            >
-              <span
-                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                  newIsActive ? "translate-x-5" : "translate-x-0"
-                }`}
-              />
-            </button>
-          </div>
-
-          {/* Catatan Hak Akses Toko */}
-          {newRole === "store_admin" && (
-            <div className="p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/60 flex items-start gap-2.5 text-xs text-blue-900 dark:text-blue-200">
-              <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-              <div>
-                <strong>Langkah Selanjutnya (Hak Akses Toko):</strong> Setelah akun ini disimpan, buka menu <Link to="/admin/user-stores" className="underline font-bold">Hak Akses Toko (user_stores)</Link> untuk menunjuk toko mana yang akan diatur oleh Admin Toko baru ini.
-              </div>
-            </div>
-          )}
-
-          {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200 dark:border-gray-800">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setIsAddModalOpen(false)}
-              label="Batal"
-              className="!text-xs! py-2! px-5! rounded-xl cursor-pointer"
-            />
-            <Button
-              type="submit"
-              variant="primary"
-              icon={<Save className="w-4 h-4" />}
-              label="Daftarkan Pengguna"
-              className="text-xs! py-2! px-5! rounded-xl font-bold shadow-md cursor-pointer"
-            />
-          </div>
-        </form>
-      </Modal>
 
       {/* MODAL 2: EDIT PENGGUNA & PERAN */}
       <Modal
@@ -544,7 +339,7 @@ export default function UserIndex() {
             {/* 4. Pemilihan Peran (Role Management) */}
             <div className="space-y-2">
               <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
-                Pembagian Peran (<code className="font-mono text-purple-600">role</code>)
+                Pembagian Peran (<code className="font-mono text-black">role</code>)
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {(
@@ -563,15 +358,14 @@ export default function UserIndex() {
                       type="button"
                       disabled={isSuperAdminMain && roleOpt.id !== "admin"}
                       onClick={() => setEditRole(roleOpt.id as any)}
-                      className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between ${
-                        isSelected
+                      className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between ${isSelected
                           ? roleOpt.color === "purple"
                             ? "bg-purple-50 dark:bg-purple-950/50 border-purple-500 text-purple-900 dark:text-purple-200 ring-2 ring-purple-500/20"
                             : roleOpt.color === "blue"
-                            ? "bg-blue-50 dark:bg-blue-950/50 border-blue-500 text-blue-900 dark:text-blue-200 ring-2 ring-blue-500/20"
-                            : "bg-gray-100 dark:bg-gray-800 border-gray-400 text-gray-900 dark:text-white ring-2 ring-gray-400/20"
+                              ? "bg-blue-50 dark:bg-blue-950/50 border-blue-500 text-blue-900 dark:text-blue-200 ring-2 ring-blue-500/20"
+                              : "bg-gray-100 dark:bg-gray-800 border-gray-400 text-gray-900 dark:text-white ring-2 ring-gray-400/20"
                           : "bg-gray-50 dark:bg-[#181519] border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-gray-300"
-                      } ${isSuperAdminMain && roleOpt.id !== "admin" ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
+                        } ${isSuperAdminMain && roleOpt.id !== "admin" ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
                     >
                       <div className="flex items-center gap-2 font-bold text-xs">
                         <IconComponent className="w-4 h-4 shrink-0" />
@@ -600,14 +394,12 @@ export default function UserIndex() {
                 type="button"
                 disabled={editingUser.id === 1}
                 onClick={() => setEditIsActive(!editIsActive)}
-                className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  editIsActive ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-700"
-                } ${editingUser.id === 1 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${editIsActive ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-700"
+                  } ${editingUser.id === 1 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
               >
                 <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                    editIsActive ? "translate-x-5" : "translate-x-0"
-                  }`}
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${editIsActive ? "translate-x-5" : "translate-x-0"
+                    }`}
                 />
               </button>
             </div>

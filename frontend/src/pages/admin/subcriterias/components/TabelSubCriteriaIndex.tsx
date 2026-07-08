@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { ArrowRight, Hash, Trash2, Loader2 } from "lucide-react";
 import { DataTable, DataTableColumnHeader } from "../../../../components/ui/common/DataTable";
+import { Button } from "../../../../components/ui/common/Button";
 import type { SubCriteria } from "../SubCriteriaIndex";
 
 export interface TabelSubCriteriaIndexProps {
@@ -33,7 +33,7 @@ export function TabelSubCriteriaIndex({
         size: 60,
       }),
       columnHelper.accessor("criteria_id", {
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Kriteria (criteria_id)" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Kriteria" />,
         cell: (info) => {
           const item = info.row.original;
           const code = item.criteria_code || `C${item.criteria_id}`;
@@ -56,7 +56,7 @@ export function TabelSubCriteriaIndex({
         },
       }),
       columnHelper.accessor("description", {
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Deskripsi Spesifikasi / Rentang" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Deskripsi Spesifikasi" />,
         cell: (info) => (
           <div className="flex items-center gap-2 font-semibold text-gray-900 dark:text-gray-100 text-base">
             <span>{info.getValue()}</span>
@@ -64,12 +64,10 @@ export function TabelSubCriteriaIndex({
         ),
       }),
       columnHelper.accessor("value_numeric", {
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Nilai Numerik (value_numeric)" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Nilai Numerik" />,
         cell: (info) => (
           <div className="flex items-center gap-2">
-            <ArrowRight className="w-4 h-4 text-blue-500 shrink-0" />
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl font-mono font-bold text-base bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60 shadow-2xs">
-              <Hash className="w-3.5 h-3.5 text-blue-500" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl font-mono font-bold text-base bg-black dark:bg-black text-white dark:text-black border border-black dark:border-black shadow-2xs">
               {Number(info.getValue()).toFixed(2)}
             </span>
           </div>
@@ -91,28 +89,23 @@ export function TabelSubCriteriaIndex({
           const isDeleting = deletingId === item.id;
           return (
             <div className="flex items-center gap-2">
-              <button
+              <Button
                 type="button"
+                variant="info"
+                label="Update"
+                disabled={isDeleting}
                 onClick={() => onEdit(item)}
-                disabled={isDeleting}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/60 font-semibold text-xs rounded-xl border border-blue-200 dark:border-blue-800/60 transition-all active:scale-95 shadow-2xs cursor-pointer disabled:opacity-50"
-                title="Edit Konversi Skala"
-              >
-                <span>Update</span>
-              </button>
-              <button
+                className="text-xs! py-1.5! px-3! rounded-xl font-bold shadow-xs cursor-pointer"
+              />
+              <Button
                 type="button"
-                onClick={() => onDelete(item.id, item.description, item.criteria_code)}
+                variant="danger"
+                label="Hapus"
                 disabled={isDeleting}
-                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-950/40 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
-                title="Hapus Sub-Kriteria"
-              >
-                {isDeleting ? (
-                  <Loader2 className="w-4 h-4 animate-spin text-red-500" />
-                ) : (
-                  <Trash2 className="w-4 h-4" />
-                )}
-              </button>
+                isLoading={isDeleting}
+                onClick={() => onDelete(item.id, item.description, item.criteria_code)}
+                className="text-xs! py-1.5! px-3! rounded-xl font-bold shadow-xs cursor-pointer"
+              />
             </div>
           );
         },

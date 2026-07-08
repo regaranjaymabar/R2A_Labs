@@ -29,7 +29,10 @@ export function useAddProduct() {
     watch,
     formState: { errors },
   } = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema) as any
+    resolver: zodResolver(productSchema) as any,
+    defaultValues: {
+      is_active: true,
+    },
   });
 
   const isActive = watch("is_active");
