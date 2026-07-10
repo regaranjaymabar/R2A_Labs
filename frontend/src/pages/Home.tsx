@@ -16,6 +16,6 @@ export default function Home() {
       <HeroSection />
       <ProductSection search={search} />
       <Footer />
-    </main>
+    </main> 
   );
 }

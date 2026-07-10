@@ -45,8 +45,8 @@ export default function RegisterForm() {
         <div>
 
             <div className="mb-4 text-center sm:text-left">
-                <h2 className="text-center text-2xl font-extrabold text-gray-900 tracking-tight">
-                    Buat Akun Baru
+                <h2 className="text-center text-2xl font text-gray-900 tracking-tight">
+                    Buat Akun Ambalabs Anda
                 </h2>
                 <p className="text-center text-xs text-gray-500 mt-1">
                     Lengkapi data di bawah ini untuk mendaftarkan akun Anda.
@@ -55,7 +55,7 @@ export default function RegisterForm() {
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-2.5">
                 <InputText
-                    label="Nama Lengkap"
+                    label="Nama"
                     nama="nama"
                     register={register}
                     error={errors.nama?.message}
@@ -84,7 +84,7 @@ export default function RegisterForm() {
                 />
 
                 <div className="pt-2">
-                    <Button label="Register" type="submit" variant="primary" className="w-full py-2.5 text-base shadow-md hover:shadow-lg transition-all" />
+                    <Button label="Register" type="submit" variant="primary" className="w-full py-2.5 text-base shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg" />
                 </div>
 
                 <div className="mt-4 text-center text-xs text-gray-600">

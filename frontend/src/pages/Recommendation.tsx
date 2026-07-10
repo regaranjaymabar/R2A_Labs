@@ -3,7 +3,8 @@ import { useOutletContext } from "react-router-dom";
 import RecommendationCard from "../components/ui/RecommendationCard";
 import { laptops, categories, budgets } from "../data/laptops";
 import type { Laptop } from "../data/laptops";
-import HeroLaptopCarousel from "../components/ui/HeroLaptopCarousel";
+import ScrollVideo from "../components/ui/background/ScrollVideo"; // ← Import ScrollVideo
+import Footer from "../components/Footer";
 
 // Type untuk outlet context
 type OutletContextType = {
@@ -67,14 +68,12 @@ export default function Recommendation() {
   };
 
   return (
-    <div className="pt-22 min-h-screen">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Header */}
+    <div className="min-h-screen">
+      <ScrollVideo />
 
-        <HeroLaptopCarousel />
-
+      <div className="max-w-7xl mx-auto px-6 pt-12">
         {/* Filter Section - Sticky */}
-        <div className="sticky top-24 z-30 bg-white/5 backdrop-blur-2xl rounded-[40px] p-8 mb-12 border border-white/10">
+        <div className="sticky top-24 z-30 bg-white/20 backdrop-blur-xl rounded-[40px] p-8 mb-12 border border-white/10 shadow-lg">
           {/* Kategori Cards */}
           <div>
             <h3 className="text-xl font-semibold mb-4">Kategori</h3>
@@ -147,7 +146,7 @@ export default function Recommendation() {
               <span>Filter aktif:</span>
               {search && (
                 <span className="px-3 py-1 bg-black/5 rounded-full text-black font-medium">
-                   "{search}"
+                  "{search}"
                 </span>
               )}
               {activeCategory !== "Semua" && (
@@ -162,7 +161,7 @@ export default function Recommendation() {
               )}
               <button
                 onClick={handleReset}
-                className="px-6 py-3 ml-260 bg-black text-white rounded-full hover:opacity-90 transition"
+                className="ml-auto px-6 py-3 bg-black text-white rounded-full hover:opacity-90 transition"
               >
                 Reset Filter
               </button>
@@ -203,6 +202,7 @@ export default function Recommendation() {
             </div>
           )}
         </div>
+        <Footer/>
       </div>
     </div>
   );

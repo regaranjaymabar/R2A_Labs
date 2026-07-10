@@ -1,4 +1,4 @@
-import ThreeDMarquee from "./background/ThreeDMarquee";
+import ThreeDMarquee from "./background/ScrollVideo";
 import { laptops } from "../../data/laptops";
 import { useNavigate } from "react-router-dom";
 

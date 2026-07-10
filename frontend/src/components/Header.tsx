@@ -1,64 +1,114 @@
-import { Search } from "lucide-react";
-// import ambalabsLogo from '../assets/ambalabs.png';
+import { Search, CircleUserRound } from "lucide-react";
 import { Link } from "react-router-dom";
 
 type HeaderProps = {
   search: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
+  visible?: boolean; // ← Prop kontrol visibilitas
 };
 
 export default function Header({
   search,
   setSearch,
+  visible = true, // Default: muncul
 }: HeaderProps) {
   return (
-    <header className="fixed top-0 left-0 w-full z-50 px-6 lg:px-12 pt-6">
+    <header
+      className={`
+        fixed top-0 left-0 w-full z-50 px-6 lg:px-12 pt-6
+        transition-all duration-500 ease-in-out
+        ${
+          visible
+            ? "translate-y-0 opacity-100"
+            : "-translate-y-full opacity-0 pointer-events-none"
+        }
+      `}
+    >
       <div className="max-w-7xl mx-auto">
         <div
           className="
-          flex items-center justify-between
-          px-6 py-4
-          rounded-full
-          bg-white/10
-          backdrop-blur-xl
-          border border-white/20
-          shadow-lg
-        "
-        >
-         <div className="text-3xl font-bold tracking-tight">
-          <img src="https://cdn-icons-png.flaticon.com/512/0/747.png" alt="Ambalabs Logo" className="h-8 w-auto" />
-        </div>
-
-          <nav className="hidden lg:flex items-center gap-10 text-sm font-medium ">
-            <Link to="/" className="transition-transform duration-300 hover:scale-105">Home</Link>
-            <Link to="/rekomendasi" className="transition-transform duration-300 hover:scale-105">Rekomendasi</Link>
-            <Link to="/" className="transition-transform duration-300 hover:scale-105">Tentang</Link>
-          </nav>
-
-          <div
-            className="
-            hidden md:flex
-            items-center gap-2
-            px-4 py-2
+            flex items-center justify-between
+            px-6 py-4
             rounded-full
             bg-white/10
-            backdrop-blur-md
+            backdrop-blur-xl
+            border border-white/20
+            shadow-lg
           "
-          >
-            <Search size={18} />
-
-            <input
-              type="text"
-              placeholder="Cari laptop..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="
-                bg-transparent
-                outline-none
-                placeholder:text-zinc-500
-                w-40
-              "
+        >
+          {/* Logo */}
+          <div className="text-3xl font-bold tracking-tight">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/0/747.png"
+              alt="Ambalabs Logo"
+              className="h-8 w-auto"
             />
+          </div>
+
+          {/* Nav */}
+          <nav className="hidden lg:flex items-center gap-10 text-sm font-medium">
+            <Link
+              to="/"
+              className="transition-transform duration-300 hover:scale-105"
+            >
+              Home
+            </Link>
+            <Link
+              to="/rekomendasi"
+              className="transition-transform duration-300 hover:scale-105"
+            >
+              Rekomendasi
+            </Link>
+            <Link
+              to="/"
+              className="transition-transform duration-300 hover:scale-105"
+            >
+              Tentang
+            </Link>
+          </nav>
+
+          {/* Search + Login */}
+          <div className="flex items-center gap-3">
+            {/* Search */}
+            <div
+              className="
+                hidden md:flex
+                items-center gap-2
+                px-4 py-2
+                rounded-full
+                bg-white/10
+                backdrop-blur-md
+              "
+            >
+              <Search size={18} />
+              <input
+                type="text"
+                placeholder="Cari laptop..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="
+                  bg-transparent
+                  outline-none
+                  placeholder:text-zinc-500
+                  w-40
+                "
+              />
+            </div>
+
+            {/* Login */}
+            <Link
+              to="/login"
+              className="
+                flex items-center justify-center
+                w-11 h-11
+                rounded-full
+                bg-black text-white
+                hover:scale-105 transition
+                shadow-md
+              "
+            >
+              <CircleUserRound size={22} />
+            </Link>
           </div>
         </div>
       </div>

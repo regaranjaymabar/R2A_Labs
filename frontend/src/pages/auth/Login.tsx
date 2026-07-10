@@ -64,44 +64,109 @@ export default function Login() {
     };
 
     return (
-        <div>
-            {/* Header Form */}
-            <div className="mb-4 text-center sm:text-left">
-                <h2 className="text-center text-2xl font-extrabold text-gray-900 tracking-tight">
-                    Selamat Datang
-                </h2>
-                <p className="text-center text-xs text-gray-500 mt-1">
-                    Silakan masukkan email dan password untuk masuk ke akun Anda.
-                </p>
-            </div>
+    <div className="w-full">
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-                <InputText
-                    label="Email"
-                    nama="email"
-                    register={register}
-                    error={errors.email?.message}
-                />
-                <InputPassword
-                    label="Password"
-                    nama="password"
-                    register={register}
-                    error={errors.password?.message}
-                    placeholder="Masukkan password Anda"
-                />
+      {/* Logo */}
 
-                <div className="pt-2">
-                    <Button type="submit" label="Login" className="w-full py-2.5 text-base shadow-md hover:shadow-lg transition-all" />
-                </div>
+      <div className="flex flex-col items-center text-center mb-10">
+  
+        {/* Logo dengan Image Path / Link */}
+        <img 
+          src="https://cdn-icons-png.flaticon.com/512/0/747.png" 
+          alt="Logo Rekomlepsop" 
+          className="w-14 h-14 rounded-2xl"
+        />
 
-                <div className="mt-4 text-center text-xs text-gray-600">
-                    Belum punya akun?{" "}
-                    <Link to="/register" className="font-semibold text-black hover:underline transition-colors">
-                        Daftar di sini
-                    </Link>
-                </div>
-            </form>
+        {/* Teks di bawah logo */}
+        <div className="mt-4">
+          <h1 className="text-2xl font-bold tracking-tight">
+            AMBALABS
+          </h1>
+          <p className="text-sm text-black/70">
+            Masuk ke ambalabs Anda
+          </p>
         </div>
-    );
-};
+
+      </div>
+
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-6"
+      >
+
+        <InputText
+          label="Email"
+          nama="email"
+          register={register}
+          error={errors.email?.message}
+          placeholder="Masukkan email Anda"
+        />
+
+        <InputPassword
+          label="Password"
+          nama="password"
+          register={register}
+          error={errors.password?.message}
+          placeholder="Masukkan password"
+        />
+
+        <div className="flex justify-end">
+
+          <Link
+            to="/forgot-password"
+            className="
+              text-sm
+              text-zinc-500
+              hover:text-black
+              transition-colors
+            "
+          >
+            Lupa password?
+          </Link>
+
+        </div>
+
+        <Button
+          type="submit"
+          label={
+            loginMutation.isPending
+              ? "Sedang Masuk..."
+              : "Masuk"
+          }
+          className="
+            w-full
+            h-13
+            rounded-2xl
+            text-base
+            font-semibold
+            transition-all
+            duration-300
+            hover:-translate-y-1
+            hover:shadow-lg
+          "
+        />
+
+        <div className="text-center text-sm text-zinc-500">
+
+          Belum punya akun?
+
+          <Link
+            to="/register"
+            className="
+              ml-1
+              font-semibold
+              text-black
+              hover:underline
+            "
+          >
+            Daftar sekarang
+          </Link>
+
+        </div>
+
+      </form>
+
+    </div>
+  );
+}
 
