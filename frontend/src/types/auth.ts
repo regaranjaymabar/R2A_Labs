@@ -9,7 +9,7 @@ export type LoginInput = {
 
 }
 
-export type UserRole = "superadmin" | "super_admin" | "admin" | "store_admin" | "user";
+export type UserRole = "superadmin" | "super_admin" | "admin" | "store_admin" | "user" | "customer";
 
 export type User = {
     id?: number
