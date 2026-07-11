@@ -100,6 +100,13 @@ function App() {
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={["superadmin", "super_admin", "admin", "store_admin"]} redirectTo="/admin/login" />}>
+          <Route element={<ProtectedRoute />}>
+          <Route element={<MainLayout />}>
+            <Route path="/rekomendasi"element={<Recommendation />}/>
+          </Route>
+        </Route>
+
+          {/* <Route element={<ProtectedRoute />}> */}
             <Route path="/admin" element={<AdminLayout />}>
 
               <Route index element={<Navigate to="/admin/dashboard" replace />} />

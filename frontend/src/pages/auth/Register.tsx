@@ -8,7 +8,7 @@ import { Link, useNavigate, type ErrorResponse } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useAuthStore } from "../../store/useAuthStore";
-import type { CustomerAuthWrapperResponse } from "../../types/auth";
+import type { CustomerAuthWrapperResponse, User } from "../../types/auth";
 import { api } from "../../lib/axios";
 
 type FormData = {
@@ -52,7 +52,7 @@ export default function RegisterForm() {
             return response.data.data;
         },
         onSuccess: (data) => {
-            const customerUser = {
+            const customerUser: User = {
                 ...data.customer,
                 role: data.customer.role || "customer",
             };
@@ -89,7 +89,7 @@ export default function RegisterForm() {
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-2.5">
                 <InputText
-                    label="Nama Lengkap"
+                    label="Nama"
                     nama="nama"
                     register={register}
                     error={errors.nama?.message}

@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useAuthStore } from "../../store/useAuthStore";
-import type { LoginInput, CustomerAuthWrapperResponse } from "../../types/auth";
+import type { LoginInput, CustomerAuthWrapperResponse, User } from "../../types/auth";
 import { api } from "../../lib/axios";
 import { InputText } from "../../components/ui/common/InputText";
 import { InputPassword } from "../../components/ui/common/InputPassword";
@@ -40,7 +40,7 @@ export default function Login() {
             return response.data.data;
         },
         onSuccess: (data) => {
-            const customerUser = {
+            const customerUser: User = {
                 ...data.customer,
                 role: data.customer.role || "customer",
             };
@@ -72,47 +72,105 @@ export default function Login() {
                     Masuk Akun Customer
                 </h2>
             </div>
+      <div className="flex flex-col items-center text-center mb-10">
+  
+        {/* Logo dengan Image Path / Link */}
+        <img 
+          src="https://cdn-icons-png.flaticon.com/512/0/747.png" 
+          alt="Logo Rekomlepsop" 
+          className="w-14 h-14 rounded-2xl"
+        />
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-                <InputText
-                    label="Email"
-                    nama="email"
-                    register={register}
-                    error={errors.email?.message}
-                />
-                <InputPassword
-                    label="Password"
-                    nama="password"
-                    register={register}
-                    error={errors.password?.message}
-                    placeholder="Masukkan password Anda"
-                />
-
-                <div className="pt-2">
-                    <Button
-                        type="submit"
-                        isLoading={loginMutation.isPending}
-                        disabled={loginMutation.isPending}
-                        label="Masuk Sekarang"
-                        className="w-full py-2.5 text-base shadow-md hover:shadow-lg transition-all cursor-pointer font-bold"
-                    />
-                </div>
-
-                <div className="mt-4 text-center text-xs text-gray-600 dark:text-gray-400">
-                    Belum punya akun?{" "}
-                    <Link to="/register" className="font-semibold text-black dark:text-white hover:underline transition-colors">
-                        Daftar di sini
-                    </Link>
-                </div>
-
-                <div className="pt-3 border-t border-gray-100 dark:border-gray-800 text-center text-xs text-gray-500">
-                    Staf atau Admin toko?{" "}
-                    <Link to="/admin/login" className="font-semibold text-black hover:underline transition-colors">
-                        Masuk Portal Admin
-                    </Link>
-                </div>
-            </form>
+        {/* Teks di bawah logo */}
+        <div className="mt-4">
+          <h1 className="text-2xl font-bold tracking-tight">
+            AMBALABS
+          </h1>
+          <p className="text-sm text-black/70">
+            Masuk ke ambalabs Anda
+          </p>
         </div>
-    );
-};
+
+      </div>
+
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-6"
+      >
+
+        <InputText
+          label="Email"
+          nama="email"
+          register={register}
+          error={errors.email?.message}
+          placeholder="Masukkan email Anda"
+        />
+
+        <InputPassword
+          label="Password"
+          nama="password"
+          register={register}
+          error={errors.password?.message}
+          placeholder="Masukkan password"
+        />
+
+        <div className="flex justify-end">
+
+          <Link
+            to="/forgot-password"
+            className="
+              text-sm
+              text-zinc-500
+              hover:text-black
+              transition-colors
+            "
+          >
+            Lupa password?
+          </Link>
+
+        </div>
+
+        <Button
+          type="submit"
+          label={
+            loginMutation.isPending
+              ? "Sedang Masuk..."
+              : "Masuk"
+          }
+          className="
+            w-full
+            h-13
+            rounded-2xl
+            text-base
+            font-semibold
+            transition-all
+            duration-300
+            hover:-translate-y-1
+            hover:shadow-lg
+          "
+        />
+
+        <div className="text-center text-sm text-zinc-500">
+
+          Belum punya akun?
+
+          <Link
+            to="/register"
+            className="
+              ml-1
+              font-semibold
+              text-black
+              hover:underline
+            "
+          >
+            Daftar sekarang
+          </Link>
+
+        </div>
+
+      </form>
+
+    </div>
+  );
+}
 

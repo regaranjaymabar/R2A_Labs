@@ -1,22 +1,44 @@
 import { Outlet } from "react-router-dom";
 
 export default function AuthLayout() {
-    return (
-        <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 p-4">
-            <div className="w-full max-w-md bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100">
-                {/* Logo atau Nama Team di Bagian Atas Form */}
-                <div className="flex flex-col items-center justify-center mb-4 text-center">
-                    {/* Jika punya gambar logo, aktifkan tag img di bawah ini: */}
-                    {/* <img src="" alt="logo/nama team" className="h-12 object-contain mb-2" /> */}
-                    
-                    <div className="font-bold text-2xl tracking-wider text-gray-900">
-                        R2A LABS
-                    </div>
-                </div>
+  return (
+    <div className="relative min-h-screen overflow-hidden">
 
-                {/* Form Login / Register */}
-                <Outlet />
-            </div>
+      {/* Background */}
+      <img
+        src="https://www.asus.com/ca-en/site/gaming/assets/images/rog/Zephyrus-G14/kv-hero_1.webp"
+        alt="Background"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+
+      {/* Overlay */}
+      <div className="absolute inset-0" />
+
+      {/* Glow */}
+      <div className="absolute -left-32 top-20 h-96 w-96 rounded-full bg-white/10 blur-[140px]" />
+      <div className="absolute -right-32 bottom-10 h-96 w-96 rounded-full bg-indigo-400/20 blur-[160px]" />
+
+      {/* Content */}
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-6 py-10">
+
+        <div
+          className="
+            w-full
+            max-w-md
+            rounded-4xl
+            border
+            border-white/40
+            bg-white
+            backdrop-blur-xl
+            shadow-[0_25px_80px_rgba(0,0,0,0.35)]
+            p-10
+          "
+        >
+          <Outlet />
         </div>
-    );
-}
+
+      </div>
+
+    </div>
+  );
+}
