@@ -1,5 +1,5 @@
 import { api } from "../lib/axios";
-import type { ProductStore, ProductStoreFormData } from "../types/productStore";
+import type { ProductStore } from "../types/productStore";
 
 export const productStoreService = {
     
@@ -23,7 +23,7 @@ export const productStoreService = {
     },
 
     // 4. Tambah produk ke inventaris toko (POST /api/admin/inventory/add)
-    create: async (payload: ProductStoreFormData): Promise<any> => {
+    create: async (payload: any): Promise<any> => {
         const formattedPayload = {
             productId: payload.product_id || (payload as any).productId,
             price: Number(payload.price),

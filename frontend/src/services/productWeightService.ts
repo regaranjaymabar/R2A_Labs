@@ -1,5 +1,5 @@
 import { api } from "../lib/axios";
-import type { ProductCriteria, ProductWeightFormData } from "../types/productWeight";
+import type { ProductCriteria } from "../types/productWeight";
 import type { ApiResponse } from "../types/api";
 
 export const productWeightService = {
@@ -35,13 +35,13 @@ export const productWeightService = {
     return all.find((item) => String(item.id) === String(id)) as ProductCriteria;
   },
 
-  create: async (payload: ProductWeightFormData): Promise<any> => {
+  create: async (payload: any): Promise<any> => {
     // Bisa disesuaikan saat menambahkan mapping bobot
     const response = await api.post("/api/superadmin/products", payload);
     return response.data;
   },
 
-  update: async (id: number | string, payload: ProductWeightFormData): Promise<any> => {
+  update: async (id: number | string, payload: any): Promise<any> => {
     const response = await api.put(`/api/superadmin/products/${id}`, payload);
     return response.data;
   },

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { brandService } from "../../../../services/brandService";
 import { brandSchema, type BrandFormData } from "./useAddBrand";
-import { type Brand } from "../BrandIndex";
+import type { Brand } from "../../../../types/brand";
 import { useQuery } from "@tanstack/react-query";
 import { useUpdate } from "../../../../hooks/useUpdate";
 

@@ -87,7 +87,7 @@ export function useEditUser() {
 
   // 4. Mutasi Update ke Backend menggunakan Generic Hook useUpdate + userService: PUT /users/:id
   const updateMutation = useUpdate<UserFormData>({
-    mutationFn: (payload) => userService.update(id!, payload),
+    mutationFn: (payload) => userService.update(id!, payload as any),
     queryKey: ["users"],
     navigateTo: "/admin/users",
     successMessage: (variables) => `Pengguna "${variables.name}" berhasil diperbarui!`,

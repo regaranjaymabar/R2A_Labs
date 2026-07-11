@@ -1,4 +1,5 @@
-import ThreeDMarquee from "./background/ScrollVideo";
+import ScrollVideo from "./background/ScrollVideo";
+const ThreeDMarquee = ScrollVideo as any;
 import { laptops } from "../../data/laptops";
 import { useNavigate } from "react-router-dom";
 
@@ -16,7 +17,7 @@ export default function HeroLaptopCarousel() {
       <ThreeDMarquee
         images={images}
         cols={4}
-        onImageClick={(image) => {
+        onImageClick={(image: any) => {
           navigate(`/product/${image.id}`);
         }}
       />

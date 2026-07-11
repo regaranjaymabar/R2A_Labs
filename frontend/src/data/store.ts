@@ -1,8 +1,8 @@
- export type Store = {
+export type Store = {
   id: number;
   laptopId: number;
   name: string;
-  storeImage: string;
+  storeImage?: string;
   address: string;
   latitude: number;
   longitude: number;
@@ -13,7 +13,7 @@
   mapsUrl: string;
   specialPrice: number;
   available: boolean;
-  distance?: number;
+  distance?: number | null;
 };
 
 export const stores: Store[] = [

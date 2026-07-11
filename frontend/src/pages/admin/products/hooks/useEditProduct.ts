@@ -57,6 +57,12 @@ export function useEditProduct() {
       const formattedDate =
         rawYear.length === 4 ? `${rawYear}-01-01` : rawYear.slice(0, 10);
 
+      const rawBattery = productData.battery || "";
+      const parsedBattery = String(rawBattery).match(/[\d.]+/)?.[0] || "";
+
+      const rawWeight = productData.weight || 0;
+      const parsedWeight = Number(String(rawWeight).match(/[\d.]+/)?.[0] || 0);
+
       reset({
         brandId: Number(productData.brandId || productData.brand_id || 1),
         modelName: productData.modelName || productData.model_name || "",
@@ -64,8 +70,8 @@ export function useEditProduct() {
         ram: productData.ram || "",
         storage: productData.storage || "",
         screenSize: Number(productData.screenSize || productData.screen_size || 0),
-        battery: String(productData.battery || ""),
-        weight: Number(productData.weight || 0),
+        battery: parsedBattery,
+        weight: parsedWeight,
         releaseYear: formattedDate,
         subCriteriaIds: [],
         is_active: Boolean(productData.is_active),

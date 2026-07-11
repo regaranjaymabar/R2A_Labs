@@ -5,10 +5,12 @@ import { DataTable, DataTableColumnHeader } from "../../../../components/ui/comm
 import Button from "../../../../components/ui/common/Button";
 import type { ProductCriteria } from "../../../../types/productWeight";
 import { Trash2 } from "lucide-react";
+import { laptops } from "../../../../data/laptops";
 
 export interface TabelProductWeightIndexProps {
   data: ProductCriteria[];
-  products?: { id: number; name: string }[]; // <-- Properti ini 
+  products?: any[]; // <-- Properti ini 
+  criterias?: any[]; // <-- Tambah properti ini agar dinamis
   isLoading?: boolean;
   onEdit: (item: ProductCriteria) => void;
   onDelete: (id: number, prodName: string, critName: string) => void;
@@ -19,12 +21,39 @@ export interface TabelProductWeightIndexProps {
 export interface GroupedLaptopWeight {
   product_id: number;
   product_name: string;
+  product?: any; // <-- Tambah properti data product
   items: {
-    [criteria_code: string]: ProductCriteria; // "C1", "C2", "C3", "C4", "C5"
+    [criteria_code: string]: ProductCriteria; // "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8"
   };
   allItems: ProductCriteria[];
   search_string: string;
 }
+
+// Helper to get raw specification from product or fallback laptop dataset
+const getRawSpecValue = (code: string, prod: any, productId: number): string => {
+  const localLaptop = laptops.find((l) => l.id === productId);
+
+  switch (code) {
+    case "C1": // Harga
+      return prod?.price || prod?.harga || localLaptop?.price || "-";
+    case "C2": // RAM
+      return prod?.ram || localLaptop?.ram || "-";
+    case "C3": // Storage
+      return prod?.storage || localLaptop?.storage || "-";
+    case "C4": // Battery
+      return prod?.battery || (localLaptop?.battery ? `${localLaptop.battery}` : "-");
+    case "C5": // Berat
+      return prod?.weight || (localLaptop?.weight ? `${localLaptop.weight}` : "-");
+    case "C6": // Processor
+      return prod?.processor || localLaptop?.cpu || "-";
+    case "C7": // Ukuran Layar
+      return prod?.screenSize || prod?.screen_size || localLaptop?.display || "-";
+    case "C8": // Tahun Rilis
+      return prod?.releaseYear || prod?.release_year || (localLaptop ? "2023" : "-");
+    default:
+      return "-";
+  }
+};
 
 const columnHelper = createColumnHelper<GroupedLaptopWeight>();
 
@@ -34,15 +63,19 @@ export function TabelProductWeightIndex({
   onEdit,
   onDelete,
   deletingId = null,
+  products = [], // Default ke array kosong
+  criterias = [], // Default ke array kosong
 }: TabelProductWeightIndexProps) {
   // 1. Mengelompokkan baris data relasi menjadi 1 Baris per Laptop
   const groupedData: GroupedLaptopWeight[] = useMemo(() => {
     const map = new Map<number, GroupedLaptopWeight>();
     data.forEach((item) => {
       if (!map.has(item.product_id)) {
+        const prod = products?.find((p: any) => Number(p.id) === Number(item.product_id));
         map.set(item.product_id, {
           product_id: item.product_id,
           product_name: item.product_name || `Laptop #${item.product_id}`,
+          product: prod,
           items: {},
           allItems: [],
           search_string: `${item.product_name || ""} id:${item.product_id}`,
@@ -56,7 +89,7 @@ export function TabelProductWeightIndex({
       group.allItems.push(item);
     });
     return Array.from(map.values());
-  }, [data]);
+  }, [data, products]);
 
   // Helper untuk merender sel kriteria yang interaktif & indah (Monochrome Style)
   const renderCriteriaCell = (
@@ -78,6 +111,8 @@ export function TabelProductWeightIndex({
       );
     }
 
+    const rawVal = getRawSpecValue(code, group.product, group.product_id);
+
     return (
       <div className="min-w-[145px] p-1">
         <div
@@ -86,7 +121,16 @@ export function TabelProductWeightIndex({
           title={`Klik untuk mengubah spesifikasi [${defaultName}]`}
         >
           {/* Bagian Atas: Deskripsi Sub Kriteria */}
-          <div className="flex items-start justify-between gap-1 mb-2">
+          <div className="flex flex-col gap-1 mb-2">
+            <span className="text-[10px] uppercase font-extrabold text-gray-400 dark:text-gray-500 tracking-wider">
+              Spek Asli:
+            </span>
+            <span className="text-[11px] font-extrabold text-gray-900 dark:text-white line-clamp-1 mb-1">
+              {rawVal}
+            </span>
+            <span className="text-[10px] uppercase font-extrabold text-gray-400 dark:text-gray-500 tracking-wider">
+              Bobot SPK:
+            </span>
             <span className={`text-xs font-bold leading-tight line-clamp-2 ${theme.text}`}>
               {crit.sub_criteria_description || "Spesifikasi"}
             </span>
@@ -103,8 +147,25 @@ export function TabelProductWeightIndex({
     );
   };
 
-  const columns = useMemo(
-    () => [
+  // Ekstrak daftar kriteria unik secara dinamis (mengutamakan parameter `criterias` dari API backend)
+  const activeCriterias = useMemo(() => {
+    if (criterias && criterias.length > 0) {
+      return [...criterias].sort((a, b) => a.code.localeCompare(b.code));
+    }
+    const map = new Map<string, { code: string; name: string }>();
+    data.forEach((item) => {
+      if (item.criteria_code) {
+        map.set(item.criteria_code, {
+          code: item.criteria_code,
+          name: item.criteria_name || "Kriteria",
+        });
+      }
+    });
+    return Array.from(map.values()).sort((a, b) => a.code.localeCompare(b.code));
+  }, [data, criterias]);
+
+  const columns = useMemo(() => {
+    const list: any[] = [
       columnHelper.accessor("product_name", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Laptop" />,
         meta: {
@@ -112,107 +173,63 @@ export function TabelProductWeightIndex({
           cellClassName: "sticky left-0 z-10 bg-white dark:bg-[#151216] border-r border-gray-200 dark:border-gray-800 shadow-[3px_0_10px_-2px_rgba(0,0,0,0.1)] group-hover:bg-gray-50/95 dark:group-hover:bg-gray-800/80",
         },
         cell: (info) => {
+          const group = info.row.original;
+          const prod = group.product;
+          
           return (
-            <div className="flex items-center gap-3 min-w-[210px] max-w-[280px] py-1">
-              <div className="min-w-0 flex-1">
-                <span className="font-extrabold text-gray-900 dark:text-white text-base block tracking-tight leading-snug truncate hover:text-gray-600 dark:hover:text-gray-300 transition-colors" title={info.getValue()}>
-                  {info.getValue()}
-                </span>
-              </div>
+            <div className="flex flex-col py-1.5 min-w-[210px] max-w-[280px] leading-snug">
+              <span className="font-extrabold text-gray-900 dark:text-white text-base block tracking-tight truncate hover:text-gray-600 dark:hover:text-gray-300 transition-colors" title={info.getValue()}>
+                {info.getValue()}
+              </span>
+              {prod && (
+                <div className="mt-1.5 flex flex-wrap gap-1 text-[10px] font-medium text-gray-500 dark:text-gray-400">
+                  <span className="bg-gray-100 dark:bg-gray-800/80 px-1.5 py-0.5 rounded-md truncate max-w-[120px]" title={prod.processor}>
+                    {prod.processor || "-"}
+                  </span>
+                  <span className="bg-gray-100 dark:bg-gray-800/80 px-1.5 py-0.5 rounded-md">
+                    {prod.ram || "-"}
+                  </span>
+                  <span className="bg-gray-100 dark:bg-gray-800/80 px-1.5 py-0.5 rounded-md">
+                    {prod.storage || "-"}
+                  </span>
+                </div>
+              )}
             </div>
           );
         },
       }),
-      columnHelper.display({
-        id: "c1_harga",
-        header: () => (
-          <div className="text-center">
-            <span className="text-[10px] font-mono font-extrabold text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded block w-fit mx-auto mb-0.5">C1</span>
-            <span className="font-bold text-gray-800 dark:text-gray-200 text-xs">Harga</span>
-          </div>
-        ),
-        cell: ({ row }) =>
-          renderCriteriaCell(row.original, "C1", "Harga", {
-            bg: "bg-gray-50/80 dark:bg-[#181519]",
-            hoverBg: "hover:bg-gray-100 dark:hover:bg-[#221f24]",
-            border: "border-gray-200/80 dark:border-gray-800",
-            text: "text-gray-900 dark:text-gray-100",
-            badge: "bg-gray-900 dark:bg-white",
-            badgeText: "text-white dark:text-gray-900",
-          }),
-      }),
-      columnHelper.display({
-        id: "c2_ram",
-        header: () => (
-          <div className="text-center">
-            <span className="text-[10px] font-mono font-extrabold text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded block w-fit mx-auto mb-0.5">C2</span>
-            <span className="font-bold text-gray-800 dark:text-gray-200 text-xs">RAM</span>
-          </div>
-        ),
-        cell: ({ row }) =>
-          renderCriteriaCell(row.original, "C2", "RAM", {
-            bg: "bg-gray-50/80 dark:bg-[#181519]",
-            hoverBg: "hover:bg-gray-100 dark:hover:bg-[#221f24]",
-            border: "border-gray-200/80 dark:border-gray-800",
-            text: "text-gray-900 dark:text-gray-100",
-            badge: "bg-gray-900 dark:bg-white",
-            badgeText: "text-white dark:text-gray-900",
-          }),
-      }),
-      columnHelper.display({
-        id: "c3_storage",
-        header: () => (
-          <div className="text-center">
-            <span className="text-[10px] font-mono font-extrabold text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded block w-fit mx-auto mb-0.5">C3</span>
-            <span className="font-bold text-gray-800 dark:text-gray-200 text-xs">Storage</span>
-          </div>
-        ),
-        cell: ({ row }) =>
-          renderCriteriaCell(row.original, "C3", "Storage", {
-            bg: "bg-gray-50/80 dark:bg-[#181519]",
-            hoverBg: "hover:bg-gray-100 dark:hover:bg-[#221f24]",
-            border: "border-gray-200/80 dark:border-gray-800",
-            text: "text-gray-900 dark:text-gray-100",
-            badge: "bg-gray-900 dark:bg-white",
-            badgeText: "text-white dark:text-gray-900",
-          }),
-      }),
-      columnHelper.display({
-        id: "c4_battery",
-        header: () => (
-          <div className="text-center">
-            <span className="text-[10px] font-mono font-extrabold text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded block w-fit mx-auto mb-0.5">C4</span>
-            <span className="font-bold text-gray-800 dark:text-gray-200 text-xs">Battery</span>
-          </div>
-        ),
-        cell: ({ row }) =>
-          renderCriteriaCell(row.original, "C4", "Battery", {
-            bg: "bg-gray-50/80 dark:bg-[#181519]",
-            hoverBg: "hover:bg-gray-100 dark:hover:bg-[#221f24]",
-            border: "border-gray-200/80 dark:border-gray-800",
-            text: "text-gray-900 dark:text-gray-100",
-            badge: "bg-gray-900 dark:bg-white",
-            badgeText: "text-white dark:text-gray-900",
-          }),
-      }),
-      columnHelper.display({
-        id: "c5_berat",
-        header: () => (
-          <div className="text-center">
-            <span className="text-[10px] font-mono font-extrabold text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded block w-fit mx-auto mb-0.5">C5</span>
-            <span className="font-bold text-gray-800 dark:text-gray-200 text-xs">Berat</span>
-          </div>
-        ),
-        cell: ({ row }) =>
-          renderCriteriaCell(row.original, "C5", "Berat", {
-            bg: "bg-gray-50/80 dark:bg-[#181519]",
-            hoverBg: "hover:bg-gray-100 dark:hover:bg-[#221f24]",
-            border: "border-gray-200/80 dark:border-gray-800",
-            text: "text-gray-900 dark:text-gray-100",
-            badge: "bg-gray-900 dark:bg-white",
-            badgeText: "text-white dark:text-gray-900",
-          }),
-      }),
+    ];
+
+    // Generate kolom kriteria dinamis
+    activeCriterias.forEach((crit) => {
+      list.push(
+        columnHelper.display({
+          id: `crit_${crit.code.toLowerCase()}`,
+          header: () => (
+            <div className="text-center">
+              <span className="text-[10px] font-mono font-extrabold text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded block w-fit mx-auto mb-0.5">
+                {crit.code}
+              </span>
+              <span className="font-bold text-gray-800 dark:text-gray-200 text-xs">
+                {crit.name}
+              </span>
+            </div>
+          ),
+          cell: ({ row }) =>
+            renderCriteriaCell(row.original, crit.code, crit.name, {
+              bg: "bg-gray-50/80 dark:bg-[#181519]",
+              hoverBg: "hover:bg-gray-100 dark:hover:bg-[#221f24]",
+              border: "border-gray-200/80 dark:border-gray-800",
+              text: "text-gray-900 dark:text-gray-100",
+              badge: "bg-gray-900 dark:bg-white",
+              badgeText: "text-white dark:text-gray-900",
+            }),
+        })
+      );
+    });
+
+    // Generate kolom aksi di akhir
+    list.push(
       columnHelper.display({
         id: "actions",
         header: () => <span className="font-semibold text-center block">Aksi</span>,
@@ -238,10 +255,11 @@ export function TabelProductWeightIndex({
             </div>
           );
         },
-      }),
-    ],
-    [deletingId, onDelete, onEdit]
-  );
+      })
+    );
+
+    return list;
+  }, [activeCriterias, deletingId, onDelete, onEdit]);
 
   return (
     <div className="space-y-4">

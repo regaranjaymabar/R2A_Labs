@@ -38,7 +38,7 @@ export function useAddProductStore() {
   const isAvailable = watch("is_available");
 
   // Mutasi dengan Generic Hook useCreate + Brand Service (Sangat Ringkas & Reusable)
-  const createMutation = useCreate<ProductStoreFormData>({
+  const createMutation = useCreate<any>({
     mutationFn: (payload) => productStoreService.create(payload),
     queryKey: ["productstores"],
     navigateTo: "/admin/productstores",

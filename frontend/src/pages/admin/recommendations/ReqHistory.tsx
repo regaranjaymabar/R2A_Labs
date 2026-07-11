@@ -172,19 +172,19 @@ export default function ReqHistory() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <div className="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/80 text-center">
                   <span className="text-[11px] font-bold text-black block">RAM</span>
-                  <span className="text-lg font-extrabold text-purple-900 dark:text-purple-200 font-mono">{selectedDetail.weights.ram}%</span>
+                  <span className="text-lg font-extrabold text-purple-900 dark:text-purple-200 font-mono">{selectedDetail.weights?.ram ?? 0}%</span>
                 </div>
                 <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 text-center">
                   <span className="text-[11px] font-bold text-amber-600 block">HARGA</span>
-                  <span className="text-lg font-extrabold text-amber-900 dark:text-amber-200 font-mono">{selectedDetail.weights.price}%</span>
+                  <span className="text-lg font-extrabold text-amber-900 dark:text-amber-200 font-mono">{selectedDetail.weights?.price ?? 0}%</span>
                 </div>
                 <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/80 text-center">
                   <span className="text-[11px] font-bold text-blue-600 block">CPU</span>
-                  <span className="text-lg font-extrabold text-blue-900 dark:text-blue-200 font-mono">{selectedDetail.weights.processor || 20}%</span>
+                  <span className="text-lg font-extrabold text-blue-900 dark:text-blue-200 font-mono">{selectedDetail.weights?.processor || 20}%</span>
                 </div>
                 <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-center">
                   <span className="text-[11px] font-bold text-emerald-600 block">STORAGE</span>
-                  <span className="text-lg font-extrabold text-emerald-900 dark:text-emerald-200 font-mono">{selectedDetail.weights.storage || 10}%</span>
+                  <span className="text-lg font-extrabold text-emerald-900 dark:text-emerald-200 font-mono">{selectedDetail.weights?.storage || 10}%</span>
                 </div>
               </div>
             </div>
@@ -196,11 +196,11 @@ export default function ReqHistory() {
                   <span>Rekomendasi Peringkat #1 Sistem SAW:</span>
                 </span>
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-purple-600 text-white">
-                  Skor: {selectedDetail.top_recommendation.saw_score}
+                  Skor: {selectedDetail.top_recommendation?.saw_score ?? "-"}
                 </span>
               </div>
               <div className="text-lg font-extrabold text-gray-900 dark:text-white">
-                {selectedDetail.top_recommendation.product_name}
+                {selectedDetail.top_recommendation?.product_name ?? "-"}
               </div>
 
               <div className="pt-3 border-t border-purple-200 dark:border-purple-800/60 flex items-center justify-between text-xs">

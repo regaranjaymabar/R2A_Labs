@@ -83,6 +83,7 @@ export function TabelReqHistory({
                 header: ({ column }) => <DataTableColumnHeader column={column} title="Preferensi Bobot" />,
                 cell: (info) => {
                     const w = info.getValue();
+                    if (!w) return null;
                     return (
                         <div className="flex flex-wrap gap-1.5 max-w-xs">
                             <span className="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
@@ -104,6 +105,7 @@ export function TabelReqHistory({
                 header: ({ column }) => <DataTableColumnHeader column={column} title="Rekomendasi" />,
                 cell: (info) => {
                     const rec = info.getValue();
+                    if (!rec) return null;
                     const item = info.row.original;
                     const isChosen = item.user_choice === rec.product_name;
                     return (
@@ -156,7 +158,7 @@ export function TabelReqHistory({
                                 variant="danger"
                                 icon={<Trash2 className="w-3 h-3" />}
                                 isLoading={deletingId === item.id}
-                                onClick={() => onDelete(item.id, item.user_name)}
+                                onClick={() => onDelete(item.id, item.user_name || item.customer?.name || "Customer")}
                                 className="text-xs! py-1.5! px-3! rounded-xl font-bold shadow-xs cursor-pointer"
                             />
                         </div>

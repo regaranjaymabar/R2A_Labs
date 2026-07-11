@@ -18,7 +18,61 @@ export type { SubCriteria };
 
 // 2. Data Dummy Awal (Persis sesuai data di screenshot phpMyAdmin kamu)
 export const initialSubCriterias: SubCriteria[] = [
-  
+  // C1: Harga (cost)
+  { id: 1, description: "< Rp 6.000.000", criteria_id: 1, criteriaId: 1, value_numeric: 5, valueNumeric: 5, criteria_code: "C1", criteria_name: "Harga", criteria_type: "cost" },
+  { id: 2, description: "Rp 6.000.000 - Rp 9.999.999", criteria_id: 1, criteriaId: 1, value_numeric: 4, valueNumeric: 4, criteria_code: "C1", criteria_name: "Harga", criteria_type: "cost" },
+  { id: 3, description: "Rp 10.000.000 - Rp 14.999.999", criteria_id: 1, criteriaId: 1, value_numeric: 3, valueNumeric: 3, criteria_code: "C1", criteria_name: "Harga", criteria_type: "cost" },
+  { id: 4, description: "Rp 15.000.000 - Rp 19.999.999", criteria_id: 1, criteriaId: 1, value_numeric: 2, valueNumeric: 2, criteria_code: "C1", criteria_name: "Harga", criteria_type: "cost" },
+  { id: 5, description: ">= Rp 20.000.000", criteria_id: 1, criteriaId: 1, value_numeric: 1, valueNumeric: 1, criteria_code: "C1", criteria_name: "Harga", criteria_type: "cost" },
+
+  // C2: RAM (benefit)
+  { id: 6, description: "4 GB", criteria_id: 2, criteriaId: 2, value_numeric: 1, valueNumeric: 1, criteria_code: "C2", criteria_name: "RAM", criteria_type: "benefit" },
+  { id: 7, description: "8 GB", criteria_id: 2, criteriaId: 2, value_numeric: 2, valueNumeric: 2, criteria_code: "C2", criteria_name: "RAM", criteria_type: "benefit" },
+  { id: 8, description: "16 GB", criteria_id: 2, criteriaId: 2, value_numeric: 3, valueNumeric: 3, criteria_code: "C2", criteria_name: "RAM", criteria_type: "benefit" },
+  { id: 9, description: "32 GB", criteria_id: 2, criteriaId: 2, value_numeric: 4, valueNumeric: 4, criteria_code: "C2", criteria_name: "RAM", criteria_type: "benefit" },
+  { id: 10, description: "64 GB", criteria_id: 2, criteriaId: 2, value_numeric: 5, valueNumeric: 5, criteria_code: "C2", criteria_name: "RAM", criteria_type: "benefit" },
+
+  // C3: Storage (benefit)
+  { id: 11, description: "256 GB SSD", criteria_id: 3, criteriaId: 3, value_numeric: 1, valueNumeric: 1, criteria_code: "C3", criteria_name: "Storage", criteria_type: "benefit" },
+  { id: 12, description: "512 GB SSD", criteria_id: 3, criteriaId: 3, value_numeric: 2, valueNumeric: 2, criteria_code: "C3", criteria_name: "Storage", criteria_type: "benefit" },
+  { id: 13, description: "1 TB SSD", criteria_id: 3, criteriaId: 3, value_numeric: 3, valueNumeric: 3, criteria_code: "C3", criteria_name: "Storage", criteria_type: "benefit" },
+  { id: 14, description: "2 TB SSD", criteria_id: 3, criteriaId: 3, value_numeric: 4, valueNumeric: 4, criteria_code: "C3", criteria_name: "Storage", criteria_type: "benefit" },
+
+  // C4: Battery (benefit)
+  { id: 15, description: "< 30 Wh", criteria_id: 4, criteriaId: 4, value_numeric: 1, valueNumeric: 1, criteria_code: "C4", criteria_name: "Battery", criteria_type: "benefit" },
+  { id: 16, description: "30 - 44 Wh", criteria_id: 4, criteriaId: 4, value_numeric: 1.5, valueNumeric: 1.5, criteria_code: "C4", criteria_name: "Battery", criteria_type: "benefit" },
+  { id: 17, description: "45 - 59 Wh", criteria_id: 4, criteriaId: 4, value_numeric: 2, valueNumeric: 2, criteria_code: "C4", criteria_name: "Battery", criteria_type: "benefit" },
+  { id: 18, description: "60 - 75 Wh", criteria_id: 4, criteriaId: 4, value_numeric: 3, valueNumeric: 3, criteria_code: "C4", criteria_name: "Battery", criteria_type: "benefit" },
+  { id: 19, description: "76 - 90 Wh", criteria_id: 4, criteriaId: 4, value_numeric: 4, valueNumeric: 4, criteria_code: "C4", criteria_name: "Battery", criteria_type: "benefit" },
+  { id: 20, description: "> 90 Wh", criteria_id: 4, criteriaId: 4, value_numeric: 5, valueNumeric: 5, criteria_code: "C4", criteria_name: "Battery", criteria_type: "benefit" },
+
+  // C5: Berat (cost)
+  { id: 21, description: "< 1.2 kg", criteria_id: 5, criteriaId: 5, value_numeric: 5, valueNumeric: 5, criteria_code: "C5", criteria_name: "Berat", criteria_type: "cost" },
+  { id: 22, description: "1.2 - 1.49 kg", criteria_id: 5, criteriaId: 5, value_numeric: 4, valueNumeric: 4, criteria_code: "C5", criteria_name: "Berat", criteria_type: "cost" },
+  { id: 23, description: "1.5 - 1.99 kg", criteria_id: 5, criteriaId: 5, value_numeric: 3, valueNumeric: 3, criteria_code: "C5", criteria_name: "Berat", criteria_type: "cost" },
+  { id: 24, description: "2.0 - 2.49 kg", criteria_id: 5, criteriaId: 5, value_numeric: 2, valueNumeric: 2, criteria_code: "C5", criteria_name: "Berat", criteria_type: "cost" },
+  { id: 25, description: ">= 2.5 kg", criteria_id: 5, criteriaId: 5, value_numeric: 1, valueNumeric: 1, criteria_code: "C5", criteria_name: "Berat", criteria_type: "cost" },
+
+  // C6: Processor (benefit)
+  { id: 26, description: "Celeron / Pentium / Athlon", criteria_id: 6, criteriaId: 6, value_numeric: 1, valueNumeric: 1, criteria_code: "C6", criteria_name: "Processor", criteria_type: "benefit" },
+  { id: 27, description: "Core i3 / Ryzen 3", criteria_id: 6, criteriaId: 6, value_numeric: 2, valueNumeric: 2, criteria_code: "C6", criteria_name: "Processor", criteria_type: "benefit" },
+  { id: 28, description: "Core i5 / Ryzen 5", criteria_id: 6, criteriaId: 6, value_numeric: 3, valueNumeric: 3, criteria_code: "C6", criteria_name: "Processor", criteria_type: "benefit" },
+  { id: 29, description: "Core i7 / Ryzen 7", criteria_id: 6, criteriaId: 6, value_numeric: 4, valueNumeric: 4, criteria_code: "C6", criteria_name: "Processor", criteria_type: "benefit" },
+  { id: 30, description: "Core i9 / Ryzen 9", criteria_id: 6, criteriaId: 6, value_numeric: 5, valueNumeric: 5, criteria_code: "C6", criteria_name: "Processor", criteria_type: "benefit" },
+
+  // C7: Ukuran Layar (benefit)
+  { id: 31, description: "< 13 Inch", criteria_id: 7, criteriaId: 7, value_numeric: 1, valueNumeric: 1, criteria_code: "C7", criteria_name: "Ukuran Layar", criteria_type: "benefit" },
+  { id: 32, description: "13 - 13.99 Inch", criteria_id: 7, criteriaId: 7, value_numeric: 2, valueNumeric: 2, criteria_code: "C7", criteria_name: "Ukuran Layar", criteria_type: "benefit" },
+  { id: 33, description: "14 - 14.99 Inch", criteria_id: 7, criteriaId: 7, value_numeric: 3, valueNumeric: 3, criteria_code: "C7", criteria_name: "Ukuran Layar", criteria_type: "benefit" },
+  { id: 34, description: "15 - 15.99 Inch", criteria_id: 7, criteriaId: 7, value_numeric: 4, valueNumeric: 4, criteria_code: "C7", criteria_name: "Ukuran Layar", criteria_type: "benefit" },
+  { id: 35, description: ">= 16 Inch", criteria_id: 7, criteriaId: 7, value_numeric: 5, valueNumeric: 5, criteria_code: "C7", criteria_name: "Ukuran Layar", criteria_type: "benefit" },
+
+  // C8: Tahun Rilis (benefit)
+  { id: 36, description: "< 2021", criteria_id: 8, criteriaId: 8, value_numeric: 1, valueNumeric: 1, criteria_code: "C8", criteria_name: "Tahun Rilis", criteria_type: "benefit" },
+  { id: 37, description: "2021", criteria_id: 8, criteriaId: 8, value_numeric: 2, valueNumeric: 2, criteria_code: "C8", criteria_name: "Tahun Rilis", criteria_type: "benefit" },
+  { id: 38, description: "2022", criteria_id: 8, criteriaId: 8, value_numeric: 3, valueNumeric: 3, criteria_code: "C8", criteria_name: "Tahun Rilis", criteria_type: "benefit" },
+  { id: 39, description: "2023", criteria_id: 8, criteriaId: 8, value_numeric: 4, valueNumeric: 4, criteria_code: "C8", criteria_name: "Tahun Rilis", criteria_type: "benefit" },
+  { id: 40, description: ">= 2024", criteria_id: 8, criteriaId: 8, value_numeric: 5, valueNumeric: 5, criteria_code: "C8", criteria_name: "Tahun Rilis", criteria_type: "benefit" },
 ];
 
 

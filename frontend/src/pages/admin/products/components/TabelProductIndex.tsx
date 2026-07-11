@@ -107,7 +107,9 @@ export function TabelProductIndex({
                                     )}
                                     {product.weight && (
                                         <span className="bg-gray-200 text-black px-2 py-0.5 rounded-md font-semibold">
-                                            {product.weight} kg
+                                            {String(product.weight).toLowerCase().endsWith("kg")
+                                                ? product.weight
+                                                : `${product.weight} kg`}
                                         </span>
                                     )}
                                 </div>

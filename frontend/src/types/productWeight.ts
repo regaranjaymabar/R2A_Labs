@@ -16,3 +16,4 @@ export type ProductWeightFormData = {
   subCriteriaMap: Record<number, number>;
   [key: string]: any;
 };
+export type ProductWeight = ProductCriteria;
