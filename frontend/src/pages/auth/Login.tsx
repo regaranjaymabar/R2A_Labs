@@ -12,72 +12,66 @@ import { InputPassword } from "../../components/ui/common/InputPassword";
 import Button from "../../components/ui/common/Button";
 
 type FormData = {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
 
 const schema = z.object({
-    email: z.string().min(1, "email harus diisi"),
-    password: z.string().min(8, "Password harus diisi"),
+  email: z.string().min(1, "email harus diisi"),
+  password: z.string().min(8, "Password harus diisi"),
 })
 
 export default function Login() {
-    const navigate = useNavigate();
-    const queryClient = useQueryClient();
-    const login = useAuthStore((state) => state.login);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const login = useAuthStore((state) => state.login);
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors }
-    } = useForm<FormData>({
-        resolver: zodResolver(schema)
-    });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<FormData>({
+    resolver: zodResolver(schema)
+  });
 
-    const loginMutation = useMutation({
-        mutationFn: async (credentials: LoginInput) => {
-            const response = await api.post<CustomerAuthWrapperResponse>("/api/customer/auth/login", credentials);
-            return response.data.data;
-        },
-        onSuccess: (data) => {
-            const customerUser: User = {
-                ...data.customer,
-                role: data.customer.role || "customer",
-            };
+  const loginMutation = useMutation({
+    mutationFn: async (credentials: LoginInput) => {
+      const response = await api.post<CustomerAuthWrapperResponse>("/api/customer/auth/login", credentials);
+      return response.data.data;
+    },
+    onSuccess: (data) => {
+      const customerUser: User = {
+        ...data.customer,
+        role: data.customer.role || "customer",
+      };
 
-            login({
-                user: customerUser,
-                token: data.token
-            });
+      login({
+        user: customerUser,
+        token: data.token
+      });
 
-            queryClient.setQueryData(["me"], customerUser);
+      queryClient.setQueryData(["me"], customerUser);
 
-            navigate("/");
-        },
-        onError: (error: AxiosError<any>) => {
-            const message = error.response?.data?.message || error.message || "Email atau password salah!";
-            alert(`Gagal Login : ${message}`);
-        }
-    })
+      navigate("/");
+    },
+    onError: (error: AxiosError<any>) => {
+      const message = error.response?.data?.message || error.message || "Email atau password salah!";
+      alert(`Gagal Login : ${message}`);
+    }
+  })
 
-    const onSubmit = (data: FormData) => {
-        loginMutation.mutate(data);
-    };
+  const onSubmit = (data: FormData) => {
+    loginMutation.mutate(data);
+  };
 
-    return (
-        <div>
-            {/* Header Form */}
-            <div className="mb-4 text-center sm:text-left">
-                <h2 className="text-center flex justify-center sm:text-left text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-                    Masuk Akun Customer
-                </h2>
-            </div>
+  return (
+    <div>
       <div className="flex flex-col items-center text-center mb-10">
-  
+
         {/* Logo dengan Image Path / Link */}
-        <img 
-          src="https://cdn-icons-png.flaticon.com/512/0/747.png" 
-          alt="Logo Rekomlepsop" 
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/0/747.png"
+          alt="Logo Rekomlepsop"
           className="w-14 h-14 rounded-2xl"
         />
 

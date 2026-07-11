@@ -124,24 +124,6 @@ export function TabelProductWeightIndex({
         },
       }),
       columnHelper.display({
-        id: "c1_harga",
-        header: () => (
-          <div className="text-center">
-            <span className="text-[10px] font-mono font-extrabold text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded block w-fit mx-auto mb-0.5">C1</span>
-            <span className="font-bold text-gray-800 dark:text-gray-200 text-xs">Harga</span>
-          </div>
-        ),
-        cell: ({ row }) =>
-          renderCriteriaCell(row.original, "C1", "Harga", {
-            bg: "bg-gray-50/80 dark:bg-[#181519]",
-            hoverBg: "hover:bg-gray-100 dark:hover:bg-[#221f24]",
-            border: "border-gray-200/80 dark:border-gray-800",
-            text: "text-gray-900 dark:text-gray-100",
-            badge: "bg-gray-900 dark:bg-white",
-            badgeText: "text-white dark:text-gray-900",
-          }),
-      }),
-      columnHelper.display({
         id: "c2_ram",
         header: () => (
           <div className="text-center">

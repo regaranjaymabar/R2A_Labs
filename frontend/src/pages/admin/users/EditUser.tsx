@@ -4,12 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "../../../components/ui/common/Button";
 import { InputText } from "../../../components/ui/common/InputText";
 import { InputSelect } from "../../../components/ui/common/InputSelect";
+import { InputSearchSelect } from "../../../components/ui/common/InputSearchSelect";
 import { storeService } from "../../../services/storeService";
 import { useEditUser } from "./hooks/useEditUser";
 
 export default function EditUser() {
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     errors,
@@ -102,13 +104,13 @@ export default function EditUser() {
               </div>
 
               <div className="md:col-span-1">
-                <InputSelect
+                <InputSearchSelect
                   label="Penempatan Cabang Toko *"
-                  nama="storeId"
-                  register={register}
-                  error={errors.storeId?.message}
+                  name="storeId"
+                  control={control}
                   options={storeOptions}
-                  placeholder="-- Pilih Cabang Toko --"
+                  error={errors.storeId?.message}
+                  placeholder="Cari atau pilih cabang toko..."
                 />
               </div>
             </div>

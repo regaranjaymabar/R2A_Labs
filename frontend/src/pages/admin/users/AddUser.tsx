@@ -3,13 +3,15 @@ import { ArrowLeft } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "../../../components/ui/common/Button";
 import { InputText } from "../../../components/ui/common/InputText";
-import { InputSelect } from "../../../components/ui/common/InputSelect";
+import { InputSearchSelect } from "../../../components/ui/common/InputSearchSelect";
 import { storeService } from "../../../services/storeService";
 import { useAddUser } from "./hooks/useAddUser";
+import { InputPassword } from "../../../components/ui/common/InputPassword";
 
 export default function AddUser() {
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     errors,
@@ -81,23 +83,22 @@ export default function AddUser() {
               </div>
 
               <div className="md:col-span-1">
-                <InputText
+                <InputPassword
                   label="Password *"
                   nama="password"
-                  type="password"
                   register={register}
                   error={errors.password?.message}
                 />
               </div>
 
               <div className="md:col-span-1">
-                <InputSelect
+                <InputSearchSelect
                   label="Penempatan Cabang Toko *"
-                  nama="storeId"
-                  register={register}
-                  error={errors.storeId?.message}
+                  name="storeId"
+                  control={control}
                   options={storeOptions}
-                  placeholder="-- Pilih Cabang Toko --"
+                  error={errors.storeId?.message}
+                  placeholder="Cari atau pilih cabang toko..."
                 />
               </div>
             </div>

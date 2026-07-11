@@ -11,6 +11,8 @@ export type ProductCriteria = {
   criteria_name?: string;
 };
 
+export type ProductWeight = ProductCriteria;
+
 export type ProductWeightFormData = {
   productId: number;
   subCriteriaMap: Record<number, number>;

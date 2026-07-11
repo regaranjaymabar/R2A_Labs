@@ -2,7 +2,7 @@ import { api } from "../lib/axios";
 import type { ProductStore, ProductStoreFormData } from "../types/productStore";
 
 export const productStoreService = {
-    
+
     // 1. Ambil inventaris toko milik admin yang login (GET /api/admin/inventory/my-store)
     getAll: async (): Promise<ProductStore[]> => {
         const response = await api.get("/api/admin/inventory/my-store");

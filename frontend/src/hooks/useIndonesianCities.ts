@@ -8,42 +8,6 @@ export interface CityOption {
 
 // Fallback daftar kota lengkap di Indonesia jika offline / jaringan gangguan
 const FALLBACK_CITIES: CityOption[] = [
-  "Jakarta Pusat",
-  "Jakarta Selatan",
-  "Jakarta Barat",
-  "Jakarta Utara",
-  "Jakarta Timur",
-  "Tangerang",
-  "Tangerang Selatan",
-  "Bekasi",
-  "Depok",
-  "Bogor",
-  "Bandung",
-  "Cimahi",
-  "Surabaya",
-  "Malang",
-  "Sidoarjo",
-  "Yogyakarta",
-  "Sleman",
-  "Bantul",
-  "Semarang",
-  "Surakarta (Solo)",
-  "Magelang",
-  "Denpasar",
-  "Badung (Bali)",
-  "Medan",
-  "Deli Serdang",
-  "Palembang",
-  "Makassar",
-  "Manado",
-  "Balikpapan",
-  "Samarinda",
-  "Banjarmasin",
-  "Pontianak",
-  "Pekanbaru",
-  "Batam",
-  "Padang",
-  "Bandar Lampung",
 ].map((city) => ({ value: city, label: city }));
 
 // Fungsi helper untuk mengubah nama kota dari UPPERCASE menjadi Title Case rapi
@@ -60,15 +24,14 @@ export function useIndonesianCities() {
     queryKey: ["indonesian-cities"],
     queryFn: async () => {
       try {
-        // 1. Ambil daftar provinsi dari API Wilayah Indonesia Emsifa (Gratis via CDN Cloudflare)
+        // 1. Ambil daftar provinsi dari API Wilayah Indonesia Emsifa
         const provincesRes = await axios.get(
           "https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json",
           { timeout: 5000 }
         );
         const provinces: { id: string; name: string }[] = provincesRes.data;
 
-        // 2. Pilih provinsi-provinsi utama / seluruhnya untuk diambil daftar kota/kabupatennya
-        // Untuk kecepatan optimal di UI, kita ambil secara paralel
+        // 2. Ambil daftar kota dari provinsi yang dipilih
         const regenciesPromises = provinces.map((prov) =>
           axios
             .get(
@@ -80,14 +43,14 @@ export function useIndonesianCities() {
         );
 
         const allRegenciesArrays = await Promise.all(regenciesPromises);
-        const flatRegencies: { id: string; province_id: string; name: string }[] =
+              const flatRegencies: { id: string; province_id: string; name: string }[] =
           allRegenciesArrays.flat();
 
         if (flatRegencies.length === 0) {
           return FALLBACK_CITIES;
         }
 
-        // 3. Ubah format menjadi { value, label } dengan Title Case yang rapi dan diurutkan abjad
+        // 3. Ubah format menjadi { value, label }
         const formattedCities: CityOption[] = flatRegencies
           .map((item) => {
             const cleanName = toTitleCase(item.name);
@@ -107,7 +70,7 @@ export function useIndonesianCities() {
         return FALLBACK_CITIES;
       }
     },
-    staleTime: 24 * 60 * 60 * 1000, // Cache selama 24 jam karena nama kota jarang berubah
+    staleTime: 24 * 60 * 60 * 1000,
     retry: 1,
   });
 }
