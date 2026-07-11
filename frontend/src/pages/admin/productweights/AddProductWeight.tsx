@@ -191,18 +191,18 @@ export default function AddProductWeight() {
                 </option>
                 {availableProducts.map((p: any) => (
                   <option key={p.id} value={p.id}>
-                    {p.id} - {p.brand_name ? `[${p.brand_name}] ` : ""}{p.model_name}
+                    {p.id} - {(p.brand?.name || p.brand_name) ? `[${p.brand?.name || p.brand_name}] ` : ""}{p.modelName || p.model_name}
                   </option>
                 ))}
               </select>
-              <div className="mt-2 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+              <div className="mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-gray-500 dark:text-gray-400">
                 <span>
                   * {showAllProducts ? "Menampilkan SELURUH laptop di katalog." : "Hanya menampilkan laptop yang belum dinilai dalam matriks SPK."}
                 </span>
                 <button
                   type="button"
                   onClick={() => setShowAllProducts(!showAllProducts)}
-                  className="font-bold text-purple-600 dark:text-purple-400 hover:underline cursor-pointer flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 transition-all active:scale-95"
+                  className="font-bold text-purple-600 dark:text-purple-400 hover:underline cursor-pointer flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 transition-all active:scale-95 shrink-0"
                 >
                   {showAllProducts ? (
                     <>
@@ -212,7 +212,7 @@ export default function AddProductWeight() {
                   ) : (
                     <>
                       <Eye className="w-3.5 h-3.5" />
-                      <span>Tampilkan Semua Laptop ({products.length})</span>
+                      <span>Tampilkan Seluruh Laptop</span>
                     </>
                   )}
                 </button>
@@ -220,61 +220,62 @@ export default function AddProductWeight() {
             </div>
           </div>
 
-          {/* SECTION 2: BARISAN KRITERIA PENILAIAN (DYNAMIC DROPDOWNS) */}
-          <div className="space-y-5 pt-2">
-            <div className="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-800">
-              <div className="flex items-center gap-2 text-sm font-bold text-black dark:text-purple-400">
-                <span>Barisan Kriteria Penilaian Spesifikasi ({criterias.length} Kriteria)</span>
+        {/* 2. Daftar Spesifikasi per Kriteria */}
+        {selectedProductId !== 0 && (
+          <div className="bg-white dark:bg-[#151216] p-6 rounded-3xl border border-gray-200/80 dark:border-gray-800 shadow-xs space-y-6">
+            <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
+              <div>
+                <h2 className="text-sm font-extrabold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+                  2. Atur Bobot Spesifikasi per Kriteria
+                </h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Pilih spesifikasi yang sesuai untuk masing-masing kriteria di bawah ini
+                </p>
               </div>
             </div>
 
-            {isCriteriasLoading ? (
-              <div className="p-8 text-center text-sm font-bold text-gray-500">
-                Memuat barisan kriteria SPK...
+            {isCriteriasLoading || isSubCriteriasLoading ? (
+              <div className="py-12 text-center text-sm text-gray-500 font-medium">
+                Memuat data kriteria dan spesifikasi...
               </div>
             ) : criterias.length === 0 ? (
-              <div className="p-8 text-center text-sm text-gray-500 bg-gray-50 dark:bg-gray-800/40 rounded-2xl">
-                Belum ada data kriteria aktif di sistem. Silakan tambahkan kriteria terlebih dahulu.
+              <div className="py-12 text-center text-sm text-gray-500 font-medium">
+                Belum ada master data kriteria tersimpan.
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {criterias.map((c: any, idx: number) => {
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {criterias.map((c: any) => {
                   const subsForCriteria = allSubCriterias.filter(
-                    (sub: any) => Number(sub.criteria_id) === Number(c.id)
+                    (s: any) =>
+                      Number(s.criteria_id ?? s.criteriaId) === Number(c.id)
                   );
-                  const currentSelectedSubId = selectedSubs[c.id] || 0;
+                  const currentSelectedSub = selectedSubs[c.id] || 0;
                   const currentNumericVal = numericValues[c.id] || 0;
-                  const isBenefit = c.type?.toLowerCase() === "benefit";
 
                   return (
                     <div
                       key={c.id}
-                      className="p-5 rounded-2xl bg-gray-50 dark:bg-[#181519] border border-gray-200 dark:border-gray-800/80 space-y-3.5 transition-all hover:border-black dark:hover:border-black"
+                      className="p-5 rounded-2xl border border-gray-200/80 dark:border-gray-800 bg-gray-50/50 dark:bg-[#181519]/50 hover:border-purple-300 dark:hover:border-purple-800 transition-all space-y-3"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                          <span className="w-6 h-6 rounded-full text-black dark:text-white flex items-center justify-center text-xs font-mono shrink-0">
-                            {idx + 1}
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded-lg text-xs font-mono font-extrabold bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                            {c.code}
                           </span>
-                          <span>{c.name}</span>
-                          <code className="text-[11px] font-mono text-gray-400">[{c.code}]</code>
+                          <span className="font-bold text-gray-900 dark:text-white text-sm">
+                            {c.name}
+                          </span>
+                        </div>
+                        <span className="text-[11px] font-semibold text-gray-500 uppercase">
+                          {c.type}
                         </span>
-
-                        {isBenefit ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 uppercase font-mono">
-                            benefit
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-400 border border-red-200 dark:border-red-800/60 uppercase font-mono">
-                            cost
-                          </span>
-                        )}
                       </div>
 
-                      {/* Dropdown Sub-Kriteria */}
-                      <div className="flex flex-col gap-1">
+                      {/* Dropdown Pilihan Subkriteria */}
+                      <div>
                         <select
-                          value={currentSelectedSubId}
+                          value={currentSelectedSub}
                           onChange={(e) =>
                             handleSubCriteriaChange(c.id, Number(e.target.value))
                           }
@@ -284,19 +285,18 @@ export default function AddProductWeight() {
                           <option value={0}>-- Pilih Spesifikasi {c.name} --</option>
                           {subsForCriteria.map((sub: any) => (
                             <option key={sub.id} value={sub.id}>
-                              {sub.name || sub.description} ({sub.value_numeric ?? sub.value ?? 0})
+                              {sub.name || sub.description} ({sub.valueNumeric ?? sub.value_numeric ?? sub.value ?? 0})
                             </option>
                           ))}
                         </select>
                       </div>
 
-                      {/* Preview Nilai Bobot Numerik */}
                       <div className="flex items-center justify-between pt-2 border-t border-gray-200/60 dark:border-gray-800 text-xs">
                         <span className="font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
                           Skala Konversi SPK:
                         </span>
                         <span
-                          className={`font-mono font-bold px-2.5 py-1 rounded-lg transition-all ${currentSelectedSubId > 0
+                          className={`font-mono font-bold px-2.5 py-1 rounded-lg transition-all ${currentSelectedSub > 0
                               ? "bg-purple-600 text-white shadow-xs"
                               : "bg-gray-200 dark:bg-gray-800 text-gray-500"
                             }`}
@@ -310,8 +310,8 @@ export default function AddProductWeight() {
               </div>
             )}
           </div>
+        )}
 
-          {/* TOMBOL AKSI FORM */}
           <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-800">
             <Button
               type="button"

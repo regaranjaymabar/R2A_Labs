@@ -3,6 +3,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { DataTable, DataTableColumnHeader } from "../../../../components/ui/common/DataTable";
 import { Button } from "../../../../components/ui/common/Button";
 import type { SubCriteria } from "../SubCriteriaIndex";
+import { Edit, Trash2 } from "lucide-react";
 
 export interface TabelSubCriteriaIndexProps {
   data: SubCriteria[];
@@ -63,17 +64,22 @@ export function TabelSubCriteriaIndex({
           </div>
         ),
       }),
-      columnHelper.accessor("value_numeric", {
+      columnHelper.accessor((row) => row.valueNumeric ?? row.value_numeric ?? (row as any).value ?? 0, {
+        id: "value_numeric",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Nilai Numerik" />,
-        cell: (info) => (
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl font-mono font-bold text-base bg-black dark:bg-black text-white dark:text-black border border-black dark:border-black shadow-2xs">
-              {Number(info.getValue()).toFixed(2)}
-            </span>
-          </div>
-        ),
+        cell: (info) => {
+          const num = Number(info.getValue() ?? 0);
+          return (
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl font-mono font-bold text-base bg-gray-200 dark:bg-black text-black dark:text-white shadow-2xs">
+                {isNaN(num) ? "0.00" : num.toFixed(2)}
+              </span>
+            </div>
+          );
+        },
       }),
-      columnHelper.accessor("created_at", {
+      columnHelper.accessor((row) => row.created_at ?? row.createdAt ?? "-", {
+        id: "created_at",
         header: ({ column }) => <DataTableColumnHeader column={column} title="Dibuat Pada" />,
         cell: (info) => (
           <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 font-mono">
@@ -91,8 +97,7 @@ export function TabelSubCriteriaIndex({
             <div className="flex items-center gap-2">
               <Button
                 type="button"
-                variant="info"
-                label="Update"
+                icon={<Edit className="w-3 h-3" />}
                 disabled={isDeleting}
                 onClick={() => onEdit(item)}
                 className="text-xs! py-1.5! px-3! rounded-xl font-bold shadow-xs cursor-pointer"
@@ -100,7 +105,7 @@ export function TabelSubCriteriaIndex({
               <Button
                 type="button"
                 variant="danger"
-                label="Hapus"
+                icon={<Trash2 className="w-3 h-3" />}
                 disabled={isDeleting}
                 isLoading={isDeleting}
                 onClick={() => onDelete(item.id, item.description, item.criteria_code)}

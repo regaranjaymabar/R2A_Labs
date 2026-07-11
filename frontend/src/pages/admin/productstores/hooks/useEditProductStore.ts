@@ -6,7 +6,7 @@ import { productStoreService } from "../../../../services/productStoreService";
 import { productStoreSchema, type ProductStoreFormData } from "./useAddProductStore";
 import { useGet } from "../../../../hooks/useGet";
 import { useUpdate } from "../../../../hooks/useUpdate";
-import type { ProductStore } from "../ProductStoreIndex";
+import type { ProductStore } from "../../../../types/productStore";
 
 export function useEditProductStore() {
   const { id } = useParams<{ id: string }>();

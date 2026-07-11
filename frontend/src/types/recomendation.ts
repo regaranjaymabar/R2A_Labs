@@ -57,31 +57,32 @@ export type RecommendationWeight = {
 // Menyesuaikan struktur tabel asli di MySQL (id_recommendation_request, customers_id_customer, dll)
 // serta properti gabungan (JOIN) dengan tabel customer, weight, dan result untuk kebutuhan tampilan UI.
 export type RecommendationRequest = {
-    // Kolom Asli Tabel recommendation_requests di MySQL
+    // Standar Backend API (camelCase sesuai Prisma ORM)
+    id: number;
+    customerId?: number;
+    kebutuhan?: string;
+    budgetMin?: number;
+    budgetMax?: number;
+    status?: string | "FILTERING" | "DRAFT" | "PENDING" | "CALCULATED" | "CHOSEN" | "COMPLETED" | "ABANDONED";
+    createdAt?: string;
+    customer?: {
+        id: number;
+        name: string;
+        email: string;
+    };
+
+    // Alias & Tampilan UI Frontend (Kompatibilitas)
     id_recommendation_request?: number;
     customers_id_customer?: number;
-    kebutuhan?: string; // Sesuai kolom varchar(100): Kebutuhan/preferensi yang dipilih user setelah tahap filter harga
-    
-    // Filter Hard Constraint: Laptop di luar rentang budget_min & budget_max langsung diskualifikasi dari perhitungan SPK.
-    // Laptop yang lolos rentang harga ini baru kemudian masuk ke tahap pembobotan (matriks keputusan).
-    budget_min?: number; // Sesuai kolom int(11)
-    budget_max?: number; // Sesuai kolom int(11)
-    
-    // Status alur SPK (maksimal 9 karakter sesuai varchar(9)):
-    // - "FILTERING" / "DRAFT": User baru menetukan filter budget_min & budget_max, belum menyetel kebutuhan/bobot
-    // - "CALCULATED" / "COMPLETED": Sistem sudah menghitung rekomendasi SAW
-    // - "CHOSEN": User telah memilih salah satu laptop dari rekomendasi
-    status?: string | "FILTERING" | "DRAFT" | "PENDING" | "CALCULATED" | "CHOSEN" | "COMPLETED" | "ABANDONED";
-    created_at?: string; // Sesuai kolom datetime(3)
-
-    // Properti Hasil JOIN / Formatting untuk Tampilan Dashboard Admin Frontend
-    id: number; // Dipetakan dari id_recommendation_request
-    user_name: string; // Hasil JOIN dengan tabel customers
+    budget_min?: number;
+    budget_max?: number;
+    created_at?: string;
+    user_name?: string;
     user_email?: string;
-    usage_purpose: string; // Representasi dari kolom kebutuhan
-    budget_range: string; // Representasi format teks dari budget_min - budget_max
-    top_recommendation: RecommendationResult; // Rekomendasi peringkat ke-1
-    weights: RecommendationWeight; // Preferensi bobot user
-    user_choice?: string; // Pilihan akhir laptop yang dipilih oleh customer
-    ranked_laptops?: RecommendationResult[]; // Daftar seluruh laptop yang diperingkat
+    usage_purpose?: string;
+    budget_range?: string;
+    top_recommendation?: RecommendationResult;
+    weights?: RecommendationWeight;
+    user_choice?: string;
+    ranked_laptops?: RecommendationResult[];
 };

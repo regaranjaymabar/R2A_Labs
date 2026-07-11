@@ -1,9 +1,10 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Trash2, Loader2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { DataTable, DataTableColumnHeader } from "../../../../components/ui/common/DataTable";
 import type { RecommendationRequest } from "../../../../types/recomendation";
+import Button from "../../../../components/ui/common/Button";
 
 
 export interface TabelReqHistoryProps {
@@ -34,35 +35,45 @@ export function TabelReqHistory({
                 ),
                 size: 60,
             }),
-            columnHelper.accessor("user_name", {
+            columnHelper.accessor((row: any) => row.customer?.name || row.user_name || row.customerName || "Customer", {
+                id: "user_name",
                 header: ({ column }) => <DataTableColumnHeader column={column} title="Pencari (User)" />,
                 cell: (info) => {
-                    const item = info.row.original;
+                    const item: any = info.row.original;
+                    const userName = item.customer?.name || item.user_name || item.customerName || "Customer";
+                    const userEmail = item.customer?.email || item.user_email || item.customerEmail || "-";
                     return (
                         <div className="flex items-center gap-3">
                             <div>
                                 <span className="font-bold text-gray-900 dark:text-white text-base block">
-                                    {info.getValue()}
+                                    {userName}
                                 </span>
                                 <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">
-                                    {item.user_email || "General User"}
+                                    {userEmail}
                                 </span>
                             </div>
                         </div>
                     );
                 },
             }),
-            columnHelper.accessor("usage_purpose", {
+            columnHelper.accessor((row: any) => row.kebutuhan || row.usage_purpose || "-", {
+                id: "usage_purpose",
                 header: ({ column }) => <DataTableColumnHeader column={column} title="Kebutuhan & Budget" />,
                 cell: (info) => {
-                    const item = info.row.original;
+                    const item: any = info.row.original;
+                    const purpose = item.kebutuhan || item.usage_purpose || "-";
+                    const budgetText =
+                        item.budget_range ||
+                        (item.budgetMin !== undefined && item.budgetMax !== undefined
+                            ? `Rp ${Number(item.budgetMin).toLocaleString("id-ID")} - Rp ${Number(item.budgetMax).toLocaleString("id-ID")}`
+                            : "-");
                     return (
                         <div>
                             <div className="font-bold text-gray-900 dark:text-gray-100 text-sm flex items-center gap-1.5">
-                                <span>{info.getValue()}</span>
+                                <span>{purpose}</span>
                             </div>
                             <div className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold font-mono mt-0.5 flex items-center gap-1">
-                                <span>Budget: {item.budget_range}</span>
+                                <span>Budget: {budgetText}</span>
                             </div>
                         </div>
                     );
@@ -140,19 +151,14 @@ export function TabelReqHistory({
                             >
                                 <span>Detail SAW</span>
                             </Link>
-                            <button
+                            <Button
                                 type="button"
+                                variant="danger"
+                                icon={<Trash2 className="w-3 h-3" />}
+                                isLoading={deletingId === item.id}
                                 onClick={() => onDelete(item.id, item.user_name)}
-                                disabled={deletingId === item.id}
-                                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-950/40 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
-                                title="Hapus Riwayat"
-                            >
-                                {deletingId === item.id ? (
-                                    <Loader2 className="w-4 h-4 animate-spin text-red-500" />
-                                ) : (
-                                    <Trash2 className="w-4 h-4" />
-                                )}
-                            </button>
+                                className="text-xs! py-1.5! px-3! rounded-xl font-bold shadow-xs cursor-pointer"
+                            />
                         </div>
                     );
                 },

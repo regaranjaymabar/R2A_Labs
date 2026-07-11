@@ -1,11 +1,11 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link, useNavigate, type ErrorResponse } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useAuthStore } from "../../store/useAuthStore";
-import type { LoginInput, LoginResponse } from "../../types/auth";
+import type { LoginInput, CustomerAuthWrapperResponse, User } from "../../types/auth";
 import { api } from "../../lib/axios";
 import { InputText } from "../../components/ui/common/InputText";
 import { InputPassword } from "../../components/ui/common/InputPassword";
@@ -36,26 +36,27 @@ export default function Login() {
 
     const loginMutation = useMutation({
         mutationFn: async (credentials: LoginInput) => {
-            //logic awal
-            const response = await api.post<LoginResponse>("/auth/login", credentials);
-            return response.data;
+            const response = await api.post<CustomerAuthWrapperResponse>("/api/customer/auth/login", credentials);
+            return response.data.data;
         },
         onSuccess: (data) => {
-            //logic jika sukses
+            const customerUser: User = {
+                ...data.customer,
+                role: data.customer.role || "customer",
+            };
+
             login({
-                user: data.user,
+                user: customerUser,
                 token: data.token
             });
 
-            queryClient.setQueryData(["me"], data.user);
+            queryClient.setQueryData(["me"], customerUser);
 
-            navigate("/dashboard");
-
+            navigate("/");
         },
-        onError: (error: AxiosError<ErrorResponse>) => {
-            const message = error.message || "Error Boss!"
-            alert(`Gagal Boss : ${message}`);
-
+        onError: (error: AxiosError<any>) => {
+            const message = error.response?.data?.message || error.message || "Email atau password salah!";
+            alert(`Gagal Login : ${message}`);
         }
     })
 
@@ -64,10 +65,13 @@ export default function Login() {
     };
 
     return (
-    <div className="w-full">
-
-      {/* Logo */}
-
+        <div>
+            {/* Header Form */}
+            <div className="mb-4 text-center sm:text-left">
+                <h2 className="text-center flex justify-center sm:text-left text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                    Masuk Akun Customer
+                </h2>
+            </div>
       <div className="flex flex-col items-center text-center mb-10">
   
         {/* Logo dengan Image Path / Link */}

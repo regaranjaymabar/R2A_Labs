@@ -12,7 +12,10 @@ export const storeSchema = z.object({
     .min(3, "Nama toko minimal terdiri dari 3 karakter"),
   address: z.string().min(1, "Alamat toko wajib diisi!"),
   city: z.string().min(1, "Kota cabang toko wajib diisi!"),
-  phone: z.string().min(1, "Nomor telepon toko wajib diisi!"),
+  phone: z
+    .string()
+    .min(1, "Nomor telepon toko wajib diisi!")
+    .max(12, "Nomor telepon maksimal 12 karakter (sesuai spesifikasi backend)!"),
   is_active: z.boolean(),
 });
 
@@ -25,6 +28,7 @@ export function useAddStore() {
   // Inisialisasi React Hook Form + Zod Resolver
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     watch,
@@ -63,6 +67,7 @@ export function useAddStore() {
 
   return {
     register,
+    control,
     handleSubmit: handleSubmit(onSubmit),
     setValue,
     watch,

@@ -2,10 +2,12 @@ import { useMemo } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   Trash2,
-  Loader2,
+  Edit,
 } from "lucide-react";
 import { DataTable, DataTableColumnHeader } from "../../../../components/ui/common/DataTable";
-import type { ProductStore } from "../ProductStoreIndex";
+import type { ProductStore } from "../../../../types/productStore";
+import Button from "../../../../components/ui/common/Button";
+
 
 export interface TableProductStoreIndexProps {
   data: ProductStore[];
@@ -43,43 +45,75 @@ export function TableProductStoreIndex({
         ),
         size: 60,
       }),
-      columnHelper.accessor("store_id", {
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Cabang Toko" />,
-        cell: (info) => {
-          const item = info.row.original;
-          return (
-            <div className="flex items-center gap-2.5">
-              <div>
-                <span className="font-semibold text-gray-900 dark:text-white text-sm block">
-                  {item.store_name || `Store ID #${item.store_id}`}
-                </span>
-                <span className="text-[11px] text-gray-500 font-mono">store_id: {item.store_id}</span>
-              </div>
-            </div>
-          );
+      columnHelper.accessor(
+        (row: any) => {
+          const storeId = row.storeId ?? row.store_id ?? 1;
+          const storeName = row.store?.name || row.store_name || row.storeName || `Store ID #${storeId}`;
+          return `${storeName} ${storeId}`;
         },
-      }),
-      columnHelper.accessor("product_id", {
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Model Laptop" />,
-        cell: (info) => {
-          const item = info.row.original;
-          return (
-            <div>
-              <div className="font-bold text-gray-900 dark:text-white text-base">
-                {item.product_name || `Product ID #${item.product_id}`}
-              </div>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                {item.brand_name && (
-                  <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
-                    {item.brand_name}
+        {
+          id: "store_info",
+          header: ({ column }) => <DataTableColumnHeader column={column} title="Cabang Toko" />,
+          cell: (info) => {
+            const item: any = info.row.original;
+            const storeId = item.storeId ?? item.store_id ?? 1;
+            const storeName = item.store?.name || item.store_name || item.storeName || `Store ID #${storeId}`;
+            return (
+              <div className="flex items-center gap-2.5">
+                <div>
+                  <span className="font-semibold text-gray-900 dark:text-white text-sm block">
+                    {storeName}
                   </span>
-                )}
-                <span className="text-[11px] text-gray-500 font-mono">product_id: {item.product_id}</span>
+                  <span className="text-[11px] text-gray-500 font-mono">store_id: {storeId}</span>
+                </div>
               </div>
-            </div>
-          );
+            );
+          },
+        }
+      ),
+      columnHelper.accessor(
+        (row: any) => {
+          const productId = row.productId ?? row.product_id;
+          const productName =
+            row.product?.modelName ||
+            row.product?.name ||
+            row.model_name ||
+            row.product_name ||
+            `Product ID #${productId}`;
+          const brandName = row.product?.brand?.name || row.brand_name || "";
+          return `${productName} ${brandName} ${productId}`;
         },
-      }),
+        {
+          id: "product_info",
+          header: ({ column }) => <DataTableColumnHeader column={column} title="Model Laptop" />,
+          cell: (info) => {
+            const item: any = info.row.original;
+            const productId = item.productId ?? item.product_id;
+            const productName =
+              item.product?.modelName ||
+              item.product?.name ||
+              item.model_name ||
+              item.product_name ||
+              `Product ID #${productId}`;
+            const brandName = item.product?.brand?.name || item.brand_name;
+            return (
+              <div>
+                <div className="font-bold text-gray-900 dark:text-white text-base">
+                  {productName}
+                </div>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  {brandName && (
+                    <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                      {brandName}
+                    </span>
+                  )}
+                  <span className="text-[11px] text-gray-500 font-mono">product_id: {productId}</span>
+                </div>
+              </div>
+            );
+          },
+        }
+      ),
       columnHelper.accessor("price", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Harga Jual" />,
         cell: (info) => (
@@ -100,8 +134,8 @@ export function TableProductStoreIndex({
         id: "status",
         header: () => <span className="font-semibold">Status Operasional</span>,
         cell: (info) => {
-          const item = info.row.original;
-          const isAvail = item.is_available === 1 || item.is_available === true;
+          const item: any = info.row.original;
+          const isAvail = item.isAvailable === 1 || item.isAvailable === true || item.is_available === 1 || item.is_available === true;
           const stockCount = item.stock;
           if (isAvail === false) {
             return (
@@ -129,32 +163,28 @@ export function TableProductStoreIndex({
         id: "actions",
         header: () => <span className="font-semibold">Aksi</span>,
         cell: (info) => {
-          const item = info.row.original;
+          const item: any = info.row.original;
           const isDeleting = deletingId === item.id;
+          const productName = item.product?.modelName || item.product?.name || item.product_name || `Product #${item.productId || item.product_id}`;
+          const storeName = item.store?.name || item.store_name || `Store #${item.storeId || item.store_id}`;
           return (
             <div className="flex items-center gap-2">
-              <button
+              <Button
                 type="button"
+                icon={<Edit className="w-3 h-3" />}
+                disabled={isDeleting}
                 onClick={() => onEdit(item)}
-                disabled={isDeleting}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/60 font-semibold text-xs rounded-xl border border-blue-200 dark:border-blue-800/60 transition-all active:scale-95 shadow-2xs cursor-pointer disabled:opacity-50"
-                title="Update Operasional (Harga, Stok, Ketersediaan)"
-              >
-                <span>Update</span>
-              </button>
-              <button
+                className="text-xs! py-1.5! px-3! rounded-xl font-bold shadow-xs cursor-pointer"
+              />
+              <Button
                 type="button"
-                onClick={() => onDelete(item.id, item.product_name || `Product #${item.product_id}`, item.store_name || `Store #${item.store_id}`)}
+                variant="danger"
+                icon={<Trash2 className="w-3 h-3" />}
                 disabled={isDeleting}
-                className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:text-red-400 dark:hover:bg-red-950/40 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
-                title="Hapus dari Cabang"
-              >
-                {isDeleting ? (
-                  <Loader2 className="w-4 h-4 animate-spin text-red-500" />
-                ) : (
-                  <Trash2 className="w-4 h-4" />
-                )}
-              </button>
+                isLoading={isDeleting}
+                onClick={() => onDelete(item.id, productName, storeName)}
+                className="text-xs! py-1.5! px-3! rounded-xl font-bold shadow-xs cursor-pointer"
+              />
             </div>
           );
         },

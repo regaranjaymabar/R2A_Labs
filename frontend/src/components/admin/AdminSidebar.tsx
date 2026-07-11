@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../ui/common/Button";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useState } from "react";
@@ -23,21 +23,23 @@ import {
 } from "lucide-react";
 
 export default function AdminSidebar() {
+    const navigate = useNavigate();
     const user = useAuthStore((state) => state.user);
     const logout = useAuthStore((state) => state.logout);
-    // Hanya super_admin / admin yang bisa lihat master data & konfigurasi
-    const isSuperAdmin = !user?.role || user?.role === "admin" || user?.role === "super_admin";
+    // Hanya superadmin yang bisa lihat master data & konfigurasi global
+    const isSuperAdmin = user?.role === "superadmin" || user?.role === "super_admin";
     const location = useLocation();
     const [isSpkOpen, setIsSpkOpen] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     const handleLogout = () => {
         logout();
+        navigate("/admin/login", { replace: true });
     };
 
     const isActive = (path: string) => {
-        if (path === "/admin") {
-            return location.pathname === "/admin";
+        if (path === "/admin/dashboard" || path === "/admin") {
+            return location.pathname === "/admin" || location.pathname === "/admin/dashboard";
         }
         return location.pathname === path || location.pathname.startsWith(`${path}/`);
     };
@@ -94,15 +96,15 @@ export default function AdminSidebar() {
                         <ul className="space-y-1.5 font-medium">
                             <li>
                                 <Link
-                                    to="/admin"
+                                    to="/admin/dashboard"
                                     onClick={() => setIsMobileOpen(false)}
                                     className={`flex items-center p-2.5 text-sm rounded-xl transition-all duration-200 group ${
-                                        isActive("/admin")
+                                        isActive("/admin/dashboard")
                                             ? "bg-gray-100 dark:bg-white/10 text-gray-950 dark:text-white font-semibold shadow-xs border-l-4 border-gray-900 dark:border-white"
                                             : "text-gray-600 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-gray-800/60 hover:text-gray-950 dark:hover:text-white"
                                     }`}
                                 >
-                                    <LayoutDashboard className={`w-5 h-5 transition duration-150 ${isActive("/admin") ? "text-gray-950 dark:text-white" : "text-gray-500 dark:text-gray-400 group-hover:text-gray-950 dark:group-hover:text-white"}`} />
+                                    <LayoutDashboard className={`w-5 h-5 transition duration-150 ${isActive("/admin/dashboard") ? "text-gray-950 dark:text-white" : "text-gray-500 dark:text-gray-400 group-hover:text-gray-950 dark:group-hover:text-white"}`} />
                                     <span className="ml-3">Dashboard</span>
                                 </Link>
                             </li>
@@ -168,6 +170,21 @@ export default function AdminSidebar() {
                                 >
                                     <Boxes className={`w-5 h-5 transition duration-150 ${isActive("/admin/productstores") ? "text-gray-950 dark:text-white" : "text-gray-500 dark:text-gray-400 group-hover:text-gray-950 dark:group-hover:text-white"}`} />
                                     <span className="ml-3">Stok & Harga</span>
+                                </Link>
+                            </li>
+
+                            <li>
+                                <Link
+                                    to="/admin/my-store-profile"
+                                    onClick={() => setIsMobileOpen(false)}
+                                    className={`flex items-center p-2.5 text-sm rounded-xl transition-all duration-200 group ${
+                                        isActive("/admin/my-store-profile")
+                                            ? "bg-gray-100 dark:bg-white/10 text-gray-950 dark:text-white font-semibold shadow-xs border-l-4 border-gray-900 dark:border-white"
+                                            : "text-gray-600 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-gray-800/60 hover:text-gray-950 dark:hover:text-white"
+                                    }`}
+                                >
+                                    <Store className={`w-5 h-5 transition duration-150 ${isActive("/admin/my-store-profile") ? "text-gray-950 dark:text-white" : "text-gray-500 dark:text-gray-400 group-hover:text-gray-950 dark:group-hover:text-white"}`} />
+                                    <span className="ml-3">Profil Tokoku</span>
                                 </Link>
                             </li>
 

@@ -14,6 +14,7 @@ export function useEditProduct() {
   // 1. Inisialisasi React Hook Form + Zod Resolver
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     watch,
@@ -52,16 +53,21 @@ export function useEditProduct() {
   // 3. Populate form begitu data berhasil dimuat
   useEffect(() => {
     if (productData) {
+      const rawYear = String(productData.releaseYear || productData.release_year || new Date().getFullYear());
+      const formattedDate =
+        rawYear.length === 4 ? `${rawYear}-01-01` : rawYear.slice(0, 10);
+
       reset({
-        brand_id: productData.brand_id,
-        model_name: productData.model_name,
+        brandId: Number(productData.brandId || productData.brand_id || 1),
+        modelName: productData.modelName || productData.model_name || "",
         processor: productData.processor || "",
         ram: productData.ram || "",
         storage: productData.storage || "",
-        screen_size: Number(productData.screen_size || 0),
-        battery: Number(productData.battery || 0),
+        screenSize: Number(productData.screenSize || productData.screen_size || 0),
+        battery: String(productData.battery || ""),
         weight: Number(productData.weight || 0),
-        release_year: Number(productData.release_year || new Date().getFullYear()),
+        releaseYear: formattedDate,
+        subCriteriaIds: [],
         is_active: Boolean(productData.is_active),
       });
     }
@@ -72,9 +78,9 @@ export function useEditProduct() {
     mutationFn: (payload) => productService.update(id!, payload),
     queryKey: ["products"],
     navigateTo: "/admin/products",
-    successMessage: (variables) => `Produk "${variables.model_name}" berhasil diperbarui!`,
+    successMessage: (variables) => `Produk "${variables.modelName}" berhasil diperbarui!`,
     errorMessage: (variables, err) =>
-      `Gagal memperbarui produk "${variables.model_name}": ${
+      `Gagal memperbarui produk "${variables.modelName}": ${
         err?.response?.data?.message || err?.message || "Error"
       }`,
   });
@@ -85,7 +91,9 @@ export function useEditProduct() {
 
   return {
     id,
+    productData,
     register,
+    control,
     handleSubmit: handleSubmit(onSubmit),
     setValue,
     errors,

@@ -1,8 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import {
     ArrowLeft,
-    CheckCircle2,
-    Ban,
     Loader2,
 } from "lucide-react";
 import { Button } from "../../../components/ui/common/Button";
@@ -16,11 +14,9 @@ export default function EditBrand() {
         id,
         register,
         handleSubmit,
-        setValue,
         errors,
         isSubmitting,
         isLoadingData,
-        isActive,
     } = useEditBrand();
 
     if (isLoadingData) {
@@ -67,74 +63,6 @@ export default function EditBrand() {
                             register={register}
                             error={errors.name?.message}
                         />
-                    </div>
-
-                    {/* INPUT 2: STATUS AKTIF (RADIO / TOGGLE CARDS TERINTEGRASI REACT HOOK FORM) */}
-                    <div className="space-y-3">
-                        <label className="block text-sm font-bold text-gray-900 dark:text-white items-center justify-between">
-                            <span className="flex items-center gap-2">
-                                <span>Status Ketersediaan Merek</span>
-                            </span>
-                            <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">
-                                Default: Aktif (true)
-                            </span>
-                        </label>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {/* Opsi 1: Aktif (Live) */}
-                            <button
-                                type="button"
-                                onClick={() => setValue("is_active", true, { shouldValidate: true })}
-                                className={`p-4 rounded-2xl border-2 text-left transition-all flex items-start gap-3.5 cursor-pointer ${isActive
-                                        ? "bg-emerald-50/80 dark:bg-emerald-950/40 border-emerald-500 shadow-md ring-2 ring-emerald-500/20"
-                                        : "bg-gray-50 dark:bg-[#181519] border-gray-200 dark:border-gray-800 opacity-60 hover:opacity-100 hover:border-gray-300"
-                                    }`}
-                            >
-                                <div
-                                    className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 font-bold ${isActive
-                                            ? "bg-emerald-500 text-white shadow-xs"
-                                            : "border-2 border-gray-300 dark:border-gray-600"
-                                        }`}
-                                >
-                                    {isActive && <CheckCircle2 className="w-4 h-4" />}
-                                </div>
-                                <div>
-                                    <span className={`block font-bold text-sm ${isActive ? "text-emerald-900 dark:text-emerald-200" : "text-gray-700 dark:text-gray-300"}`}>
-                                        Aktif & Siap Digunakan
-                                    </span>
-                                    <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 block leading-relaxed">
-                                        Merek ini langsung muncul di katalog produk dan dropdown pemilihan spesifikasi laptop.
-                                    </span>
-                                </div>
-                            </button>
-
-                            {/* Opsi 2: Nonaktif (Draft) */}
-                            <button
-                                type="button"
-                                onClick={() => setValue("is_active", false, { shouldValidate: true })}
-                                className={`p-4 rounded-2xl border-2 text-left transition-all flex items-start gap-3.5 cursor-pointer ${!isActive
-                                        ? "bg-red-50/80 dark:bg-red-950/40 border-red-500 shadow-md ring-2 ring-red-500/20"
-                                        : "bg-gray-50 dark:bg-[#181519] border-gray-200 dark:border-gray-800 opacity-60 hover:opacity-100 hover:border-gray-300"
-                                    }`}
-                            >
-                                <div
-                                    className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 font-bold ${!isActive
-                                            ? "bg-red-500 text-white shadow-xs"
-                                            : "border-2 border-gray-300 dark:border-gray-600"
-                                        }`}
-                                >
-                                    {!isActive && <Ban className="w-4 h-4" />}
-                                </div>
-                                <div>
-                                    <span className={`block font-bold text-sm ${!isActive ? "text-red-900 dark:text-red-200" : "text-gray-700 dark:text-gray-300"}`}>
-                                        Nonaktif (Simpan sebagai Draft)
-                                    </span>
-                                    <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 block leading-relaxed">
-                                        Merek disembunyikan sementara dari pilihan input produk baru tanpa menghapus data.
-                                    </span>
-                                </div>
-                            </button>
-                        </div>
                     </div>
 
                     {/* TOMBOL AKSI FORM */}

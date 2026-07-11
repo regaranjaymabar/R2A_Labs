@@ -2,9 +2,7 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   Plus,
-  ShieldCheck,
   Filter,
-  Save,
 } from "lucide-react";
 import { TableProductStoreIndex } from "./components/TableProductStoreIndex";
 import { Button } from "../../../components/ui/common/Button";
@@ -12,132 +10,16 @@ import { Modal } from "../../../components/ui/common/Modal";
 import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
 import { useDeleteProductStore } from "./hooks/useDeleteProductStore";
 import type { ProductStore } from "../../../types/productStore";
+import { useGet } from "../../../hooks/useGet";
+import { productStoreService } from "../../../services/productStoreService";
+import { useAuthStore } from "../../../store/useAuthStore";
 
 
 
 
 // 2. Data Dummy Awal (Disesuaikan dengan angka persis di screenshot database kamu)
 const initialProductStores: ProductStore[] = [
-  {
-    id: 1,
-    product_id: 1,
-    store_id: 1,
-    price: 6999000,
-    stock: 15,
-    is_available: 1,
-    updated_at: "2026-06-30 07:03:58",
-    product_name: "ASUS Vivobook 14 A1404ZA",
-    brand_name: "ASUS",
-    store_name: "Toko Asus Official Jakarta",
-  },
-  {
-    id: 2,
-    product_id: 2,
-    store_id: 1,
-    price: 12999000,
-    stock: 8,
-    is_available: 1,
-    updated_at: "2026-06-30 07:03:58",
-    product_name: "ROG Zephyrus G14 GA402",
-    brand_name: "ASUS",
-    store_name: "Toko Asus Official Jakarta",
-  },
-  {
-    id: 3,
-    product_id: 3,
-    store_id: 1,
-    price: 7499000,
-    stock: 0,
-    is_available: 1,
-    updated_at: "2026-06-30 07:03:58",
-    product_name: "Lenovo IdeaPad Slim 3",
-    brand_name: "Lenovo",
-    store_name: "Toko Asus Official Jakarta",
-  },
-  {
-    id: 4,
-    product_id: 4,
-    store_id: 1,
-    price: 11999000,
-    stock: 6,
-    is_available: 1,
-    updated_at: "2026-06-30 07:03:58",
-    product_name: "HP Victus Gaming 15",
-    brand_name: "HP",
-    store_name: "Toko Asus Official Jakarta",
-  },
-  {
-    id: 5,
-    product_id: 5,
-    store_id: 1,
-    price: 8999000,
-    stock: 0,
-    is_available: 0,
-    updated_at: "2026-06-30 07:03:58",
-    product_name: "Acer Aspire 5 A514-55G",
-    brand_name: "Acer",
-    store_name: "Toko Asus Official Jakarta",
-  },
-  {
-    id: 6,
-    product_id: 6,
-    store_id: 1,
-    price: 13999000,
-    stock: 5,
-    is_available: 1,
-    updated_at: "2026-06-30 07:03:58",
-    product_name: "MSI Cyborg 15 A12VE",
-    brand_name: "MSI",
-    store_name: "Toko Asus Official Jakarta",
-  },
-  {
-    id: 7,
-    product_id: 1,
-    store_id: 2,
-    price: 6899000,
-    stock: 10,
-    is_available: 1,
-    updated_at: "2026-06-30 07:03:58",
-    product_name: "ASUS Vivobook 14 A1404ZA",
-    brand_name: "ASUS",
-    store_name: "Lenovo Exclusive Store",
-  },
-  {
-    id: 8,
-    product_id: 3,
-    store_id: 2,
-    price: 7399000,
-    stock: 9,
-    is_available: 1,
-    updated_at: "2026-06-30 07:03:58",
-    product_name: "Lenovo IdeaPad Slim 3",
-    brand_name: "Lenovo",
-    store_name: "Lenovo Exclusive Store",
-  },
-  {
-    id: 9,
-    product_id: 5,
-    store_id: 2,
-    price: 8899000,
-    stock: 8,
-    is_available: 1,
-    updated_at: "2026-06-30 07:03:58",
-    product_name: "Acer Aspire 5 A514-55G",
-    brand_name: "Acer",
-    store_name: "Lenovo Exclusive Store",
-  },
-  {
-    id: 10,
-    product_id: 7,
-    store_id: 2,
-    price: 6799000,
-    stock: 11,
-    is_available: 1,
-    updated_at: "2026-06-30 07:03:58",
-    product_name: "Zyrex Sky 232 Prime",
-    brand_name: "Zyrex",
-    store_name: "Lenovo Exclusive Store",
-  },
+  
 ];
 
 const formatIDR = (value: number) => {
@@ -148,67 +30,107 @@ const formatIDR = (value: number) => {
   }).format(value);
 };
 
-
-
 export default function ProductStoreIndex() {
-  const [data, setData] = useState<ProductStore[]>(initialProductStores);
-  
-  // State Simulasi Role & Filter (Read)
-  const [currentUserRole, setCurrentUserRole] = useState<"SUPER_ADMIN" | "STORE_ADMIN">("SUPER_ADMIN");
+  const user = useAuthStore((state) => state.user);
+  const isSuperAdmin = user?.role === "super_admin" || user?.role === "superadmin";
+
+  // Ambil data inventaris dari API / cache lokal
+  const { data: fetchedData } = useGet({
+    queryKey: ["productstores"],
+    queryFn: productStoreService.getAll,
+    offlineFallbackData: initialProductStores,
+  });
+  const [localData, setLocalData] = useState<ProductStore[] | null>(null);
+  const data: ProductStore[] = localData || (fetchedData && fetchedData.length > 0 ? fetchedData : initialProductStores);
+
   const [selectedStoreFilter, setSelectedStoreFilter] = useState<string>("ALL");
 
   // State Modal Edit Operasional (3 Alur Aksi: Harga, Stok, Ketersediaan)
   const [editingItem, setEditingItem] = useState<ProductStore | null>(null);
-  const [editPrice, setEditPrice] = useState<number>(0);
-  const [editStock, setEditStock] = useState<number>(0);
+  const [editPrice, setEditPrice] = useState<number | string>(0);
+  const [editStock, setEditStock] = useState<number | string>(0);
   const [editIsAvailable, setEditIsAvailable] = useState<boolean>(true);
 
-  // 1. Filter Data Berdasarkan Role & Toko
+  const getStoreId = (item: any) => Number(item?.storeId ?? item?.store_id ?? 1);
+  const getStoreName = (item: any) => item?.store?.name || item?.store_name || item?.storeName || `Store #${getStoreId(item)}`;
+  const getProductId = (item: any) => Number(item?.productId ?? item?.product_id ?? 1);
+  const getProductName = (item: any) =>
+    item?.product?.modelName ||
+    item?.product?.name ||
+    item?.model_name ||
+    item?.product_name ||
+    `Product ID #${getProductId(item)}`;
+
+  // 1. Filter Data Berdasarkan Role & Toko yang Sedang Login
   const filteredData = useMemo(() => {
-    if (currentUserRole === "STORE_ADMIN") {
-      // Store Admin hanya melihat tokonya sendiri (Simulasi: store_id = 1)
-      return data.filter((item) => item.store_id === 1);
+    if (!isSuperAdmin) {
+      // Store Admin hanya melihat tokonya sendiri
+      const userStoreId = Number((user as any)?.store_id ?? (user as any)?.storeId ?? 1);
+      return data.filter((item) => getStoreId(item) === userStoreId);
     }
     // Super Admin: Bisa melihat semua atau filter per cabang
     if (selectedStoreFilter === "ALL") {
       return data;
     }
-    return data.filter((item) => (item.store_name || `Store #${item.store_id}`) === selectedStoreFilter);
-  }, [data, currentUserRole, selectedStoreFilter]);
+    return data.filter((item) => getStoreName(item) === selectedStoreFilter);
+  }, [data, isSuperAdmin, user, selectedStoreFilter]);
 
   // Daftar nama toko unik untuk dropdown filter
   const uniqueStores = useMemo(() => {
-    const names = data.map((item) => item.store_name || `Store #${item.store_id}`);
+    const names = data.map((item) => getStoreName(item));
     return Array.from(new Set(names));
   }, [data]);
+
+  const [isSavingEdit, setIsSavingEdit] = useState<boolean>(false);
 
   // Buka Modal Edit
   const handleOpenEdit = (item: ProductStore) => {
     setEditingItem(item);
     setEditPrice(item.price);
     setEditStock(item.stock);
-    setEditIsAvailable(item.is_available === 1 || item.is_available === true);
+    setEditIsAvailable(
+      (item as any).isAvailable === 1 ||
+      (item as any).isAvailable === true ||
+      item.is_available === 1 ||
+      item.is_available === true
+    );
   };
 
-  // Simpan Perubahan Operasional (Update ke state / backend)
-  const handleSaveEdit = (e: React.FormEvent) => {
+  // Simpan Perubahan Operasional (Update ke backend & state lokal)
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingItem) return;
 
-    setData((prev) =>
-      prev.map((item) =>
-        item.id === editingItem.id
-          ? {
-              ...item,
-              price: Number(editPrice),
-              stock: Number(editStock),
-              is_available: editIsAvailable ? 1 : 0,
-              updated_at: new Date().toISOString().slice(0, 19).replace("T", " "),
-            }
-          : item
-      )
-    );
-    setEditingItem(null);
+    setIsSavingEdit(true);
+    try {
+      await productStoreService.update(editingItem.id, {
+        price: Number(editPrice || 0),
+        stock: Number(editStock || 0),
+        is_available: editIsAvailable,
+        isAvailable: editIsAvailable ? 1 : 0,
+      });
+
+      setLocalData(
+        data.map((item) =>
+          item.id === editingItem.id
+            ? {
+                ...item,
+                price: Number(editPrice || 0),
+                stock: Number(editStock || 0),
+                is_available: editIsAvailable ? 1 : 0,
+                isAvailable: editIsAvailable ? 1 : 0,
+                updated_at: new Date().toISOString().slice(0, 19).replace("T", " "),
+              }
+            : item
+        )
+      );
+      setEditingItem(null);
+    } catch (error) {
+      console.error("Gagal menyimpan perubahan:", error);
+      alert("Gagal menyimpan perubahan ke server.");
+    } finally {
+      setIsSavingEdit(false);
+    }
   };
 
   // Gunakan hook hapus yang sudah otomatis mengelola ModalConfirm
@@ -227,41 +149,6 @@ export default function ProductStoreIndex() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          {/* Panel Simulasi Role Akses (Read) */}
-          <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800/80 p-1 rounded-xl border border-gray-200 dark:border-gray-700 text-xs">
-            <span className="px-2.5 py-1 text-gray-500 dark:text-gray-400 font-semibold flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
-              Simulasi Role:
-            </span>
-            <button
-              type="button"
-              onClick={() => {
-                setCurrentUserRole("SUPER_ADMIN");
-                setSelectedStoreFilter("ALL");
-              }}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
-                currentUserRole === "SUPER_ADMIN"
-                  ? "bg-white dark:bg-[#181519] text-gray-900 dark:text-white shadow-2xs border border-gray-200 dark:border-gray-700"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900"
-              }`}
-            >
-              Super Admin
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setCurrentUserRole("STORE_ADMIN");
-              }}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
-                currentUserRole === "STORE_ADMIN"
-                  ? "bg-white dark:bg-[#181519] text-gray-900 dark:text-white shadow-2xs border border-gray-200 dark:border-gray-700"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900"
-              }`}
-            >
-              Store Admin (store_id: 1)
-            </button>
-          </div>
-
           <Link
             to="/admin/productstores/add"
             className="inline-flex items-center gap-2 bg-[#151216] dark:bg-white text-white dark:text-gray-900 hover:bg-[#262128] dark:hover:bg-gray-200 font-semibold px-4 py-2 rounded-xl shadow-sm transition-all active:scale-95 text-sm"
@@ -273,7 +160,7 @@ export default function ProductStoreIndex() {
       </div>
 
       {/* Filter Cabang (Khusus Super Admin) */}
-      {currentUserRole === "SUPER_ADMIN" && (
+      {isSuperAdmin && (
         <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-900/40 p-4 rounded-2xl border border-gray-200/80 dark:border-gray-800">
           <Filter className="w-4 h-4 text-gray-500" />
           <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
@@ -304,12 +191,12 @@ export default function ProductStoreIndex() {
       )}
 
       {/* Indikator Status Banner jika Store Admin */}
-      {currentUserRole === "STORE_ADMIN" && (
+      {!isSuperAdmin && (
         <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/60 p-4 rounded-2xl flex items-center justify-between text-xs text-blue-800 dark:text-blue-300">
           <div className="flex items-center gap-2.5 font-medium">
             <span>
-              Mode <strong>Store Admin</strong> aktif: Membatasi tampilan hanya untuk cabang{" "}
-              <strong className="underline font-mono">store_id: 1</strong> (Toko Asus Official Jakarta).
+              Mode <strong>Store Admin</strong> aktif: Membatasi tampilan inventaris hanya untuk cabang{" "}
+              <strong className="underline font-mono">store_id: {(user as any)?.store_id || 1}</strong>.
             </span>
           </div>
           <span className="font-mono bg-blue-100 dark:bg-blue-900/60 px-2 py-0.5 rounded font-bold">
@@ -331,14 +218,9 @@ export default function ProductStoreIndex() {
         isOpen={Boolean(editingItem)}
         onClose={() => setEditingItem(null)}
         maxWidth="lg"
-        badge={
-          <span className="text-blue-600 dark:text-blue-400">
-            Eksekusi Perubahan (Update)
-          </span>
-        }
-        title={editingItem?.product_name || (editingItem ? `Product ID #${editingItem.product_id}` : "")}
+        title={editingItem ? getProductName(editingItem) : ""}
         subtitle={
-          editingItem ? `${editingItem.store_name || `Store #${editingItem.store_id}`} (store_id: ${editingItem.store_id})` : undefined
+          editingItem ? `${getStoreName(editingItem)} (store_id: ${getStoreId(editingItem)})` : undefined
         }
       >
         {editingItem && (
@@ -346,7 +228,7 @@ export default function ProductStoreIndex() {
             {/* 1. Penyesuaian Harga */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 items-center gap-1.5">
-                <span>1. Penyesuaian Harga Jual (IDR)</span>
+                <span>Penyesuaian Harga Jual (IDR)</span>
               </label>
               <p className="text-[11px] text-gray-500 dark:text-gray-400">
                 Perbarui kolom <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">price</code> jika ada promo lokal atau perubahan harga distributor.
@@ -358,20 +240,20 @@ export default function ProductStoreIndex() {
                 <input
                   type="number"
                   value={editPrice}
-                  onChange={(e) => setEditPrice(Number(e.target.value))}
+                  onChange={(e) => setEditPrice(e.target.value === "" ? "" : Number(e.target.value))}
                   className="w-full pl-11 pr-4 py-2.5 text-sm font-mono font-bold bg-gray-50 dark:bg-[#181519] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all shadow-2xs"
                   required
                 />
               </div>
               <div className="text-right text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                {formatIDR(editPrice)}
+                {formatIDR(Number(editPrice || 0))}
               </div>
             </div>
 
             {/* 2. Mutasi Stok */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 items-center gap-1.5">
-                <span>2. Mutasi Stok Fisik (Unit)</span>
+                <span>Mutasi Stok Fisik (Unit)</span>
               </label>
               <p className="text-[11px] text-gray-500 dark:text-gray-400">
                 Perbarui kolom <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">stock</code> saat ada barang masuk (restok) atau terjual offline.
@@ -380,7 +262,7 @@ export default function ProductStoreIndex() {
                 type="number"
                 min="0"
                 value={editStock}
-                onChange={(e) => setEditStock(Number(e.target.value))}
+                onChange={(e) => setEditStock(e.target.value === "" ? "" : Number(e.target.value))}
                 className="w-full px-4 py-2.5 text-sm font-mono font-bold bg-gray-50 dark:bg-[#181519] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all shadow-2xs"
                 required
               />
@@ -390,7 +272,7 @@ export default function ProductStoreIndex() {
             <div className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-200/80 dark:border-gray-800 flex items-center justify-between gap-4">
               <div className="space-y-0.5">
                 <label className="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
-                  <span>3. Ubah Ketersediaan (<code className="font-mono text-[11px]">is_available</code>)</span>
+                  <span>Ubah Ketersediaan</span>
                 </label>
                 <p className="text-[11px] text-gray-500 dark:text-gray-400">
                   Matikan saklar jika laptop discontinued atau ditarik dari cabang.
@@ -423,8 +305,9 @@ export default function ProductStoreIndex() {
               />
               <Button
                 type="submit"
-                icon={<Save className="w-4 h-4" />}
                 label="Simpan Perubahan"
+                isLoading={isSavingEdit}
+                disabled={isSavingEdit}
                 className="text-xs! py-2! px-5! rounded-xl font-bold shadow-md cursor-pointer"
               />
             </div>

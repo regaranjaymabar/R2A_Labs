@@ -17,7 +17,7 @@ export default function AddBrand() {
                 <div>
                     <div className="flex items-center gap-2.5">
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
-                            <span>Tambah Merek Laptop Baru</span>
+                            <span>Tambah Brand Laptop Baru</span>
                         </h1>
                     </div>
                 </div>
@@ -37,7 +37,7 @@ export default function AddBrand() {
                 <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-7">
                     <div className="space-y-1">
                         <InputText
-                            label="Nama Merek Laptop"
+                            label="Nama Brand Laptop"
                             nama="name"
                             register={register}
                             error={errors.name?.message}

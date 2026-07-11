@@ -23,54 +23,7 @@ export type { Criteria };
 
 // 2. Data Dummy Awal (Persis 8 baris data dari screenshot database phpMyAdmin kamu)
 export const initialCriterias: Criteria[] = [
-  {
-    id: 1,
-    code: "C1",
-    name: "Harga",
-    type: "cost",
-  },
-  {
-    id: 2,
-    code: "C2",
-    name: "RAM",
-    type: "benefit",
-  },
-  {
-    id: 3,
-    code: "C3",
-    name: "Storage",
-    type: "benefit",
-  },
-  {
-    id: 4,
-    code: "C4",
-    name: "Battery",
-    type: "benefit",
-  },
-  {
-    id: 5,
-    code: "C5",
-    name: "Berat",
-    type: "cost",
-  },
-  {
-    id: 6,
-    code: "C6",
-    name: "Processor",
-    type: "benefit",
-  },
-  {
-    id: 7,
-    code: "C7",
-    name: "Ukuran Layar",
-    type: "benefit",
-  },
-  {
-    id: 8,
-    code: "C8",
-    name: "Tahun Rilis",
-    type: "benefit",
-  },
+  
 ];
 
 
@@ -78,7 +31,7 @@ export default function CriteriaIndex() {
   const queryClient = useQueryClient();
 
   // Fetch data kriteria dari backend via useGet (React Query + offline fallback)
-  const { data: fetchedData, isLoading } = useGet<Criteria[]>({
+  const { data: fetchedData, isLoading, refetch } = useGet<Criteria[]>({
     queryKey: ["criterias"],
     queryFn: criteriaService.getAll,
     offlineFallbackData: initialCriterias,
@@ -100,6 +53,7 @@ export default function CriteriaIndex() {
   const [editCode, setEditCode] = useState<string>("");
   const [editName, setEditName] = useState<string>("");
   const [editType, setEditType] = useState<"benefit" | "cost">("benefit");
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
 
   // Buka Modal Update
   const handleOpenEdit = (item: Criteria) => {
@@ -109,24 +63,47 @@ export default function CriteriaIndex() {
     setEditType((item.type.toLowerCase() === "cost" ? "cost" : "benefit") as "benefit" | "cost");
   };
 
-  // Simpan Perubahan
-  const handleSaveEdit = (e: React.FormEvent) => {
+  // Simpan Perubahan ke Backend Server (PUT /api/superadmin/criteria/:id)
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingItem) return;
 
-    queryClient.setQueryData<Criteria[]>(["criterias"], (prev) =>
-      (prev || []).map((item) =>
-        item.id === editingItem.id
-          ? {
-              ...item,
-              code: editCode.toUpperCase(),
-              name: editName,
-              type: editType,
-            }
-          : item
-      )
-    );
-    setEditingItem(null);
+    try {
+      setIsSavingEdit(true);
+      await criteriaService.update(editingItem.id, {
+        code: editCode.toUpperCase(),
+        name: editName.trim(),
+        type: editType,
+      });
+
+      // Update cache lokal langsung seketika agar UI tabel berubah seketika tanpa jeda
+      queryClient.setQueryData<Criteria[]>(["criterias"], (old = []) =>
+        old.map((item) =>
+          Number(item.id) === Number(editingItem.id)
+            ? {
+                ...item,
+                code: editCode.toUpperCase(),
+                name: editName.trim(),
+                type: editType,
+              }
+            : item
+        )
+      );
+
+      setEditingItem(null);
+
+      // Paksa refetch langsung ke backend agar data tabel 100% tersinkron
+      await refetch();
+      await queryClient.invalidateQueries({ queryKey: ["criterias"] });
+    } catch (err: any) {
+      alert(
+        `Gagal memperbarui kriteria: ${
+          err?.response?.data?.message || err?.message || "Error"
+        }`
+      );
+    } finally {
+      setIsSavingEdit(false);
+    }
   };
 
   
@@ -262,9 +239,10 @@ export default function CriteriaIndex() {
               />
               <Button
                 type="submit"
+                disabled={isSavingEdit}
                 icon={<Save className="w-4 h-4" />}
-                label="Simpan Kriteria"
-                className="text-xs! py-2! px-5! rounded-xl font-bold shadow-md cursor-pointer"
+                label={isSavingEdit ? "Menyimpan..." : "Simpan Kriteria"}
+                className="text-xs! py-2! px-5! rounded-xl font-bold shadow-md cursor-pointer disabled:opacity-50"
               />
             </div>
           </form>

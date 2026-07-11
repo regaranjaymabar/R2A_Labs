@@ -14,6 +14,7 @@ export function useEditStore() {
   // 1. Inisialisasi React Hook Form + Zod Resolver
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     watch,
@@ -59,7 +60,7 @@ export function useEditStore() {
         address: storeData.address || "",
         city: storeData.city || "",
         phone: storeData.phone || "",
-        is_active: Boolean(storeData.is_active),
+        is_active: Boolean(storeData.isActive !== undefined ? storeData.isActive : storeData.is_active),
       });
     }
   }, [storeData, reset]);
@@ -82,6 +83,7 @@ export function useEditStore() {
 
   return {
     register,
+    control,
     handleSubmit: handleSubmit(onSubmit),
     setValue,
     watch,
