@@ -10,3 +10,9 @@ export type ProductCriteria = {
   criteria_code?: string;
   criteria_name?: string;
 };
+
+export type ProductWeightFormData = {
+  productId: number;
+  subCriteriaMap: Record<number, number>;
+  [key: string]: any;
+};

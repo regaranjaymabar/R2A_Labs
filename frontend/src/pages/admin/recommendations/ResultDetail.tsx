@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   Sliders,
@@ -9,82 +9,103 @@ import {
   Cpu,
   DollarSign,
   TrendingUp,
+  Loader2,
 } from "lucide-react";
 import { Button } from "../../../components/ui/common/Button";
-
-// Simulasi Data Detail Hasil Perhitungan SAW untuk Session ID #1 (Andi Pratama)
-const dummyResultSession = {
-  id: 1,
-  user_name: "Andi Pratama",
-  user_email: "andi.pratama@gmail.com",
-  usage_purpose: "Coding & Web Development",
-  budget_range: "Rp 6.000.000 - Rp 10.000.000",
-  created_at: "2026-07-02 14:30:25",
-  user_choice: "Lenovo IdeaPad Slim 3",
-  weights_applied: {
-    price: 40,
-    ram: 30,
-    processor: 20,
-    storage: 10,
-  },
-  ranked_laptops: [
-    {
-      rank: 1,
-      name: "Lenovo IdeaPad Slim 3",
-      brand: "Lenovo",
-      price_display: "Rp 8.499.000",
-      ram_display: "16 GB",
-      cpu_display: "Core i5 Gen 12",
-      storage_display: "512 GB SSD",
-      saw_score: 0.895,
-      is_chosen_by_user: true,
-      criteria_breakdown: {
-        price_norm: 0.85,
-        ram_norm: 1.0,
-        cpu_norm: 0.9,
-        storage_norm: 0.8,
-      },
-    },
-    {
-      rank: 2,
-      name: "ASUS Vivobook 14 X1404",
-      brand: "ASUS",
-      price_display: "Rp 8.299.000",
-      ram_display: "8 GB",
-      cpu_display: "Ryzen 5 7530U",
-      storage_display: "512 GB SSD",
-      saw_score: 0.85,
-      is_chosen_by_user: false,
-      criteria_breakdown: {
-        price_norm: 0.9,
-        ram_norm: 0.75,
-        cpu_norm: 0.85,
-        storage_norm: 0.8,
-      },
-    },
-    {
-      rank: 3,
-      name: "Acer Aspire 5 Lite",
-      brand: "Acer",
-      price_display: "Rp 7.499.000",
-      ram_display: "8 GB",
-      cpu_display: "Core i3 Gen 12",
-      storage_display: "512 GB SSD",
-      saw_score: 0.795,
-      is_chosen_by_user: false,
-      criteria_breakdown: {
-        price_norm: 1.0,
-        ram_norm: 0.75,
-        cpu_norm: 0.7,
-        storage_norm: 0.8,
-      },
-    },
-  ],
-};
+import { useGet } from "../../../hooks/useGet";
+import { recommendationService } from "../../../services/recommendationService";
 
 export default function ResultDetail() {
   const { id } = useParams();
-  const [session] = useState(dummyResultSession);
+
+  const { data: fetchedData, isLoading } = useGet({
+    queryKey: ["recommendation-detail", id || ""],
+    queryFn: () => recommendationService.getById(id!),
+    enabled: !!id,
+  });
+
+  const session = useMemo(() => {
+    if (!fetchedData) return null;
+    const data: any = fetchedData;
+
+    const weights = data.weights_applied || data.weights || {};
+    const rankedLaptops =
+      data.ranked_laptops ||
+      (Array.isArray(data.results) ? data.results : null) ||
+      (Array.isArray(data.top_recommendation) ? data.top_recommendation : []) ||
+      [];
+
+    const formatBudget = () => {
+      if (data.budget_range) return data.budget_range;
+      if (data.budgetMin !== undefined && data.budgetMax !== undefined) {
+        return `Rp ${Number(data.budgetMin).toLocaleString("id-ID")} - Rp ${Number(data.budgetMax).toLocaleString("id-ID")}`;
+      }
+      return "-";
+    };
+
+    return {
+      id: data.id ?? id ?? "-",
+      user_name: data.user_name || data.customer?.name || "Pengguna",
+      user_email: data.user_email || data.customer?.email || "-",
+      usage_purpose: data.usage_purpose || data.kebutuhan || "Umum",
+      budget_range: formatBudget(),
+      created_at: data.created_at || data.createdAt || "-",
+      user_choice: data.user_choice || "-",
+      weights_applied: {
+        price: weights?.price ?? 0,
+        ram: weights?.ram ?? 0,
+        processor: weights?.processor ?? 0,
+        storage: weights?.storage ?? 0,
+      },
+      ranked_laptops: Array.isArray(rankedLaptops)
+        ? rankedLaptops.map((laptop: any, index: number) => ({
+            rank: laptop.rank || laptop.ranking || index + 1,
+            name: laptop.name || laptop.product_name || `Laptop Rekomendasi #${index + 1}`,
+            brand: laptop.brand || "-",
+            price_display: laptop.price_display || "-",
+            ram_display: laptop.ram_display || "-",
+            cpu_display: laptop.cpu_display || "-",
+            storage_display: laptop.storage_display || "-",
+            saw_score: Number(laptop.saw_score ?? laptop.score ?? 0),
+            is_chosen_by_user: Boolean(laptop.is_chosen_by_user),
+            criteria_breakdown: {
+              price_norm: laptop.criteria_breakdown?.price_norm ?? 0,
+              ram_norm: laptop.criteria_breakdown?.ram_norm ?? 0,
+              cpu_norm: laptop.criteria_breakdown?.cpu_norm ?? 0,
+              storage_norm: laptop.criteria_breakdown?.storage_norm ?? 0,
+            },
+          }))
+        : [],
+    };
+  }, [fetchedData, id]);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 space-y-3">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+        <p className="text-sm font-semibold text-gray-500">Memuat detail analisis SAW...</p>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 space-y-4 text-center">
+        <p className="text-base font-bold text-gray-700 dark:text-gray-300">
+          Detail hasil rekomendasi tidak ditemukan.
+        </p>
+        <Link to="/admin/recommendations">
+          <Button
+            type="button"
+            variant="secondary"
+            icon={<ArrowLeft className="w-4 h-4" />}
+            label="Kembali ke Riwayat"
+            className="text-xs! py-2! px-4! rounded-xl!"
+          />
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 pb-12">

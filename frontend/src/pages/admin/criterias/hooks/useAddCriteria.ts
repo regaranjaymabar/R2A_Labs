@@ -15,6 +15,7 @@ export const criteriaSchema = z.object({
     .min(1, "Nama kriteria wajib diisi!")
     .min(2, "Nama kriteria minimal terdiri dari 2 karakter"),
   type: z.enum(["benefit", "cost"]),
+  weight: z.number().optional(),
 });
 
 export const CriteriaSchema = criteriaSchema;

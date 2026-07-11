@@ -3,6 +3,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { DataTable, DataTableColumnHeader } from "../../../../components/ui/common/DataTable";
 import { Button } from "../../../../components/ui/common/Button";
 import type { Criteria } from "../../../../types/criteria";
+import { Edit, Trash2 } from "lucide-react";
 
 export interface TabelCriteriaIndexProps {
   data: Criteria[];
@@ -51,28 +52,29 @@ export function TabelCriteriaIndex({
         ),
       }),
       columnHelper.accessor("type", {
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Tipe Atribut (SAW)" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Tipe Atribut" />,
         cell: (info) => {
           const val = info.getValue();
-          const typeStr = String(val).toLowerCase();
+          const typeStr = String(val || "").toLowerCase().trim();
 
-          // STRUKTUR ELSE IF MURNI SESUAI INSTRUKSI UNTUK BADGE WARNA:
           if (typeStr === "benefit") {
-            // Badge Hijau: Semakin besar nilainya semakin bagus (contoh: RAM, Storage)
             return (
               <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 shadow-2xs">
                 benefit
               </span>
             );
           } else if (typeStr === "cost") {
-            // Badge Merah: Semakin kecil nilainya semakin bagus (contoh: Harga, Berat)
             return (
               <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-400 border border-red-200 dark:border-red-800/60 shadow-2xs">
                 cost
               </span>
             );
           }
-          return null;
+          return (
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+              {String(val || "-")}
+            </span>
+          );
         },
       }),
       columnHelper.display({
@@ -85,8 +87,7 @@ export function TabelCriteriaIndex({
             <div className="flex items-center gap-2">
               <Button
                 type="button"
-                variant="info"
-                label="Update"
+                icon={<Edit className="w-3 h-3" />}
                 disabled={isDeleting}
                 onClick={() => onEdit(item)}
                 className="text-xs! py-1.5! px-3! rounded-xl font-bold shadow-xs cursor-pointer"
@@ -94,7 +95,7 @@ export function TabelCriteriaIndex({
               <Button
                 type="button"
                 variant="danger"
-                label="Hapus"
+                icon={<Trash2 className="w-3 h-3" />}
                 disabled={isDeleting}
                 isLoading={isDeleting}
                 onClick={() => onDelete(item.id, item.code, item.name)}

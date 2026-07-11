@@ -1,7 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import {
     ArrowLeft,
-    Save,
 } from "lucide-react";
 import { Button } from "../../../components/ui/common/Button";
 import { InputText } from "../../../components/ui/common/InputText";
@@ -53,7 +52,7 @@ export default function AddCriteria() {
                     <div className="bg-gray-50 dark:bg-[#1a171c] border border-gray-200 dark:border-gray-800/80 rounded-2xl p-4 flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2.5">
                             <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
-                                Preview Matriks SAW:
+                                Preview:
                             </span>
                             <span className="text-sm font-bold font-mono text-gray-900 dark:text-white px-2.5 py-1 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 shadow-2xs">
                                 [{codeVal}] {nameVal}
@@ -72,28 +71,22 @@ export default function AddCriteria() {
                         </div>
                     </div>
 
-                    {/* 1. Kode Kriteria (code) */}
                     <InputText
-                        label="Kode Kriteria (Identitas Unik)"
+                        label="Kode Kriteria"
                         nama="code"
-                        placeholder="Contoh: C1, C2, C3"
                         register={register}
                         error={errors.code?.message}
                         helperText="* Digunakan sebagai identitas kolom unik pada tabel perhitungan dan matriks keputusan."
                     />
 
-                    {/* 2. Nama Kriteria (name) */}
                     <InputText
-                        label="Nama Kriteria (Label Spesifikasi)"
+                        label="Nama Kriteria"
                         nama="name"
-                        placeholder="Contoh: Harga, RAM, Kapasitas Storage, Berat"
                         register={register}
                         error={errors.name?.message}
                         helperText="* Label spesifikasi laptop yang mudah dibaca oleh pengguna di antarmuka sistem."
                     />
 
-                    {/* 3. Tipe Atribut (type) */}
-                    {/* 3. Tipe Atribut (type) */}
                     <div className="pt-2 border-t border-gray-100 dark:border-gray-800">
                         <InputSelect
                             label="Tipe Atribut *"
@@ -102,7 +95,6 @@ export default function AddCriteria() {
                                 { value: "benefit", label: "Benefit" },
                                 { value: "cost", label: "Cost" },
                             ]}
-                            placeholder=""
                             register={register}
                             error={errors.type?.message}
                         />
@@ -120,7 +112,6 @@ export default function AddCriteria() {
                         <Button
                             type="submit"
                             variant="primary"
-                            icon={<Save className="w-4 h-4" />}
                             label={isSubmitting ? "Menyimpan..." : "Simpan Kriteria"}
                             disabled={isSubmitting}
                             className="text-xs py-2.5 px-6 rounded-xl font-bold shadow-md cursor-pointer"

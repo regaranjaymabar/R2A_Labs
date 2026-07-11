@@ -5,7 +5,6 @@ import { Modal } from "../../../components/ui/common/Modal";
 import { useQueryClient } from "@tanstack/react-query";
 import { subCriteriaService } from "../../../services/subCriteriaService";
 import { useUpdate } from "../../../hooks/useUpdate";
-import type { SubCriteriaFormData } from "./hooks/useAddSubCriteria";
 import type { SubCriteria } from "./SubCriteriaIndex";
 
 interface EditSubCriteriaProps {
@@ -26,11 +25,11 @@ export default function EditSubCriteria({
   useEffect(() => {
     if (item) {
       setEditDescription(item.description || "");
-      setEditValueNumeric(Number(item.value_numeric) || 0);
+      setEditValueNumeric(Number(item.value_numeric ?? item.valueNumeric) || 0);
     }
   }, [item]);
 
-  const updateMutation = useUpdate<SubCriteriaFormData>({
+  const updateMutation = useUpdate<any>({
     mutationFn: (payload) => subCriteriaService.update(item!.id, payload),
     queryKey: ["subcriterias"],
     successMessage: (variables) =>
@@ -39,38 +38,41 @@ export default function EditSubCriteria({
       `Gagal memperbarui konversi "${variables.description}": ${
         err?.response?.data?.message || err?.message || "Error"
       }`,
-    onOfflineFallback: () => {
-      queryClient.setQueryData<SubCriteria[]>(["subcriterias"], (old) =>
-        old
-          ? old.map((sub) =>
-              sub.id === item?.id
-                ? {
-                    ...sub,
-                    description: editDescription,
-                    value_numeric: Number(editValueNumeric),
-                  }
-                : sub
-            )
-          : []
-      );
-    },
   });
 
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!item) return;
 
-    updateMutation.mutate(
-      {
-        criteria_id: Number(item.criteria_id),
-        description: editDescription,
-        value_numeric: Number(editValueNumeric),
-      },
-      {
-        onSuccess: () => onClose(),
-        onSettled: () => onClose(),
-      }
+    const payload = {
+      description: editDescription,
+      valueNumeric: Number(editValueNumeric),
+      value_numeric: Number(editValueNumeric),
+    };
+
+    // Optimistic cache update agar UI seketika terperbarui
+    queryClient.setQueryData<SubCriteria[]>(["subcriterias"], (old = []) =>
+      old.map((sub) =>
+        Number(sub.id) === Number(item.id)
+          ? {
+              ...sub,
+              description: editDescription,
+              value_numeric: Number(editValueNumeric),
+              valueNumeric: Number(editValueNumeric),
+            }
+          : sub
+      )
     );
+
+    updateMutation.mutate(payload, {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ["subcriterias"] });
+        onClose();
+      },
+      onError: () => {
+        onClose();
+      },
+    });
   };
 
   return (

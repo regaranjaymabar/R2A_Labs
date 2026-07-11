@@ -58,8 +58,8 @@ export default function EditProductWeight() {
     setValue("sub_criteria_id", subId, { shouldValidate: true });
 
     const found = allSubCriterias.find((sub: any) => Number(sub.id) === subId);
-    if (found && found.value_numeric !== undefined) {
-      setValue("value_numeric", Number(found.value_numeric), { shouldValidate: true });
+    if (found && (found.valueNumeric !== undefined || found.value_numeric !== undefined)) {
+      setValue("value_numeric", Number(found.valueNumeric ?? found.value_numeric), { shouldValidate: true });
     } else if (found && (found as any).value !== undefined) {
       setValue("value_numeric", Number((found as any).value), { shouldValidate: true });
     } else {
@@ -117,7 +117,7 @@ export default function EditProductWeight() {
           </option>
           {products.map((p: any) => (
             <option key={p.id} value={p.id}>
-              #{p.id} - {p.brand_name || ""} {p.model_name}
+              #{p.id} - {p.brand?.name || p.brand_name || ""} {p.modelName || p.model_name}
             </option>
           ))}
         </InputSelect>

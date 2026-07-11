@@ -1,14 +1,15 @@
-import { useState } from "react";
 import { productWeightService } from "../../../../services/productWeightService";
-import { useDelete } from "../../../../hooks/useDelete";
-import { useQueryClient } from "@tanstack/react-query";
-import type { ProductWeight } from "../../../../types/productWeight";
+import { useDeleteWithConfirm } from "../../../../hooks/useDeleteWithConfirm";
 
 export function useDeleteProductWeight() {
-  const queryClient = useQueryClient();
-  const [deleteTarget, setDeleteTarget] = useState<{ ids: number[]; name: string } | null>(null);
-
-  const deleteMutation = useDelete<{ ids: number[]; name: string }>({
+  const {
+    deleteTarget,
+    setDeleteTarget,
+    confirmDelete,
+    cancelDelete,
+    isDeleting,
+    deleteMutation,
+  } = useDeleteWithConfirm<{ ids: number[]; name: string }>({
     mutationFn: async ({ ids }) => {
       await Promise.all(ids.map((id) => productWeightService.delete(id)));
     },
@@ -18,11 +19,8 @@ export function useDeleteProductWeight() {
       `Gagal menghapus bobot kriteria "${name}": ${
         err?.response?.data?.message || err?.message || "Error"
       }`,
-    onOfflineFallback: ({ ids }) => {
-      queryClient.setQueryData<ProductWeight[]>(["productweights"], (old) =>
-        old ? old.filter((item) => !ids.includes(item.id)) : []
-      );
-    },
+    onOfflineFallback: (target, oldData) =>
+      oldData ? oldData.filter((item) => !target.ids.includes(item.id)) : [],
   });
 
   const handleDelete = (idOrIds: number | number[], prodName: string, critName: string = "") => {
@@ -31,27 +29,13 @@ export function useDeleteProductWeight() {
     setDeleteTarget({ ids, name: displayName });
   };
 
-  const confirmDelete = () => {
-    if (deleteTarget) {
-      deleteMutation.mutate(deleteTarget, {
-        onSuccess: () => {
-          setDeleteTarget(null);
-        },
-      });
-    }
-  };
-
-  const cancelDelete = () => {
-    setDeleteTarget(null);
-  };
-
   return {
     handleDelete,
     confirmDelete,
     cancelDelete,
     deleteTarget,
-    isDeleting: deleteMutation.isPending,
-    deletingId: deleteMutation.isPending ? deleteMutation.variables?.ids[0] : null,
-    deletingIds: deleteMutation.isPending ? deleteMutation.variables?.ids || [] : [],
+    isDeleting,
+    deletingId: isDeleting ? deleteMutation.variables?.ids[0] : null,
+    deletingIds: isDeleting ? deleteMutation.variables?.ids || [] : [],
   };
 }

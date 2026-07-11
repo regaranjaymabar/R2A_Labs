@@ -1,14 +1,16 @@
 import { useMemo } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { DataTable, DataTableColumnHeader } from "../../../../components/ui/common/DataTable";
-import type { ProductWeight } from "../../../../types/productWeight";
+
 import Button from "../../../../components/ui/common/Button";
+import type { ProductCriteria } from "../../../../types/productWeight";
+import { Trash2 } from "lucide-react";
 
 export interface TabelProductWeightIndexProps {
-  data: ProductWeight[];
+  data: ProductCriteria[];
   products?: { id: number; name: string }[]; // <-- Properti ini 
   isLoading?: boolean;
-  onEdit: (item: ProductWeight) => void;
+  onEdit: (item: ProductCriteria) => void;
   onDelete: (id: number, prodName: string, critName: string) => void;
   deletingId?: number | null;
 }
@@ -18,9 +20,9 @@ export interface GroupedLaptopWeight {
   product_id: number;
   product_name: string;
   items: {
-    [criteria_code: string]: ProductWeight; // "C1", "C2", "C3", "C4", "C5"
+    [criteria_code: string]: ProductCriteria; // "C1", "C2", "C3", "C4", "C5"
   };
-  allItems: ProductWeight[];
+  allItems: ProductCriteria[];
   search_string: string;
 }
 
@@ -49,7 +51,7 @@ export function TabelProductWeightIndex({
       const group = map.get(item.product_id)!;
       if (item.criteria_code) {
         group.items[item.criteria_code] = item;
-        group.search_string += ` ${item.criteria_code} ${item.criteria_name || ""} ${item.sub_criteria_description || ""} ${item.value_numeric}`;
+        group.search_string += ` ${item.criteria_code} ${item.criteria_name || ""} ${item.sub_criteria_description || ""} ${item.value_numeric ?? item.value_numeric}`;
       }
       group.allItems.push(item);
     });
@@ -93,7 +95,7 @@ export function TabelProductWeightIndex({
           {/* Bagian Bawah: Skor Numerik & Indikator Ubah */}
           <div className="flex items-center justify-between gap-1 pt-1.5 border-t border-black/5 dark:border-white/5">
             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-mono font-extrabold ${theme.badge} ${theme.badgeText} shadow-2xs`}>
-              {Number(crit.value_numeric).toFixed(2)}
+              {Number(crit.value_numeric ?? crit.value_numeric ?? 0).toFixed(2)}
             </span>
           </div>
         </div>
@@ -223,7 +225,7 @@ export function TabelProductWeightIndex({
               <Button
                 type="button"
                 variant="danger"
-                label="Hapus"
+                icon={<Trash2 className="w-3 h-3" />}
                 disabled={!firstCrit || isDeleting}
                 isLoading={isDeleting}
                 onClick={() => {

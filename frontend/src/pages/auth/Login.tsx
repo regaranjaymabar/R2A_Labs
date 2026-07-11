@@ -1,11 +1,11 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Link, useNavigate, type ErrorResponse } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useAuthStore } from "../../store/useAuthStore";
-import type { LoginInput, LoginResponse } from "../../types/auth";
+import type { LoginInput, CustomerAuthWrapperResponse } from "../../types/auth";
 import { api } from "../../lib/axios";
 import { InputText } from "../../components/ui/common/InputText";
 import { InputPassword } from "../../components/ui/common/InputPassword";
@@ -36,26 +36,27 @@ export default function Login() {
 
     const loginMutation = useMutation({
         mutationFn: async (credentials: LoginInput) => {
-            //logic awal
-            const response = await api.post<LoginResponse>("/auth/login", credentials);
-            return response.data;
+            const response = await api.post<CustomerAuthWrapperResponse>("/api/customer/auth/login", credentials);
+            return response.data.data;
         },
         onSuccess: (data) => {
-            //logic jika sukses
+            const customerUser = {
+                ...data.customer,
+                role: data.customer.role || "customer",
+            };
+
             login({
-                user: data.user,
+                user: customerUser,
                 token: data.token
             });
 
-            queryClient.setQueryData(["me"], data.user);
+            queryClient.setQueryData(["me"], customerUser);
 
-            navigate("/dashboard");
-
+            navigate("/");
         },
-        onError: (error: AxiosError<ErrorResponse>) => {
-            const message = error.message || "Error Boss!"
-            alert(`Gagal Boss : ${message}`);
-
+        onError: (error: AxiosError<any>) => {
+            const message = error.response?.data?.message || error.message || "Email atau password salah!";
+            alert(`Gagal Login : ${message}`);
         }
     })
 
@@ -67,12 +68,9 @@ export default function Login() {
         <div>
             {/* Header Form */}
             <div className="mb-4 text-center sm:text-left">
-                <h2 className="text-center text-2xl font-extrabold text-gray-900 tracking-tight">
-                    Selamat Datang
+                <h2 className="text-center flex justify-center sm:text-left text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                    Masuk Akun Customer
                 </h2>
-                <p className="text-center text-xs text-gray-500 mt-1">
-                    Silakan masukkan email dan password untuk masuk ke akun Anda.
-                </p>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
@@ -91,13 +89,26 @@ export default function Login() {
                 />
 
                 <div className="pt-2">
-                    <Button type="submit" label="Login" className="w-full py-2.5 text-base shadow-md hover:shadow-lg transition-all" />
+                    <Button
+                        type="submit"
+                        isLoading={loginMutation.isPending}
+                        disabled={loginMutation.isPending}
+                        label="Masuk Sekarang"
+                        className="w-full py-2.5 text-base shadow-md hover:shadow-lg transition-all cursor-pointer font-bold"
+                    />
                 </div>
 
-                <div className="mt-4 text-center text-xs text-gray-600">
+                <div className="mt-4 text-center text-xs text-gray-600 dark:text-gray-400">
                     Belum punya akun?{" "}
-                    <Link to="/register" className="font-semibold text-black hover:underline transition-colors">
+                    <Link to="/register" className="font-semibold text-black dark:text-white hover:underline transition-colors">
                         Daftar di sini
+                    </Link>
+                </div>
+
+                <div className="pt-3 border-t border-gray-100 dark:border-gray-800 text-center text-xs text-gray-500">
+                    Staf atau Admin toko?{" "}
+                    <Link to="/admin/login" className="font-semibold text-black hover:underline transition-colors">
+                        Masuk Portal Admin
                     </Link>
                 </div>
             </form>

@@ -19,6 +19,7 @@ export function useAddProductStore() {
   // Inisialisasi React Hook Form + Zod Resolver
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     watch,
@@ -54,6 +55,7 @@ export function useAddProductStore() {
 
   return {
     register,
+    control,
     handleSubmit: handleSubmit(onSubmit),
     setValue,
     watch,

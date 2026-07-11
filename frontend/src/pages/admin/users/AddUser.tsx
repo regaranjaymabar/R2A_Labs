@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import {
-  ArrowLeft,
-  UserPlus,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "../../../components/ui/common/Button";
 import { InputText } from "../../../components/ui/common/InputText";
+import { InputSelect } from "../../../components/ui/common/InputSelect";
+import { storeService } from "../../../services/storeService";
 import { useAddUser } from "./hooks/useAddUser";
 
 export default function AddUser() {
@@ -18,6 +18,16 @@ export default function AddUser() {
     selectedRole,
   } = useAddUser();
 
+  const { data: stores = [] } = useQuery({
+    queryKey: ["stores"],
+    queryFn: () => storeService.getAll(),
+  });
+
+  const storeOptions = stores.map((s) => ({
+    value: s.id,
+    label: `${s.name} - ${s.city || s.address || "Cabang"}`,
+  }));
+
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
       {/* 1. HEADER HALAMAN */}
@@ -25,12 +35,9 @@ export default function AddUser() {
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
-              <span>Registrasi Akun Pengguna / Pegawai</span>
+              <span>Registrasi Akun Pengguna</span>
             </h1>
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Daftarkan akun baru ke dalam tabel <code className="font-mono text-xs">users</code>. Tentukan hak akses dan peran operasional secara presisi.
-          </p>
         </div>
 
         <Link
@@ -44,48 +51,53 @@ export default function AddUser() {
 
       {/* 2. KARTU FORM UTAMA */}
       <div className="bg-white dark:bg-[#151216] rounded-3xl border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden">
-        {/* Decorative Top Accent */}
-        <div className="h-2 bg-linear-to-r from-black to-black"></div>
+        <div className="h-2 bg-linear-to-r from-purple-600 to-blue-600"></div>
 
         <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-8">
           {/* SECTION 1: IDENTITAS & KREDENSIAL AKUN */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-800 text-sm font-bold text-black dark:text-purple-400">
-              <span>Identitas</span>
+              <span>Identitas & Penempatan Toko</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Nama Lengkap */}
               <div className="md:col-span-1">
                 <InputText
-                  label="Nama Lengkap (name) *"
+                  label="Nama Lengkap *"
                   nama="name"
-                  placeholder="Contoh: Budi Santoso"
                   register={register}
                   error={errors.name?.message}
                 />
               </div>
 
-              {/* Alamat Email */}
               <div className="md:col-span-1">
                 <InputText
-                  label="Alamat Email (email) *"
+                  label="Alamat Email *"
                   nama="email"
                   type="email"
-                  placeholder="Contoh: budi.store@r2a-labs.com"
                   register={register}
                   error={errors.email?.message}
                 />
               </div>
 
-              {/* Password Awal */}
-              <div className="md:col-span-2">
+              <div className="md:col-span-1">
                 <InputText
-                  label="Password Awal (password) *"
+                  label="Password *"
                   nama="password"
-                  placeholder="Contoh: Store#2026 (Minimal 6 karakter)"
+                  type="password"
                   register={register}
                   error={errors.password?.message}
+                />
+              </div>
+
+              <div className="md:col-span-1">
+                <InputSelect
+                  label="Penempatan Cabang Toko *"
+                  nama="storeId"
+                  register={register}
+                  error={errors.storeId?.message}
+                  options={storeOptions}
+                  placeholder="-- Pilih Cabang Toko --"
                 />
               </div>
             </div>
@@ -94,14 +106,14 @@ export default function AddUser() {
           {/* SECTION 2: PEMBAGIAN PERAN (ROLE MANAGEMENT) */}
           <div className="space-y-4 pt-2 border-t border-gray-100 dark:border-gray-800">
             <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-800 text-sm font-bold text-black dark:text-purple-400">
-              <span>Pembagian Peran</span>
+              <span>Pembagian Peran (Role)</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {(
                 [
-                  { id: "store_admin", label: "Admin Toko", desc: "Mengelola stok & harga cabang", color: "blue" },
-                  { id: "admin", label: "Super Admin", desc: "Kontrol penuh sistem SPK", color: "purple" },
+                  { id: "admin", label: "Admin Toko / Staff", desc: "Mengelola stok & harga cabang", color: "blue" },
+                  { id: "superadmin", label: "Super Admin", desc: "Kontrol penuh sistem SPK", color: "purple" },
                   { id: "user", label: "User Biasa", desc: "Konsumen pencari laptop", color: "gray" },
                 ] as const
               ).map((roleOpt) => {
@@ -173,7 +185,6 @@ export default function AddUser() {
               type="submit"
               variant="primary"
               disabled={isSubmitting}
-              icon={<UserPlus className="w-4 h-4" />}
               label={isSubmitting ? "Menyimpan..." : "Daftarkan Pengguna"}
               className="py-3! px-6! rounded-xl! font-bold! shadow-lg cursor-pointer"
             />

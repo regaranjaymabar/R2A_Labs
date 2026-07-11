@@ -18,18 +18,7 @@ import type { Brand } from "../../../types/brand";
 
 // Data Dummy Cadangan (Fallback jika server backend belum menyala saat development)
 const initialBrands: Brand[] = [
-    { id: 1, name: "ASUS"},
-    { id: 2, name: "Lenovo"},
-    { id: 3, name: "HP"},
-    { id: 4, name: "Acer"},
-    { id: 5, name: "Apple"},
-    { id: 6, name: "MSI"},
-    { id: 7, name: "Dell"},
-    { id: 8, name: "Axioo"},
-    { id: 9, name: "Razer"},
-    { id: 10, name: "Samsung"},
-    { id: 11, name: "Zyrex"},
-    { id: 12, name: "Gigabyte"},
+   
 ];
 
 export default function BrandIndex() {

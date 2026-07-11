@@ -1,15 +1,14 @@
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { createColumnHelper } from "@tanstack/react-table";
 import {
   Edit,
   Trash2,
-  CheckCircle2,
-  XCircle,
-  Loader2,
 } from "lucide-react";
 import { DataTable, DataTableColumnHeader } from "../../../../components/ui/common/DataTable";
-import { type Brand } from "../BrandIndex";
+import type { Brand } from "../../../../types/brand";
+import Button from "../../../../components/ui/common/Button";
+
 
 interface TableBrandIndexProps {
   data: Brand[];
@@ -26,7 +25,8 @@ export function TableBrandIndex({
   onDelete,
   deletingId = null,
 }: TableBrandIndexProps) {
-  
+  const navigate = useNavigate();
+
   // Definisi Kolom Tabel (id, name, is_active, dan actions)
   const columns = useMemo(
     () => [
@@ -49,24 +49,6 @@ export function TableBrandIndex({
           </div>
         ),
       }),
-      columnHelper.accessor("is_active", {
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
-        cell: (info) => {
-          const val = info.getValue();
-          const isActive = val === 1 || val === true || Number(val) === 1;
-          return isActive ? (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 shadow-2xs">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-              Aktif
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-800/60 shadow-2xs">
-              <XCircle className="w-3.5 h-3.5 text-red-500" />
-              Non-Aktif
-            </span>
-          );
-        },
-      }),
       columnHelper.display({
         id: "actions",
         header: () => <span className="font-semibold text-right block">Aksi</span>,
@@ -75,32 +57,28 @@ export function TableBrandIndex({
           const isDeleting = deletingId === brand.id;
           return (
             <div className="flex items-center justify-end gap-2">
-              <Link
-                to={`/admin/brands/edit/${brand.id}`}
-                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-400 dark:hover:bg-blue-950/40 rounded-lg transition-colors"
-                title="Edit Brand"
-              >
-                <Edit className="w-4 h-4" />
-              </Link>
-              <button
+              <Button
                 type="button"
-                onClick={() => onDelete(brand.id, brand.name)}
+                icon={<Edit className="w-3 h-3" />}
                 disabled={isDeleting}
-                className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 dark:text-gray-400 dark:hover:text-red-400 dark:hover:bg-red-950/40 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
-                title="Hapus Brand"
-              >
-                {isDeleting ? (
-                  <Loader2 className="w-4 h-4 animate-spin text-red-500" />
-                ) : (
-                  <Trash2 className="w-4 h-4" />
-                )}
-              </button>
+                onClick={() => navigate(`/admin/brands/edit/${brand.id}`)}
+                className="text-xs! py-1.5! px-3! rounded-xl font-bold shadow-xs cursor-pointer"
+              />
+              <Button
+                type="button"
+                variant="danger"
+                icon={<Trash2 className="w-3 h-3" />}
+                disabled={isDeleting}
+                isLoading={isDeleting}
+                onClick={() => onDelete(brand.id, brand.name)}
+                className="text-xs! py-1.5! px-3! rounded-xl font-bold shadow-xs cursor-pointer"
+              />
             </div>
           );
         },
       }),
     ],
-    [deletingId, onDelete]
+    [deletingId, onDelete, navigate]
   );
 
   return (

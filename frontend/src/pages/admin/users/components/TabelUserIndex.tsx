@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Loader2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import { DataTable, DataTableColumnHeader } from "../../../../components/ui/common/DataTable";
 import { Button } from "../../../../components/ui/common/Button";
 import type { UserData } from "../../../../types/user";
@@ -9,8 +9,8 @@ export interface TabelUserIndexProps {
   data: UserData[];
   isLoading?: boolean;
   onEdit: (item: UserData) => void;
-  onToggleStatus: (item: UserData) => void;
-  togglingId?: number | null;
+  onDelete: (item: UserData) => void;
+  deletingId?: number | null;
 }
 
 const columnHelper = createColumnHelper<UserData>();
@@ -19,20 +19,24 @@ export function TabelUserIndex({
   data,
   isLoading = false,
   onEdit,
-  onToggleStatus,
-  togglingId = null,
+  onDelete,
+  deletingId = null,
 }: TabelUserIndexProps) {
   const columns = useMemo(
     () => [
-      columnHelper.accessor("id", {
-        header: () => <span className="font-semibold">ID</span>,
-        cell: (info) => (
-          <span className="text-gray-500 dark:text-gray-400 font-mono font-bold">
-            #{info.getValue()}
-          </span>
-        ),
-        size: 60,
-      }),
+      columnHelper.accessor(
+        (row) => row.id ?? (row as any).id_user ?? "-",
+        {
+          id: "id",
+          header: () => <span className="font-semibold">ID</span>,
+          cell: (info) => (
+            <span className="text-gray-500 dark:text-gray-400 font-mono font-bold">
+              #{info.getValue()}
+            </span>
+          ),
+          size: 60,
+        }
+      ),
       columnHelper.accessor("name", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Identitas Pengguna" />,
         cell: (info) => {
@@ -62,14 +66,14 @@ export function TabelUserIndex({
         header: ({ column }) => <DataTableColumnHeader column={column} title="Peran Akses (Role)" />,
         cell: (info) => {
           const role = info.getValue();
-          if (role === "admin") {
+          if (role === "superadmin") {
             return (
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60 shadow-2xs">
                 <span>Super Admin</span>
               </span>
             );
           }
-          if (role === "store_admin") {
+          if (role === "admin" || role === "store_admin") {
             return (
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60 shadow-2xs">
                 <span>Admin Toko</span>
@@ -83,81 +87,93 @@ export function TabelUserIndex({
           );
         },
       }),
-      columnHelper.accessor("is_active", {
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Status Akun (Soft Delete)" />,
-        cell: (info) => {
-          const isActive = info.getValue();
-          return isActive ? (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-              <span>Aktif</span>
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800">
-              <span>Nonaktif</span>
-            </span>
-          );
+      columnHelper.accessor(
+        (row) => {
+          const val = row.isActive ?? row.is_active;
+          return val === false || val === 0 ? false : true;
         },
-      }),
-      columnHelper.accessor("created_at", {
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Tanggal Daftar" />,
-        cell: (info) => (
-          <span className="text-xs text-gray-600 dark:text-gray-400 font-mono">
-            {info.getValue()}
-          </span>
-        ),
-      }),
+        {
+          id: "is_active",
+          header: ({ column }) => <DataTableColumnHeader column={column} title="Status Akun (Soft Delete)" />,
+          cell: (info) => {
+            const isActive = info.getValue();
+            return isActive ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                <span>Aktif</span>
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800">
+                <span>Nonaktif</span>
+              </span>
+            );
+          },
+        }
+      ),
+      columnHelper.accessor(
+        (row) => row.createdAt || row.created_at || "-",
+        {
+          id: "created_at",
+          header: ({ column }) => <DataTableColumnHeader column={column} title="Tanggal Daftar" />,
+          cell: (info) => {
+            const raw = info.getValue();
+            if (!raw || raw === "-") return <span className="text-xs text-gray-400">-</span>;
+            try {
+              const d = new Date(raw);
+              if (isNaN(d.getTime())) return <span className="text-xs text-gray-600 dark:text-gray-400 font-mono">{raw}</span>;
+              return (
+                <span className="text-xs text-gray-600 dark:text-gray-400 font-mono">
+                  {d.toLocaleDateString("id-ID", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </span>
+              );
+            } catch {
+              return (
+                <span className="text-xs text-gray-600 dark:text-gray-400 font-mono">
+                  {raw}
+                </span>
+              );
+            }
+          },
+        }
+      ),
       columnHelper.display({
         id: "actions",
         header: () => <span className="font-semibold text-right block">Aksi Kendali</span>,
         cell: (info) => {
           const item = info.row.original;
           const isSuperAdminMain = item.id === 1;
-          const isToggling = togglingId === item.id;
+          const isDeleting = deletingId === item.id;
 
           return (
             <div className="flex items-center justify-end gap-2">
-              <span title="Edit Identitas & Peran Pengguna">
-                <Button
-                  type="button"
-                  variant="info"
-                  onClick={() => onEdit(item)}
-                  disabled={isToggling}
-                  label="Edit Role"
-                  className="text-xs! py-1.5! px-3! rounded-xl font-bold shadow-2xs cursor-pointer disabled:opacity-50"
-                />
-              </span>
+              <Button
+                type="button"
+                icon={<Edit className="w-3 h-3" />}
+                onClick={() => onEdit(item)}
+                disabled={isDeleting}
+                className="text-xs! py-1.5! px-3! rounded-xl font-bold shadow-2xs cursor-pointer disabled:opacity-50"
+              />
 
               {!isSuperAdminMain && (
-                <button
+                <Button
                   type="button"
-                  onClick={() => onToggleStatus(item)}
-                  disabled={isToggling}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-semibold text-xs border transition-all active:scale-95 shadow-2xs cursor-pointer disabled:opacity-50 ${
-                    item.is_active
-                      ? "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/60 border-red-200 dark:border-red-800/60"
-                      : "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border-emerald-200 dark:border-emerald-800/60"
-                  }`}
-                  title={item.is_active ? "Nonaktifkan Akun (Soft Delete)" : "Aktifkan Kembali Akses Akun"}
-                >
-                  {isToggling ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : item.is_active ? (
-                    <>
-                      <span>Nonaktifkan</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Aktifkan</span>
-                    </>
-                  )}
-                </button>
+                  variant="danger"
+                  icon={<Trash2 className="w-3.5 h-3.5" />}
+                  onClick={() => onDelete(item)}
+                  disabled={isDeleting}
+                  isLoading={isDeleting}
+                  className="text-xs! py-1.5! px-3! rounded-xl font-bold shadow-2xs cursor-pointer"
+                />
               )}
             </div>
           );
         },
       }),
     ],
-    [onEdit, onToggleStatus, togglingId]
+    [onEdit, onDelete, deletingId]
   );
 
   return (

@@ -4,26 +4,28 @@ import { z } from "zod";
 import { productService } from "../../../../services/productService";
 import { useCreate } from "../../../../hooks/useCreate";
 
-// 1. Skema Validasi Zod untuk tabel products di database
+
 export const productSchema = z.object({
-  brand_id: z.coerce.number().min(1, "Pilih merek laptop terlebih dahulu!"),
-  model_name: z.string().min(1, "Nama model laptop wajib diisi!"),
-  processor: z.string().optional(),
-  ram: z.string().optional(),
-  storage: z.string().optional(),
-  screen_size: z.coerce.number().optional(),
-  battery: z.coerce.number().optional(),
-  weight: z.coerce.number().optional(),
-  release_year: z.coerce.number().optional(),
-  is_active: z.boolean(),
+  brandId: z.coerce.number().min(1, "Pilih merek laptop terlebih dahulu!"),
+  modelName: z.string().min(1, "Nama model laptop wajib diisi!"),
+  screenSize: z.coerce.number().optional(),
+  processor: z.string().min(1, "Processor wajib diisi!"),
+  ram: z.string().min(1, "Kapasitas RAM wajib diisi!"),
+  storage: z.string().min(1, "Storage wajib diisi!"),
+  battery: z.string().optional(),
+  weight: z.coerce.number().min(0.1, "Berat laptop wajib diisi!"),
+  releaseYear: z.string().min(4, "Tahun rilis wajib diisi!"),
+  subCriteriaIds: z.array(z.number()).default([]),
+  is_active: z.boolean().default(true),
 });
 
 export type ProductFormData = z.infer<typeof productSchema>;
 
 export function useAddProduct() {
-  // Inisialisasi React Hook Form + Zod Resolver
+ 
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     watch,
@@ -37,16 +39,15 @@ export function useAddProduct() {
 
   const isActive = watch("is_active");
 
-  // Mutasi dengan Generic Hook useCreate + Product Service (Sangat Ringkas & Reusable)
-  const createMutation = useCreate<ProductFormData>({
+    const createMutation = useCreate<ProductFormData>({
     mutationFn: (payload) => productService.create(payload),
     queryKey: ["products"],
     navigateTo: "/admin/products",
     successMessage: (variables) =>
-      `Produk "${variables.model_name}" berhasil didaftarkan dengan status: ${variables.is_active ? "Aktif (Live)" : "Nonaktif (Draft)"
+      `Produk "${variables.modelName}" berhasil didaftarkan dengan status: ${variables.is_active ? "Aktif (Live)" : "Nonaktif (Draft)"
       }!`,
     errorMessage: (variables, err) =>
-      `Gagal menyimpan produk "${variables.model_name}": ${err?.response?.data?.message || err?.message || "Error"
+      `Gagal menyimpan produk "${variables.modelName}": ${err?.response?.data?.message || err?.message || "Error"
       }`,
   });
 
@@ -56,6 +57,7 @@ export function useAddProduct() {
 
   return {
     register,
+    control,
     handleSubmit: handleSubmit(onSubmit),
     setValue,
     errors,

@@ -80,6 +80,36 @@ export function DataTable<TData>({
     },
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: (row, columnId, filterValue) => {
+      const search = String(filterValue).toLowerCase().trim();
+      if (!search) return true;
+
+      // 1. Cek nilai kolom standar dari TanStack Table
+      const colValue = row.getValue(columnId);
+      if (colValue !== undefined && colValue !== null && String(colValue).toLowerCase().includes(search)) {
+        return true;
+      }
+
+      // 2. Cek ke dalam seluruh properti string/number dari row.original
+      const item: any = row.original;
+      if (!item) return false;
+
+      const searchInObj = (obj: any, depth = 0): boolean => {
+        if (!obj || typeof obj !== "object" || depth > 3) return false;
+        for (const key of Object.keys(obj)) {
+          const val = obj[key];
+          if (val === null || val === undefined) continue;
+          if (typeof val === "string" || typeof val === "number") {
+            if (String(val).toLowerCase().includes(search)) return true;
+          } else if (typeof val === "object") {
+            if (searchInObj(val, depth + 1)) return true;
+          }
+        }
+        return false;
+      };
+
+      return searchInObj(item);
+    },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),

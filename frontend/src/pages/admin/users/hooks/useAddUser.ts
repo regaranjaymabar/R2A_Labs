@@ -16,10 +16,13 @@ export const userSchema = z.object({
     .email("Format email tidak valid!"),
   password: z
     .string()
-    .min(6, "Password minimal 6 karakter")
-    .optional()
-    .or(z.literal("")),
-  role: z.enum(["admin", "store_admin", "user"]),
+    .min(6, "Password minimal 6 karakter"),
+  role: z.enum(["superadmin", "admin", "store_admin", "user"]),
+  storeId: z.union([
+    z.coerce.number().min(1, "Cabang toko wajib dipilih!"),
+    z.literal(""),
+    z.null(),
+  ]),
   is_active: z.boolean(),
 });
 
@@ -31,6 +34,7 @@ export function useAddUser() {
   // Inisialisasi React Hook Form + Zod Resolver
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     watch,
@@ -41,7 +45,8 @@ export function useAddUser() {
       name: "",
       email: "",
       password: "",
-      role: "store_admin",
+      role: "admin",
+      storeId: 1,
       is_active: true, // Default diatur ke Aktif (true)
     },
   });
@@ -55,7 +60,7 @@ export function useAddUser() {
     queryKey: ["users"],
     navigateTo: "/admin/users",
     successMessage: (variables) =>
-      `Pengguna "${variables.name}" (${variables.role}) berhasil didaftarkan!`,
+      `Pengguna "${variables.name}" berhasil didaftarkan!`,
     errorMessage: (variables, err) =>
       `Gagal menyimpan pengguna "${variables.name}": ${
         err?.response?.data?.message || err?.message || "Error"
@@ -68,6 +73,7 @@ export function useAddUser() {
 
   return {
     register,
+    control,
     handleSubmit: handleSubmit(onSubmit),
     setValue,
     watch,

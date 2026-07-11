@@ -10,3 +10,12 @@ export type ProductStore = {
   brand_name?: string;
   store_name?: string;
 };
+
+export type ProductStoreFormData = {
+  productId: number;
+  storeId?: number;
+  price: number;
+  stock: number;
+  isAvailable?: boolean;
+  [key: string]: any;
+};
