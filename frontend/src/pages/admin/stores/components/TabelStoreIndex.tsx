@@ -28,7 +28,7 @@ export function TabelStoreIndex({
       columnHelper.accessor("id", {
         header: () => <span className="font-semibold">ID / No</span>,
         cell: (info) => (
-          <span className="text-gray-500 dark:text-gray-400 font-mono font-medium">
+          <span className="text-gray-500 font-mono font-medium">
             #{info.getValue()}
           </span>
         ),
@@ -38,7 +38,7 @@ export function TabelStoreIndex({
         header: ({ column }) => <DataTableColumnHeader column={column} title="Nama Toko" />,
         cell: (info) => (
           <div className="flex items-center gap-3">
-            <span className="font-bold text-gray-900 dark:text-white text-base">
+            <span className="font-bold text-gray-900 text-base">
               {info.getValue()}
             </span>
           </div>
@@ -47,7 +47,7 @@ export function TabelStoreIndex({
       columnHelper.accessor("address", {
         header: () => <span className="font-semibold">Alamat Lengkap</span>,
         cell: (info) => (
-          <span className="text-gray-500 dark:text-gray-400 text-xs truncate block max-w-xs" title={info.getValue() || ""}>
+          <span className="text-gray-500 text-xs truncate block max-w-xs" title={info.getValue() || ""}>
             {info.getValue() || "-"}
           </span>
         ),
@@ -55,14 +55,14 @@ export function TabelStoreIndex({
       columnHelper.accessor("city", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Kota / Wilayah" />,
         cell: (info) => (
-          <span className="text-gray-700 dark:text-gray-300 font-medium">
+          <span className="text-gray-700 font-medium">
             {info.getValue()}
           </span>
         ),
       }),
       columnHelper.accessor("phone", {
         header: () => <span className="font-semibold">No. Telepon</span>,
-        cell: (info) => <span className="font-mono text-gray-600 dark:text-gray-400">{info.getValue()}</span>,
+        cell: (info) => <span className="font-mono text-gray-600">{info.getValue()}</span>,
       }),
       columnHelper.accessor(
         (row: any) => {
@@ -75,12 +75,12 @@ export function TabelStoreIndex({
           cell: (info) => {
             const isActive = info.getValue() === "Aktif";
           return isActive ? (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 shadow-2xs">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
               Aktif
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-800/60 shadow-2xs">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200 shadow-2xs">
               <XCircle className="w-3.5 h-3.5 text-red-500" />
               Non-Aktif
             </span>

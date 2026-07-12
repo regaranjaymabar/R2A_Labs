@@ -70,10 +70,10 @@ export default function AddStock() {
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
       {/* 1. HEADER HALAMAN & ROLE BADGE */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 dark:border-gray-800 pb-5 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 pb-5 gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2.5">
               <span>Tambah Stok & Harga Cabang</span>
             </h1>
           </div>
@@ -81,11 +81,11 @@ export default function AddStock() {
 
         <div className="flex items-center gap-3 self-start sm:self-auto">
           {/* Badge Peran Pengguna Aktif */}
-          <div className="bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xs font-bold border border-gray-200 dark:border-gray-700">
+          <div className="bg-gray-100 px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xs font-bold border border-gray-200">
             {isSuperAdmin ? (
-              <span className="text-blue-600 dark:text-blue-400">⚡ Super Admin (Full Akses)</span>
+              <span className="text-blue-600">⚡ Super Admin (Full Akses)</span>
             ) : (
-              <span className="text-purple-600 dark:text-purple-400 flex items-center gap-1">
+              <span className="text-purple-600 flex items-center gap-1">
                 <Lock className="w-3 h-3" /> Store Admin
               </span>
             )}
@@ -93,7 +93,7 @@ export default function AddStock() {
 
           <Link
             to="/admin/productstores"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold text-xs transition-all shadow-2xs active:scale-95"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition-all shadow-2xs active:scale-95"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Kembali</span>
@@ -102,7 +102,7 @@ export default function AddStock() {
       </div>
 
       {/* 2. KARTU FORM UTAMA */}
-      <div className="bg-white dark:bg-[#151216] rounded-3xl border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden">
+      <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
         {/* Decorative Top Accent */}
         <div className="h-2 bg-black"></div>
 
@@ -117,7 +117,7 @@ export default function AddStock() {
                     <span className="flex items-center justify-between">
                       <span>Pilih Toko Cabang *</span>
                       {isStoreAdmin && (
-                        <span className="text-[10px] font-mono font-bold text-black dark:text-purple-400 flex items-center gap-1 bg-purple-100 dark:bg-purple-900/60 px-2 py-0.5 rounded-full">
+                        <span className="text-[10px] font-mono font-bold text-black flex items-center gap-1 bg-purple-100 px-2 py-0.5 rounded-full">
                           <Lock className="w-2.5 h-2.5" /> Terkunci
                         </span>
                       )}
@@ -171,7 +171,7 @@ export default function AddStock() {
 
           {/* SECTION 2: HARGA JUAL & STOK AWAL */}
           <div className="space-y-4 pt-2">
-            <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-800 text-sm font-bold text-black dark:text-white">
+            <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-black">
               <span>Penetapan Harga Lokal & Stok Fisik</span>
             </div>
 
@@ -185,10 +185,10 @@ export default function AddStock() {
                   register={register}
                   error={errors.price?.message}
                   helperText={
-                    <span className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <span className="flex items-center justify-between text-xs text-gray-500 mt-1">
                       <span>* Harga bisa berbeda tiap cabang.</span>
                       {Number(watchPrice) > 0 && (
-                        <span className="font-bold font-mono text-black dark:text-purple-400">
+                        <span className="font-bold font-mono text-black">
                           {formattedPrice}
                         </span>
                       )}
@@ -212,8 +212,8 @@ export default function AddStock() {
           </div>
 
           {/* SECTION 3: STATUS KETERSEDIAAN CABANG */}
-          <div className="space-y-3 pt-4 border-t border-gray-100 dark:border-gray-800">
-            <label className="block text-sm font-bold text-gray-900 dark:text-white items-center justify-between">
+          <div className="space-y-3 pt-4 border-t border-gray-100">
+            <label className="block text-sm font-bold text-gray-900 items-center justify-between">
               <span className="flex items-center gap-2">
                 <span>Status Ketersediaan di Cabang Ini</span>
               </span>
@@ -227,14 +227,14 @@ export default function AddStock() {
                   setValue("is_available", true, { shouldValidate: true })
                 }
                 className={`p-4 rounded-2xl border-2 text-left transition-all flex items-start gap-3.5 cursor-pointer ${isAvailable
-                    ? "bg-emerald-50/80 dark:bg-emerald-950/40 border-emerald-500 shadow-md ring-2 ring-emerald-500/20"
-                    : "bg-gray-50 dark:bg-[#181519] border-gray-200 dark:border-gray-800 opacity-60 hover:opacity-100 hover:border-gray-300"
+                    ? "bg-emerald-50/80 border-emerald-500 shadow-md ring-2 ring-emerald-500/20"
+                    : "bg-gray-50 border-gray-200 opacity-60 hover:opacity-100 hover:border-gray-300"
                   }`}
               >
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 font-bold ${isAvailable
                       ? "bg-emerald-500 text-white shadow-xs"
-                      : "border-2 border-gray-300 dark:border-gray-600"
+                      : "border-2 border-gray-300"
                     }`}
                 >
                   {isAvailable && <CheckCircle2 className="w-4 h-4" />}
@@ -242,8 +242,8 @@ export default function AddStock() {
                 <div>
                   <span
                     className={`block font-bold text-sm ${isAvailable
-                        ? "text-emerald-900 dark:text-emerald-200"
-                        : "text-gray-700 dark:text-gray-300"
+                        ? "text-emerald-900"
+                        : "text-gray-700"
                       }`}
                   >
                     Tersedia
@@ -258,14 +258,14 @@ export default function AddStock() {
                   setValue("is_available", false, { shouldValidate: true })
                 }
                 className={`p-4 rounded-2xl border-2 text-left transition-all flex items-start gap-3.5 cursor-pointer ${!isAvailable
-                    ? "bg-red-50/80 dark:bg-red-950/40 border-red-500 shadow-md ring-2 ring-red-500/20"
-                    : "bg-gray-50 dark:bg-[#181519] border-gray-200 dark:border-gray-800 opacity-60 hover:opacity-100 hover:border-gray-300"
+                    ? "bg-red-50/80 border-red-500 shadow-md ring-2 ring-red-500/20"
+                    : "bg-gray-50 border-gray-200 opacity-60 hover:opacity-100 hover:border-gray-300"
                   }`}
               >
                 <div
                   className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 font-bold ${!isAvailable
                       ? "bg-red-500 text-white shadow-xs"
-                      : "border-2 border-gray-300 dark:border-gray-600"
+                      : "border-2 border-gray-300"
                     }`}
                 >
                   {!isAvailable && <Ban className="w-4 h-4" />}
@@ -273,8 +273,8 @@ export default function AddStock() {
                 <div>
                   <span
                     className={`block font-bold text-sm ${!isAvailable
-                        ? "text-red-900 dark:text-red-200"
-                        : "text-gray-700 dark:text-gray-300"
+                        ? "text-red-900"
+                        : "text-gray-700"
                       }`}
                   >
                     Habis
@@ -285,7 +285,7 @@ export default function AddStock() {
           </div>
 
           {/* TOMBOL AKSI FORM */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-800">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
             <Button
               type="button"
               variant="secondary"

@@ -133,10 +133,10 @@ export default function AddProductWeight() {
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
       {/* 1. HEADER HALAMAN */}
-      <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 pb-5">
+      <div className="flex items-center justify-between border-b border-gray-200 pb-5">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2.5">
               <span>Tambah Bobot Spesifikasi Produk</span>
             </h1>
           </div>
@@ -144,7 +144,7 @@ export default function AddProductWeight() {
 
         <Link
           to="/admin/productweights"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold text-xs transition-all shadow-2xs active:scale-95"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition-all shadow-2xs active:scale-95"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Kembali ke Matriks</span>
@@ -152,24 +152,24 @@ export default function AddProductWeight() {
       </div>
 
       {validationError && (
-        <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 flex items-center gap-3 text-red-700 dark:text-red-300 animate-shake">
+        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 flex items-center gap-3 text-red-700 animate-shake">
           <AlertCircle className="w-5 h-5 shrink-0" />
           <span className="text-xs font-bold">{validationError}</span>
         </div>
       )}
 
       {/* 2. KARTU FORM UTAMA */}
-      <div className="bg-white dark:bg-[#151216] rounded-3xl border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden">
+      <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
         <div className="h-2 bg-black"></div>
 
         <form onSubmit={handleBatchSubmit} className="p-6 md:p-8 space-y-8">
           <div className="space-y-4">
-            <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-800 text-sm font-bold text-black dark:text-purple-400">
+            <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-black">
               <span>Pilih Produk Laptop yang Akan Dinilai</span>
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="text-sm font-medium text-gray-700">
                 Model Laptop
               </label>
               <select
@@ -179,7 +179,7 @@ export default function AddProductWeight() {
                   setValidationError(null);
                 }}
                 disabled={isDataLoading}
-                className={`w-full border border-gray-300 dark:border-gray-700 rounded-xl px-3.5 py-3 outline-none transition-all font-semibold text-sm bg-white dark:bg-[#181519] text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500/20 dark:focus:border-purple-500 cursor-pointer ${!selectedProductId ? "border-purple-300 dark:border-purple-800" : ""
+                className={`w-full border border-gray-300 rounded-xl px-3.5 py-3 outline-none transition-all font-semibold text-sm bg-white text-gray-900 focus:ring-2 focus:ring-purple-500/20 cursor-pointer ${!selectedProductId ? "border-purple-300" : ""
                   }`}
               >
                 <option value={0}>
@@ -195,14 +195,14 @@ export default function AddProductWeight() {
                   </option>
                 ))}
               </select>
-              <div className="mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-gray-500 dark:text-gray-400">
+              <div className="mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-gray-500">
                 <span>
                   * {showAllProducts ? "Menampilkan SELURUH laptop di katalog." : "Hanya menampilkan laptop yang belum dinilai dalam matriks SPK."}
                 </span>
                 <button
                   type="button"
                   onClick={() => setShowAllProducts(!showAllProducts)}
-                  className="font-bold text-purple-600 dark:text-purple-400 hover:underline cursor-pointer flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 transition-all active:scale-95 shrink-0"
+                  className="font-bold text-purple-600 hover:underline cursor-pointer flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-50 border border-purple-200 transition-all active:scale-95 shrink-0"
                 >
                   {showAllProducts ? (
                     <>
@@ -222,14 +222,14 @@ export default function AddProductWeight() {
 
         {/* 2. Daftar Spesifikasi per Kriteria */}
         {selectedProductId !== 0 && (
-          <div className="bg-white dark:bg-[#151216] p-6 rounded-3xl border border-gray-200/80 dark:border-gray-800 shadow-xs space-y-6">
-            <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
+          <div className="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs space-y-6">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-4">
               <div>
-                <h2 className="text-sm font-extrabold text-gray-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                <h2 className="text-sm font-extrabold text-gray-900 uppercase tracking-wider flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-purple-500"></span>
                   2. Atur Bobot Spesifikasi per Kriteria
                 </h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-gray-500 mt-1">
                   Pilih spesifikasi yang sesuai untuk masing-masing kriteria di bawah ini
                 </p>
               </div>
@@ -256,14 +256,14 @@ export default function AddProductWeight() {
                   return (
                     <div
                       key={c.id}
-                      className="p-5 rounded-2xl border border-gray-200/80 dark:border-gray-800 bg-gray-50/50 dark:bg-[#181519]/50 hover:border-purple-300 dark:hover:border-purple-800 transition-all space-y-3"
+                      className="p-5 rounded-2xl border border-gray-200/80 bg-gray-50/50 hover:border-purple-300 transition-all space-y-3"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded-lg text-xs font-mono font-extrabold bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                          <span className="px-2 py-0.5 rounded-lg text-xs font-mono font-extrabold bg-purple-100 text-purple-700 border border-purple-200">
                             {c.code}
                           </span>
-                          <span className="font-bold text-gray-900 dark:text-white text-sm">
+                          <span className="font-bold text-gray-900 text-sm">
                             {c.name}
                           </span>
                         </div>
@@ -280,7 +280,7 @@ export default function AddProductWeight() {
                             handleSubCriteriaChange(c.id, Number(e.target.value))
                           }
                           disabled={isSubCriteriasLoading}
-                          className="w-full border border-gray-300 dark:border-gray-700 rounded-xl px-3.5 py-2.5 outline-none transition-all font-semibold text-sm bg-white dark:bg-[#151216] text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500/20 dark:focus:border-purple-500 cursor-pointer shadow-2xs"
+                          className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 outline-none transition-all font-semibold text-sm bg-white text-gray-900 focus:ring-2 focus:ring-purple-500/20 cursor-pointer shadow-2xs"
                         >
                           <option value={0}>-- Pilih Spesifikasi {c.name} --</option>
                           {subsForCriteria.map((sub: any) => (
@@ -291,14 +291,14 @@ export default function AddProductWeight() {
                         </select>
                       </div>
 
-                      <div className="flex items-center justify-between pt-2 border-t border-gray-200/60 dark:border-gray-800 text-xs">
-                        <span className="font-medium text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      <div className="flex items-center justify-between pt-2 border-t border-gray-200/60 text-xs">
+                        <span className="font-medium text-gray-500 flex items-center gap-1">
                           Skala Konversi SPK:
                         </span>
                         <span
                           className={`font-mono font-bold px-2.5 py-1 rounded-lg transition-all ${currentSelectedSub > 0
                               ? "bg-purple-600 text-white shadow-xs"
-                              : "bg-gray-200 dark:bg-gray-800 text-gray-500"
+                              : "bg-gray-200 text-gray-500"
                             }`}
                         >
                           {currentNumericVal.toFixed(2)}
@@ -312,7 +312,7 @@ export default function AddProductWeight() {
           </div>
         )}
 
-          <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-800">
+          <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
             <Button
               type="button"
               variant="secondary"

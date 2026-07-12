@@ -39,7 +39,7 @@ export function TableProductStoreIndex({
       columnHelper.accessor("id", {
         header: () => <span className="font-semibold">ID</span>,
         cell: (info) => (
-          <span className="text-gray-500 dark:text-gray-400 font-mono font-medium">
+          <span className="text-gray-500 font-mono font-medium">
             #{info.getValue()}
           </span>
         ),
@@ -61,7 +61,7 @@ export function TableProductStoreIndex({
             return (
               <div className="flex items-center gap-2.5">
                 <div>
-                  <span className="font-semibold text-gray-900 dark:text-white text-sm block">
+                  <span className="font-semibold text-gray-900 text-sm block">
                     {storeName}
                   </span>
                   <span className="text-[11px] text-gray-500 font-mono">store_id: {storeId}</span>
@@ -98,12 +98,12 @@ export function TableProductStoreIndex({
             const brandName = item.product?.brand?.name || item.brand_name;
             return (
               <div>
-                <div className="font-bold text-gray-900 dark:text-white text-base">
+                <div className="font-bold text-gray-900 text-base">
                   {productName}
                 </div>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   {brandName && (
-                    <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                    <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-gray-100 text-gray-600">
                       {brandName}
                     </span>
                   )}
@@ -117,7 +117,7 @@ export function TableProductStoreIndex({
       columnHelper.accessor("price", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Harga Jual" />,
         cell: (info) => (
-          <span className="font-mono font-bold text-gray-900 dark:text-emerald-400 text-base">
+          <span className="font-mono font-bold text-gray-900 text-base">
             {formatIDR(info.getValue())}
           </span>
         ),
@@ -125,7 +125,7 @@ export function TableProductStoreIndex({
       columnHelper.accessor("stock", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Stok Fisik" />,
         cell: (info) => (
-          <span className="font-mono font-bold text-base px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+          <span className="font-mono font-bold text-base px-2.5 py-1 rounded-lg bg-gray-100 text-gray-800">
             {info.getValue()} <span className="text-xs font-normal text-gray-500">unit</span>
           </span>
         ),
@@ -139,19 +139,19 @@ export function TableProductStoreIndex({
           const stockCount = item.stock;
           if (isAvail === false) {
             return (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-400 border border-gray-300 dark:border-gray-700 shadow-2xs">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-gray-200 text-gray-700 border border-gray-300 shadow-2xs">
                 Non-Aktif
               </span>
             );
           } else if (stockCount <= 0) {
             return (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-400 border border-red-300 dark:border-red-800/80 shadow-2xs animate-pulse">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-300 shadow-2xs animate-pulse">
                 Stok Kosong
               </span>
             );
           } else if (stockCount > 0) {
             return (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 shadow-2xs">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
                 Stok Tersedia
               </span>
             );

@@ -59,14 +59,14 @@ export default function StoreIndex() {
   return (
     <div className="space-y-6 pb-10">
       {/* Header Halaman */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Daftar Toko / Stores</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Daftar Toko / Stores</h1>
         </div>
         <div>
           <Link
             to="/admin/stores/add"
-            className="inline-flex items-center gap-2 bg-[#151216] dark:bg-white text-white dark:text-gray-900 hover:bg-[#262128] dark:hover:bg-gray-200 font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all active:scale-95 text-sm"
+            className="inline-flex items-center gap-2 bg-[#151216] text-white hover:bg-[#262128] font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all active:scale-95 text-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Toko</span>
@@ -91,7 +91,7 @@ export default function StoreIndex() {
         message={
           <span>
             Apakah kamu yakin ingin menghapus data toko{" "}
-            <strong className="text-gray-900 dark:text-white font-semibold">
+            <strong className="text-gray-900 font-semibold">
               {deleteTarget?.name}
             </strong>{" "}
             (ID: #{deleteTarget?.id})? Data yang dihapus tidak dapat dikembalikan.

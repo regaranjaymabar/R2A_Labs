@@ -164,10 +164,10 @@ export default function UserIndex() {
   return (
     <div className="space-y-6 pb-12">
       {/* 1. HEADER & KARTU INFORMASI SUPER ADMIN */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2.5">
               <span>Daftar Pengguna & Hak Akses</span>
             </h1>
           </div>
@@ -176,7 +176,7 @@ export default function UserIndex() {
         <div className="flex items-center gap-3">
           <Link
             to="/admin/users/add"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#151216] dark:bg-white text-white dark:text-gray-900 hover:bg-[#262128] dark:hover:bg-gray-200 font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#151216] text-white hover:bg-[#262128] font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer"
           >
             <UserPlus className="w-4 h-4" />
             <span>Tambah Pengguna / Pegawai</span>
@@ -186,29 +186,29 @@ export default function UserIndex() {
       {/* 3. KARTU STATISTIK RINGKAS (GLOWING CARDS) */}
       <GlowingCards gap="1rem" maxWidth="100%" padding="0">
         <GlowingCard glowColor="#6366f1" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-gray-500 dark:text-gray-400 block uppercase font-mono">Total Akun</span>
-          <span className="text-2xl font-extrabold text-gray-900 dark:text-white mt-1 block">{stats.total}</span>
+          <span className="text-xs font-bold text-gray-500 block uppercase font-mono">Total Akun</span>
+          <span className="text-2xl font-extrabold text-gray-900 mt-1 block">{stats.total}</span>
         </GlowingCard>
         <GlowingCard glowColor="#a855f7" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-purple-700 dark:text-purple-300 block uppercase font-mono">Super Admin</span>
-          <span className="text-2xl font-extrabold text-purple-900 dark:text-purple-100 mt-1 block">{stats.admins}</span>
+          <span className="text-xs font-bold text-purple-700 block uppercase font-mono">Super Admin</span>
+          <span className="text-2xl font-extrabold text-purple-900 mt-1 block">{stats.admins}</span>
         </GlowingCard>
         <GlowingCard glowColor="#3b82f6" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-blue-700 dark:text-blue-300 block uppercase font-mono">Admin Toko</span>
-          <span className="text-2xl font-extrabold text-blue-900 dark:text-blue-100 mt-1 block">{stats.storeAdmins}</span>
+          <span className="text-xs font-bold text-blue-700 block uppercase font-mono">Admin Toko</span>
+          <span className="text-2xl font-extrabold text-blue-900 mt-1 block">{stats.storeAdmins}</span>
         </GlowingCard>
         <GlowingCard glowColor="#10b981" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block uppercase font-mono">UserData Biasa</span>
-          <span className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 mt-1 block">{stats.users}</span>
+          <span className="text-xs font-bold text-gray-700 block uppercase font-mono">UserData Biasa</span>
+          <span className="text-2xl font-extrabold text-gray-900 mt-1 block">{stats.users}</span>
         </GlowingCard>
         <GlowingCard glowColor="#ef4444" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-red-700 dark:text-red-300 block uppercase font-mono">Nonaktif (Soft Del)</span>
-          <span className="text-2xl font-extrabold text-red-900 dark:text-red-100 mt-1 block">{stats.inactive}</span>
+          <span className="text-xs font-bold text-red-700 block uppercase font-mono">Nonaktif (Soft Del)</span>
+          <span className="text-2xl font-extrabold text-red-900 mt-1 block">{stats.inactive}</span>
         </GlowingCard>
       </GlowingCards>
 
       {/* 4. BAR FILTER & PENCARIAN */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50 dark:bg-[#181519] p-4 rounded-2xl border border-gray-200 dark:border-gray-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-200">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1.5 mr-1 font-mono">
             <Filter className="w-3.5 h-3.5" />
@@ -229,8 +229,8 @@ export default function UserIndex() {
                 onClick={() => setFilterRole(role)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                   isActive
-                    ? "bg-black text-white shadow-md dark:bg-white dark:text-black"
-                    : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-gray-300"
+                    ? "bg-black text-white shadow-md"
+                    : "bg-white text-gray-600 border border-gray-200 hover:border-gray-300"
                 }`}
               >
                 {labels[role]}
@@ -244,7 +244,7 @@ export default function UserIndex() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as any)}
-            className="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-purple-500 dark:text-white cursor-pointer shadow-2xs"
+            className="px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer shadow-2xs"
           >
             <option value="all">Semua Status</option>
             <option value="active">🟢 Aktif (Live)</option>
@@ -301,7 +301,7 @@ export default function UserIndex() {
 
             {/* 4. Pemilihan Peran (Role Management) */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
+              <label className="block text-xs font-bold text-gray-700">
                 Pembagian Peran 
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -323,11 +323,11 @@ export default function UserIndex() {
                       onClick={() => setEditRole(roleOpt.id as any)}
                       className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between ${isSelected
                           ? roleOpt.color === "purple"
-                            ? "bg-purple-50 dark:bg-purple-950/50 border-purple-500 text-purple-900 dark:text-purple-200 ring-2 ring-purple-500/20"
+                            ? "bg-purple-50 border-purple-500 text-purple-900 ring-2 ring-purple-500/20"
                             : roleOpt.color === "blue"
-                              ? "bg-blue-50 dark:bg-blue-950/50 border-blue-500 text-blue-900 dark:text-blue-200 ring-2 ring-blue-500/20"
-                              : "bg-gray-100 dark:bg-gray-800 border-gray-400 text-gray-900 dark:text-white ring-2 ring-gray-400/20"
-                          : "bg-gray-50 dark:bg-[#181519] border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-gray-300"
+                              ? "bg-blue-50 border-blue-500 text-blue-900 ring-2 ring-blue-500/20"
+                              : "bg-gray-100 border-gray-400 text-gray-900 ring-2 ring-gray-400/20"
+                          : "bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300"
                         } ${isSuperAdminMain && roleOpt.id !== "superadmin" ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
                     >
                       <div className="flex items-center gap-2 font-bold text-xs">
@@ -344,9 +344,9 @@ export default function UserIndex() {
             </div>
 
             {/* 5. Status Akun (is_active - Soft Delete) */}
-            <div className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-200/80 dark:border-gray-800 flex items-center justify-between gap-4">
+            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200/80 flex items-center justify-between gap-4">
               <div>
-                <label className="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+                <label className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
                   <span>Status Akun</span>
                 </label>
               </div>
@@ -354,7 +354,7 @@ export default function UserIndex() {
                 type="button"
                 disabled={editingUser.id === 1}
                 onClick={() => setEditIsActive(!editIsActive)}
-                className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${editIsActive ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-700"
+                className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${editIsActive ? "bg-emerald-500" : "bg-gray-300"
                   } ${editingUser.id === 1 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
               >
                 <span
@@ -365,7 +365,7 @@ export default function UserIndex() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200 dark:border-gray-800">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200">
               <Button
                 type="button"
                 variant="secondary"
@@ -392,7 +392,7 @@ export default function UserIndex() {
         title="Hapus Permanen Akun Pengguna?"
         message={
           <span>
-            Apakah Anda yakin ingin menghapus permanen akun <strong className="font-bold text-gray-900 dark:text-white">{deleteTarget?.name}</strong> ({deleteTarget?.email}) dari database? Seluruh data akun ini akan dihapus permanen dan tidak dapat dikembalikan.
+            Apakah Anda yakin ingin menghapus permanen akun <strong className="font-bold text-gray-900">{deleteTarget?.name}</strong> ({deleteTarget?.email}) dari database? Seluruh data akun ini akan dihapus permanen dan tidak dapat dikembalikan.
           </span>
         }
         confirmLabel={isDeleting ? "Menghapus..." : "Ya, Hapus Permanen"}

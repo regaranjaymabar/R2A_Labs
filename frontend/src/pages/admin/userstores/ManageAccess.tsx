@@ -33,16 +33,13 @@ export default function ManageAccess() {
   return (
     <div className="space-y-6 pb-12">
       {/* 1. HEADER HALAMAN */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2.5">
               <span>Hak Akses Toko</span>
             </h1>
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Jembatan penghubung antara identitas pegawai (<code className="font-mono text-xs">users</code>) dengan data fisik cabang (<code className="font-mono text-xs">stores</code>). Fokus murni pada delegasi role <code className="font-mono text-xs font-bold text-blue-600">store_admin</code>.
-          </p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -60,25 +57,25 @@ export default function ManageAccess() {
       {/* 2. KARTU STATISTIK RINGKAS (GLOWING CARDS) */}
       <GlowingCards gap="1rem" maxWidth="100%" padding="0">
         <GlowingCard glowColor="#6366f1" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-gray-500 dark:text-gray-400 block uppercase font-mono">Total Delegasi</span>
-          <span className="text-2xl font-extrabold text-gray-900 dark:text-white mt-1 block">{stats.total}</span>
+          <span className="text-xs font-bold text-gray-500 block uppercase font-mono">Total Delegasi</span>
+          <span className="text-2xl font-extrabold text-gray-900 mt-1 block">{stats.total}</span>
         </GlowingCard>
         <GlowingCard glowColor="#10b981" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 block uppercase font-mono">Akses Aktif</span>
-          <span className="text-2xl font-extrabold text-emerald-900 dark:text-emerald-100 mt-1 block">{stats.active}</span>
+          <span className="text-xs font-bold text-emerald-700 block uppercase font-mono">Akses Aktif</span>
+          <span className="text-2xl font-extrabold text-emerald-900 mt-1 block">{stats.active}</span>
         </GlowingCard>
         <GlowingCard glowColor="#ef4444" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-red-700 dark:text-red-300 block uppercase font-mono">Dicabut</span>
-          <span className="text-2xl font-extrabold text-red-900 dark:text-red-100 mt-1 block">{stats.revoked}</span>
+          <span className="text-xs font-bold text-red-700 block uppercase font-mono">Dicabut</span>
+          <span className="text-2xl font-extrabold text-red-900 mt-1 block">{stats.revoked}</span>
         </GlowingCard>
         <GlowingCard glowColor="#3b82f6" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-blue-700 dark:text-blue-300 block uppercase font-mono">Admin Toko Aktif</span>
-          <span className="text-2xl font-extrabold text-blue-900 dark:text-blue-100 mt-1 block">{stats.uniqueAdmins} <span className="text-xs font-normal text-blue-600">Orang</span></span>
+          <span className="text-xs font-bold text-blue-700 block uppercase font-mono">Admin Toko Aktif</span>
+          <span className="text-2xl font-extrabold text-blue-900 mt-1 block">{stats.uniqueAdmins} <span className="text-xs font-normal text-blue-600">Orang</span></span>
         </GlowingCard>
       </GlowingCards>
 
       {/* 3. FILTER BAR */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50 dark:bg-[#181519] p-4 rounded-2xl border border-gray-200 dark:border-gray-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-200">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1.5 mr-1 font-mono">
             <Filter className="w-3.5 h-3.5" />
@@ -87,7 +84,7 @@ export default function ManageAccess() {
           <select
             value={filterStore}
             onChange={(e) => setFilterStore(e.target.value)}
-            className="px-3.5 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white cursor-pointer shadow-2xs"
+            className="px-3.5 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-2xs"
           >
             <option value="all">Semua Cabang Toko</option>
             {availableStores.map((st) => (
@@ -100,7 +97,7 @@ export default function ManageAccess() {
 
         <div className="flex items-center gap-2">
           <span className="text-xs font-bold text-gray-500 uppercase font-mono">Status Akses:</span>
-          <div className="flex items-center gap-1 bg-white dark:bg-gray-800 p-1 rounded-xl border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-1 bg-white p-1 rounded-xl border border-gray-200">
             {(
               [
                 { id: "all", label: "Semua" },
@@ -114,7 +111,7 @@ export default function ManageAccess() {
                 onClick={() => setFilterStatus(stOpt.id)}
                 className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${filterStatus === stOpt.id
                   ? "bg-blue-600 text-white shadow-xs"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                  : "text-gray-600 hover:text-gray-900"
                   }`}
               >
                 {stOpt.label}
@@ -154,11 +151,11 @@ export default function ManageAccess() {
         message={
           revokeTarget?.is_active ? (
             <span>
-              Apakah kamu yakin ingin mencabut akses <strong className="font-bold text-gray-900 dark:text-white">{revokeTarget.user_name}</strong> untuk mengelola toko <strong className="font-bold text-gray-900 dark:text-white">{revokeTarget.store_name}</strong>? Pegawai ini tidak akan bisa lagi mengedit stok dan harga di toko ini.
+              Apakah kamu yakin ingin mencabut akses <strong className="font-bold text-gray-900">{revokeTarget.user_name}</strong> untuk mengelola toko <strong className="font-bold text-gray-900">{revokeTarget.store_name}</strong>? Pegawai ini tidak akan bisa lagi mengedit stok dan harga di toko ini.
             </span>
           ) : (
             <span>
-              Apakah kamu yakin ingin memulihkan kembali akses <strong className="font-bold text-gray-900 dark:text-white">{revokeTarget?.user_name}</strong> untuk mengelola toko <strong className="font-bold text-gray-900 dark:text-white">{revokeTarget?.store_name}</strong>?
+              Apakah kamu yakin ingin memulihkan kembali akses <strong className="font-bold text-gray-900">{revokeTarget?.user_name}</strong> untuk mengelola toko <strong className="font-bold text-gray-900">{revokeTarget?.store_name}</strong>?
             </span>
           )
         }

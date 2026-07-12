@@ -8,14 +8,6 @@ import { useUpdate } from "../../../../hooks/useUpdate";
 import { productSchema, type ProductFormData } from "./useAddProduct";
 import type { Product } from "../../../../types/product";
 
-const parseNumberSafe = (val: any): number => {
-  if (typeof val === "number" && !isNaN(val)) return val;
-  if (val === undefined || val === null || val === "") return 0;
-  const cleaned = String(val).replace(/,/g, ".").replace(/[^0-9.]/g, "");
-  const num = parseFloat(cleaned);
-  return isNaN(num) ? 0 : num;
-};
-
 export function useEditProduct() {
   const { id } = useParams<{ id: string }>();
 
@@ -65,18 +57,24 @@ export function useEditProduct() {
       const formattedDate =
         rawYear.length === 4 ? `${rawYear}-01-01` : rawYear.slice(0, 10);
 
+      const rawBattery = productData.battery || "";
+      const parsedBattery = String(rawBattery).match(/[\d.]+/)?.[0] || "";
+
+      const rawWeight = productData.weight || 0;
+      const parsedWeight = Number(String(rawWeight).match(/[\d.]+/)?.[0] || 0);
+
       reset({
         brandId: Number(productData.brandId || productData.brand_id || 1),
         modelName: productData.modelName || productData.model_name || "",
         processor: productData.processor || "",
         ram: productData.ram || "",
         storage: productData.storage || "",
-        screenSize: parseNumberSafe(productData.screenSize || productData.screen_size),
-        battery: String(productData.battery ?? ""),
-        weight: parseNumberSafe(productData.weight),
+        screenSize: Number(productData.screenSize || productData.screen_size || 0),
+        battery: parsedBattery,
+        weight: parsedWeight,
         releaseYear: formattedDate,
         subCriteriaIds: [],
-        is_active: Boolean(productData.is_active ?? productData.isActive ?? true),
+        is_active: Boolean(productData.is_active),
       });
     }
   }, [productData, reset]);

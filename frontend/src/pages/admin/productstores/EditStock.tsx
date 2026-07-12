@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, Ban, Boxes, Package } from "lucide-react";
 import { Button } from "../../../components/ui/common/Button";
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { productStoreService } from "../../../services/productStoreService";
 
@@ -30,7 +29,7 @@ export default function EditStock() {
     if (item) {
       setPrice(String(item.price || 0));
       setStock(String(item.stock || 0));
-      setIsAvailable(Boolean(item.is_available ?? item.is_available ?? true));
+      setIsAvailable(Boolean((item as any).isAvailable ?? item.is_available ?? true));
     }
   }, [item]);
 
@@ -109,7 +108,7 @@ export default function EditStock() {
                 Model Laptop Terpilih
               </span>
               <span className="text-base font-bold text-gray-900 dark:text-white">
-                {(item as any).product?.modelName || (item as any).product_name || `Laptop ID #${item.product_id || item.product_id}`}
+                {(item as any).product?.modelName || (item as any).product_name || `Laptop ID #${(item as any).productId || item.product_id}`}
               </span>
             </div>
           </div>

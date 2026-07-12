@@ -153,7 +153,7 @@ export default function MyStoreProfile() {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px] space-y-3">
                 <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
-                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Memuat data profil toko...</span>
+                <span className="text-sm font-medium text-gray-500">Memuat data profil toko...</span>
             </div>
         );
     }
@@ -161,12 +161,12 @@ export default function MyStoreProfile() {
     return (
         <div className="max-w-4xl mx-auto space-y-6 pb-12">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 pb-5">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-5">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2.5">
                         <span>Profil Tokoku</span>
                     </h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-gray-500 mt-1">
                         Kelola identitas, alamat, dan titik lokasi toko kamu agar mudah dicari pelanggan.
                     </p>
                 </div>
@@ -174,25 +174,25 @@ export default function MyStoreProfile() {
 
             {/* Notification Banner */}
             {successMsg && (
-                <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm font-medium">
+                <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium">
                     <span>{successMsg}</span>
                 </div>
             )}
 
             {errorMsg && (
-                <div className="flex items-center gap-3 p-4 rounded-2xl bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-sm font-medium">
+                <div className="flex items-center gap-3 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-medium">
                     <span>{errorMsg}</span>
                 </div>
             )}
 
             {/* Form Box */}
-            <div className="bg-white dark:bg-[#151216] rounded-3xl border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden">
+            <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
                 <div className="h-2 bg-black"></div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="p-6 md:p-8 space-y-8">
                     {/* Section 1: Identitas Toko */}
                     <div className="space-y-4">
-                        <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-800 text-sm font-bold text-gray-900 dark:text-purple-400">
+                        <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-gray-900">
                             <span>Informasi Umum & Kontak</span>
                         </div>
 
@@ -248,11 +248,11 @@ export default function MyStoreProfile() {
 
                         {/* Helper Lokasi GPS */}
                         <div className="pt-2">
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800/50">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-purple-50 border border-purple-200">
                                 <div className="flex items-start gap-3">
                                     <Info className="w-5 h-5 text-black mt-0.5 shrink-0" />
-                                    <div className="text-xs text-gray-700 dark:text-gray-300 space-y-1">
-                                        <p className="font-semibold text-gray-900 dark:text-white">Koordinat GPS Toko (Latitude & Longitude)</p>
+                                    <div className="text-xs text-gray-700 space-y-1">
+                                        <p className="font-semibold text-gray-900">Koordinat GPS Toko (Latitude & Longitude)</p>
                                         <p>
                                             Klik tombol deteksi otomatis atau buka <b>Google Maps</b> → klik kanan pada titik toko Anda → klik angka koordinat untuk menyalin.
                                         </p>
@@ -280,7 +280,7 @@ export default function MyStoreProfile() {
                         </div>
 
                         {/* Smart Paste Google Maps */}
-                        <div className="p-4 rounded-2xl bg-white dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-800/50">
+                        <div className="p-4 rounded-2xl bg-white border border-indigo-200">
                             <InputText
                                 label="Tempel lokasi google maps disini *"
                                 placeholder="Contoh tempel di sini: -6.879293230671416, 109.1337399269172"
@@ -324,7 +324,7 @@ export default function MyStoreProfile() {
                         {/* Reverse Geocode Badge & Mismatch Alert */}
                         {detectedLocation && (
                             <div className="space-y-2">
-                                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold">
+                                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-semibold">
                                     <span>📍 Wilayah Koordinat Terdeteksi:</span>
                                     <span className="font-bold underline">{detectedLocation}</span>
                                 </div>
@@ -338,7 +338,7 @@ export default function MyStoreProfile() {
                                                 .replace(/kabupaten|kota/gi, "")
                                                 .trim()
                                         ) && (
-                                        <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 text-xs font-semibold flex items-start gap-2.5 animate-fadeIn">
+                                        <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs font-semibold flex items-start gap-2.5 animate-fadeIn">
                                             <span className="text-base">⚠️</span>
                                             <div>
                                                 <p className="font-bold">Perhatian: Potensi Perbedaan Lokasi!</p>
@@ -352,10 +352,10 @@ export default function MyStoreProfile() {
                         )}
 
                         {/* Interactive OpenStreetMap Preview */}
-                        <div className="mt-4 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-md transition-all animate-fadeIn">
-                            <div className="bg-gray-50 dark:bg-gray-900/80 px-4 py-3 flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 dark:border-gray-800">
-                                <div className="flex items-center gap-2 text-xs font-semibold text-gray-700 dark:text-gray-300">
-                                    <MapPin className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
+                        <div className="mt-4 rounded-2xl overflow-hidden border border-gray-200 shadow-md transition-all animate-fadeIn">
+                            <div className="bg-gray-50 px-4 py-3 flex flex-wrap items-center justify-between gap-2 border-b border-gray-200">
+                                <div className="flex items-center gap-2 text-xs font-semibold text-gray-700">
+                                    <MapPin className="w-4 h-4 text-purple-600 shrink-0" />
                                     <span>
                                         {hasValidCoords
                                             ? "Pratinjau Titik Lokasi Toko di Peta (OpenStreetMap)"
@@ -374,7 +374,7 @@ export default function MyStoreProfile() {
                                     </a>
                                 )}
                             </div>
-                            <div className="w-full h-64 bg-gray-100 dark:bg-gray-800 relative">
+                            <div className="w-full h-64 bg-gray-100 relative">
                                 <iframe
                                     title="Peta Lokasi Toko"
                                     width="100%"
@@ -389,7 +389,7 @@ export default function MyStoreProfile() {
                     </div>
 
                     {/* Action Button */}
-                    <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-end">
+                    <div className="pt-4 border-t border-gray-100 flex justify-end">
                         <Button
                             type="submit"
                             variant="primary"

@@ -139,10 +139,10 @@ export default function ProductStoreIndex() {
   return (
     <div className="space-y-6 pb-12">
       {/* Header Halaman & Kontrol Role */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-2xl font-bold text-gray-900">
               Stok & Harga 
             </h1>
           </div>
@@ -151,7 +151,7 @@ export default function ProductStoreIndex() {
         <div className="flex flex-wrap items-center gap-3">
           <Link
             to="/admin/productstores/add"
-            className="inline-flex items-center gap-2 bg-[#151216] dark:bg-white text-white dark:text-gray-900 hover:bg-[#262128] dark:hover:bg-gray-200 font-semibold px-4 py-2 rounded-xl shadow-sm transition-all active:scale-95 text-sm"
+            className="inline-flex items-center gap-2 bg-[#151216] text-white hover:bg-[#262128] font-semibold px-4 py-2 rounded-xl shadow-sm transition-all active:scale-95 text-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Stok Cabang</span>
@@ -161,15 +161,15 @@ export default function ProductStoreIndex() {
 
       {/* Filter Cabang (Khusus Super Admin) */}
       {isSuperAdmin && (
-        <div className="flex items-center gap-3 bg-gray-50 dark:bg-gray-900/40 p-4 rounded-2xl border border-gray-200/80 dark:border-gray-800">
+        <div className="flex items-center gap-3 bg-gray-50 p-4 rounded-2xl border border-gray-200/80">
           <Filter className="w-4 h-4 text-gray-500" />
-          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+          <span className="text-xs font-semibold text-gray-700">
             Filter Cabang Toko:
           </span>
           <select
             value={selectedStoreFilter}
             onChange={(e) => setSelectedStoreFilter(e.target.value)}
-            className="bg-white dark:bg-[#181519] border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-1.5 text-xs font-medium text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs cursor-pointer"
+            className="bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs cursor-pointer"
           >
             <option value="ALL">🌐 Semua Cabang Toko ({data.length} barang)</option>
             {uniqueStores.map((storeName) => (
@@ -192,14 +192,14 @@ export default function ProductStoreIndex() {
 
       {/* Indikator Status Banner jika Store Admin */}
       {!isSuperAdmin && (
-        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/60 p-4 rounded-2xl flex items-center justify-between text-xs text-blue-800 dark:text-blue-300">
+        <div className="bg-blue-50 border border-blue-200 p-4 rounded-2xl flex items-center justify-between text-xs text-blue-800">
           <div className="flex items-center gap-2.5 font-medium">
             <span>
               Mode <strong>Store Admin</strong> aktif: Membatasi tampilan inventaris hanya untuk cabang{" "}
               <strong className="underline font-mono">store_id: {(user as any)?.store_id || 1}</strong>.
             </span>
           </div>
-          <span className="font-mono bg-blue-100 dark:bg-blue-900/60 px-2 py-0.5 rounded font-bold">
+          <span className="font-mono bg-blue-100 px-2 py-0.5 rounded font-bold">
             {filteredData.length} Barang
           </span>
         </div>
@@ -227,11 +227,11 @@ export default function ProductStoreIndex() {
           <form onSubmit={handleSaveEdit} className="space-y-5">
             {/* 1. Penyesuaian Harga */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 items-center gap-1.5">
+              <label className="block text-xs font-bold text-gray-700 items-center gap-1.5">
                 <span>Penyesuaian Harga Jual (IDR)</span>
               </label>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                Perbarui kolom <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">price</code> jika ada promo lokal atau perubahan harga distributor.
+              <p className="text-[11px] text-gray-500">
+                Perbarui kolom <code className="font-mono bg-gray-100 px-1 rounded">price</code> jika ada promo lokal atau perubahan harga distributor.
               </p>
               <div className="relative mt-1">
                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-sm text-gray-500">
@@ -241,40 +241,40 @@ export default function ProductStoreIndex() {
                   type="number"
                   value={editPrice}
                   onChange={(e) => setEditPrice(e.target.value === "" ? "" : Number(e.target.value))}
-                  className="w-full pl-11 pr-4 py-2.5 text-sm font-mono font-bold bg-gray-50 dark:bg-[#181519] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all shadow-2xs"
+                  className="w-full pl-11 pr-4 py-2.5 text-sm font-mono font-bold bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-2xs"
                   required
                 />
               </div>
-              <div className="text-right text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+              <div className="text-right text-xs font-semibold text-emerald-600">
                 {formatIDR(Number(editPrice || 0))}
               </div>
             </div>
 
             {/* 2. Mutasi Stok */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 items-center gap-1.5">
+              <label className="block text-xs font-bold text-gray-700 items-center gap-1.5">
                 <span>Mutasi Stok Fisik (Unit)</span>
               </label>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                Perbarui kolom <code className="font-mono bg-gray-100 dark:bg-gray-800 px-1 rounded">stock</code> saat ada barang masuk (restok) atau terjual offline.
+              <p className="text-[11px] text-gray-500">
+                Perbarui kolom <code className="font-mono bg-gray-100 px-1 rounded">stock</code> saat ada barang masuk (restok) atau terjual offline.
               </p>
               <input
                 type="number"
                 min="0"
                 value={editStock}
                 onChange={(e) => setEditStock(e.target.value === "" ? "" : Number(e.target.value))}
-                className="w-full px-4 py-2.5 text-sm font-mono font-bold bg-gray-50 dark:bg-[#181519] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all shadow-2xs"
+                className="w-full px-4 py-2.5 text-sm font-mono font-bold bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-2xs"
                 required
               />
             </div>
 
             {/* 3. Ubah Ketersediaan (Saklar / Switch) */}
-            <div className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-200/80 dark:border-gray-800 flex items-center justify-between gap-4">
+            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200/80 flex items-center justify-between gap-4">
               <div className="space-y-0.5">
-                <label className="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+                <label className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
                   <span>Ubah Ketersediaan</span>
                 </label>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                <p className="text-[11px] text-gray-500">
                   Matikan saklar jika laptop discontinued atau ditarik dari cabang.
                 </p>
               </div>
@@ -283,7 +283,7 @@ export default function ProductStoreIndex() {
                 type="button"
                 onClick={() => setEditIsAvailable(!editIsAvailable)}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  editIsAvailable ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-700"
+                  editIsAvailable ? "bg-emerald-500" : "bg-gray-300"
                 }`}
               >
                 <span
@@ -295,13 +295,13 @@ export default function ProductStoreIndex() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200 dark:border-gray-800">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200">
               <Button
                 type="button"
                 variant="secondary"
                 onClick={() => setEditingItem(null)}
                 label="Batal"
-                className="!text-xs! py-2! px-5! rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 cursor-pointer"
+                className="!text-xs! py-2! px-5! rounded-xl cursor-pointer"
               />
               <Button
                 type="submit"
@@ -324,7 +324,7 @@ export default function ProductStoreIndex() {
         message={
           <span>
             Apakah kamu yakin ingin menghapus data stok & harga untuk{" "}
-            <strong className="text-gray-900 dark:text-white font-semibold">
+            <strong className="text-gray-900 font-semibold">
               {deleteTarget?.name}
             </strong>{" "}
             (ID: #{deleteTarget?.id})? Data yang dihapus tidak dapat dikembalikan.

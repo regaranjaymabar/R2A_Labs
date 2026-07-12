@@ -23,7 +23,14 @@ export type { Criteria };
 
 // 2. Data Dummy Awal (Persis 8 baris data dari screenshot database phpMyAdmin kamu)
 export const initialCriterias: Criteria[] = [
-  
+  { id: 1, code: "C1", name: "Harga", type: "cost" },
+  { id: 2, code: "C2", name: "RAM", type: "benefit" },
+  { id: 3, code: "C3", name: "Storage", type: "benefit" },
+  { id: 4, code: "C4", name: "Battery", type: "benefit" },
+  { id: 5, code: "C5", name: "Berat", type: "cost" },
+  { id: 6, code: "C6", name: "Processor", type: "benefit" },
+  { id: 7, code: "C7", name: "Ukuran Layar", type: "benefit" },
+  { id: 8, code: "C8", name: "Tahun Rilis", type: "benefit" },
 ];
 
 
@@ -249,7 +256,6 @@ export default function CriteriaIndex() {
         )}
       </Modal>
 
-      {/* MODAL KONFIRMASI HAPUS KRITERIA */}
       <ModalConfirm
         isOpen={Boolean(deleteTarget)}
         onClose={cancelDelete}

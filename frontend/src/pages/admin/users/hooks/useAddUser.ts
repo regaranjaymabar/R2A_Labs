@@ -56,7 +56,7 @@ export function useAddUser() {
 
   // Mutasi dengan Generic Hook useCreate + User Service
   const createMutation = useCreate<UserFormData>({
-    mutationFn: (payload) => userService.create(payload),
+    mutationFn: (payload) => userService.create(payload as any),
     queryKey: ["users"],
     navigateTo: "/admin/users",
     successMessage: (variables) =>

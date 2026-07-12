@@ -60,18 +60,18 @@ export default function BrandIndex() {
     return (
         <div className="space-y-6 pb-10">
             {/* Header Halaman */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
                 <div>
                     <div className="flex items-center gap-2.5">
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Daftar Merek / Brands</h1>
+                        <h1 className="text-2xl font-bold text-gray-900">Daftar Merek / Brands</h1>
                         {(isLoading || isFetching) && (
-                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800 font-mono animate-pulse">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 font-mono animate-pulse">
                                 <Loader2 className="w-3 h-3 animate-spin" />
                                 {isLoading ? "Mengambil Data..." : "Menyegarkan..."}
                             </span>
                         )}
                     </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-gray-500 mt-1">
                         Kelola katalog merek laptop (`id`, `name`,ang terdaftar di sistem R2A LABS.
                     </p>
                 </div>
@@ -84,12 +84,12 @@ export default function BrandIndex() {
                         disabled={isLoading || isFetching}
                         icon={<RefreshCw className={`w-3.5 h-3.5 ${isLoading || isFetching ? "animate-spin" : ""}`} />}
                         label="Refresh"
-                        className="px-3.5! py-2.5! rounded-xl! text-xs! font-semibold! bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700 cursor-pointer shadow-xs!"
+                        className="px-3.5! py-2.5! rounded-xl! text-xs! font-semibold! bg-white text-gray-700 hover:bg-gray-50 border-gray-300 cursor-pointer shadow-xs!"
                     />
 
                     <Link
                         to="/admin/brands/add"
-                        className="inline-flex items-center gap-2 bg-[#151216] dark:bg-white text-white dark:text-gray-900 hover:bg-[#262128] dark:hover:bg-gray-200 font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all active:scale-95 text-sm"
+                        className="inline-flex items-center gap-2 bg-[#151216] text-white hover:bg-[#262128] font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all active:scale-95 text-sm"
                     >
                         <Plus className="w-4 h-4" />
                         <span>Tambah Brand</span>
@@ -99,12 +99,12 @@ export default function BrandIndex() {
 
             {/* Banner Error (muncul jika gagal koneksi ke backend) */}
             {isError && (
-                <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 flex items-start gap-3 text-amber-900 dark:text-amber-200 text-xs shadow-xs">
-                    <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-start gap-3 text-amber-900 text-xs shadow-xs">
+                    <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                     <div className="flex-1 space-y-1">
                         <span className="font-bold block text-sm">Informasi Koneksi Server Backend:</span>
                         <p className="leading-relaxed">{errorMessage}</p>
-                        <p className="text-[11px] text-amber-700 dark:text-amber-400 italic">
+                        <p className="text-[11px] text-amber-700 italic">
                             *Catatan Dev: Saat ini tabel menampilkan data dummy cadangan agar kamu tetap bisa menguji antarmuka.
                         </p>
                     </div>
@@ -127,7 +127,7 @@ export default function BrandIndex() {
                     message={
                       <span>
                         Apakah kamu yakin ingin menghapus data brand{" "}
-                        <strong className="text-gray-900 dark:text-white font-semibold">
+                        <strong className="text-gray-900 font-semibold">
                           {deleteTarget?.name}
                         </strong>{" "}
                         (ID: #{deleteTarget?.id})? Data yang dihapus tidak dapat dikembalikan.

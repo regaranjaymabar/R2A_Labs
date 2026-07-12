@@ -62,17 +62,17 @@ export default function ProductIndex() {
   return (
     <div className="space-y-6 pb-10">
       {/* Header Halaman */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Daftar Produk</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900">Daftar Produk</h1>
+          <p className="text-sm text-gray-500 mt-1">
             Kelola katalog spesifikasi laptop (`model_name`, `processor`, `ram`, `storage`, `is_active`) di sistem R2A LABS.
           </p>
         </div>
         <div>
           <Link
             to="/admin/products/add"
-            className="inline-flex items-center gap-2 bg-[#151216] dark:bg-white text-white dark:text-gray-900 hover:bg-[#262128] dark:hover:bg-gray-200 font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all active:scale-95 text-sm"
+            className="inline-flex items-center gap-2 bg-[#151216] text-white hover:bg-[#262128] font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all active:scale-95 text-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Produk</span>
@@ -97,7 +97,7 @@ export default function ProductIndex() {
         message={
           <span>
             Apakah kamu yakin ingin menghapus produk{" "}
-            <strong className="text-gray-900 dark:text-white font-semibold">
+            <strong className="text-gray-900 font-semibold">
               {deleteTarget?.name}
             </strong>{" "}
             (ID: #{deleteTarget?.id})? Data yang dihapus tidak dapat dikembalikan.

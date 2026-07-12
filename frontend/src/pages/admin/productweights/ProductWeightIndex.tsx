@@ -12,6 +12,8 @@ import { useGet } from "../../../hooks/useGet";
 import { productWeightService } from "../../../services/productWeightService";
 import { productService } from "../../../services/productService";
 import { subCriteriaService } from "../../../services/subCriteriaService";
+import { criteriaService } from "../../../services/criteriaService";
+import { initialCriterias } from "../criterias/CriteriaIndex";
 import { initialProducts } from "../products/ProductIndex";
 import { useDeleteProductWeight } from "./hooks/useDeleteProductWeight";
 import { useQueryClient } from "@tanstack/react-query";
@@ -36,6 +38,14 @@ export default function ProductWeightIndex() {
     offlineFallbackData: initialProducts,
   });
   const products = fetchedProducts || initialProducts;
+
+  // Fetch seluruh kriteria dari database untuk header kolom dinamis
+  const { data: fetchedCriterias } = useGet<any[]>({
+    queryKey: ["criterias"],
+    queryFn: criteriaService.getAll,
+    offlineFallbackData: initialCriterias,
+  });
+  const criterias = fetchedCriterias || initialCriterias;
 
   // Fetch seluruh sub-kriteria dari database agar modal pilihan tidak kosong
   const { data: fetchedSubCriterias } = useGet<any[]>({
@@ -216,6 +226,7 @@ export default function ProductWeightIndex() {
       <TabelProductWeightIndex
         data={filteredData}
         products={products}
+        criterias={criterias}
         isLoading={isLoading}
         onEdit={handleOpenEdit}
         onDelete={handleDelete}
@@ -278,6 +289,7 @@ export default function ProductWeightIndex() {
               />
               <Button
                 type="submit"
+                variant="info"
                 label="Simpan Bobot Spek"
                 className="text-xs! py-2! px-5! rounded-xl font-bold shadow-md cursor-pointer"
               />
