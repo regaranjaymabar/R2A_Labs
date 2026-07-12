@@ -97,9 +97,12 @@ export default function AddProductWeight() {
       return;
     }
 
-    // Validasi 2: Seluruh kriteria yang aktif harus dipilih spesifikasinya
+    // Validasi 2: Seluruh kriteria yang aktif harus dipilih spesifikasinya (kecuali Harga / C1 yang opsional)
     const unselectedCriterias = criterias.filter(
-      (c: any) => !selectedSubs[c.id] || selectedSubs[c.id] <= 0
+      (c: any) =>
+        c.code !== "C1" &&
+        c.name.toLowerCase() !== "harga" &&
+        (!selectedSubs[c.id] || selectedSubs[c.id] <= 0)
     );
     if (unselectedCriterias.length > 0) {
       setValidationError(
@@ -110,13 +113,15 @@ export default function AddProductWeight() {
       return;
     }
 
-    // Siapkan array payload untuk seluruh kriteria
-    const payloads = criterias.map((c: any) => ({
-      product_id: Number(selectedProductId),
-      criteria_id: Number(c.id),
-      sub_criteria_id: Number(selectedSubs[c.id]),
-      value_numeric: Number(numericValues[c.id] || 0),
-    }));
+    // Siapkan array payload untuk seluruh kriteria yang terpilih saja
+    const payloads = criterias
+      .filter((c: any) => selectedSubs[c.id] && selectedSubs[c.id] > 0)
+      .map((c: any) => ({
+        product_id: Number(selectedProductId),
+        criteria_id: Number(c.id),
+        sub_criteria_id: Number(selectedSubs[c.id]),
+        value_numeric: Number(numericValues[c.id] || 0),
+      }));
 
     try {
       if (mutateBatch) {
@@ -179,7 +184,7 @@ export default function AddProductWeight() {
                   setValidationError(null);
                 }}
                 disabled={isDataLoading}
-                className={`w-full border border-gray-300 rounded-xl px-3.5 py-3 outline-none transition-all font-semibold text-sm bg-white text-gray-900 focus:ring-2 focus:ring-purple-500/20 cursor-pointer ${!selectedProductId ? "border-purple-300" : ""
+                className={`w-full border border-gray-300 rounded-xl px-3.5 py-3 outline-none transition-all font-semibold text-sm bg-white text-gray-900 focus:ring-2 focus:ring-black cursor-pointer ${!selectedProductId ? "border-black" : ""
                   }`}
               >
                 <option value={0}>
@@ -202,7 +207,7 @@ export default function AddProductWeight() {
                 <button
                   type="button"
                   onClick={() => setShowAllProducts(!showAllProducts)}
-                  className="font-bold text-purple-600 hover:underline cursor-pointer flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-50 border border-purple-200 transition-all active:scale-95 shrink-0"
+                  className="font-bold text-gray-700 hover:underline cursor-pointer flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-gray-200 transition-all active:scale-95 shrink-0"
                 >
                   {showAllProducts ? (
                     <>
@@ -225,9 +230,8 @@ export default function AddProductWeight() {
           <div className="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs space-y-6">
             <div className="flex items-center justify-between border-b border-gray-100 pb-4">
               <div>
-                <h2 className="text-sm font-extrabold text-gray-900 uppercase tracking-wider flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-purple-500"></span>
-                  2. Atur Bobot Spesifikasi per Kriteria
+                <h2 className="text-sm font-extrabold text-gray-900 uppercase tracking-wider">
+                  Atur Bobot Spesifikasi per Kriteria
                 </h2>
                 <p className="text-xs text-gray-500 mt-1">
                   Pilih spesifikasi yang sesuai untuk masing-masing kriteria di bawah ini
@@ -245,22 +249,24 @@ export default function AddProductWeight() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {criterias.map((c: any) => {
-                  const subsForCriteria = allSubCriterias.filter(
-                    (s: any) =>
-                      Number(s.criteria_id ?? s.criteriaId) === Number(c.id)
-                  );
+                {criterias
+                  .filter((c: any) => c.code !== "C1" && c.name.toLowerCase() !== "harga")
+                  .map((c: any) => {
+                    const subsForCriteria = allSubCriterias.filter(
+                      (s: any) =>
+                        Number(s.criteria_id ?? s.criteriaId) === Number(c.id)
+                    );
                   const currentSelectedSub = selectedSubs[c.id] || 0;
                   const currentNumericVal = numericValues[c.id] || 0;
 
                   return (
                     <div
                       key={c.id}
-                      className="p-5 rounded-2xl border border-gray-200/80 bg-gray-50/50 hover:border-purple-300 transition-all space-y-3"
+                      className="p-5 rounded-2xl border border-gray-200/80 transition-all space-y-3"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded-lg text-xs font-mono font-extrabold bg-purple-100 text-purple-700 border border-purple-200">
+                          <span className="px-2 py-0.5 rounded-lg text-xs font-mono font-extrabold text-black border border-gray-200">
                             {c.code}
                           </span>
                           <span className="font-bold text-gray-900 text-sm">
@@ -280,7 +286,7 @@ export default function AddProductWeight() {
                             handleSubCriteriaChange(c.id, Number(e.target.value))
                           }
                           disabled={isSubCriteriasLoading}
-                          className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 outline-none transition-all font-semibold text-sm bg-white text-gray-900 focus:ring-2 focus:ring-purple-500/20 cursor-pointer shadow-2xs"
+                          className="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 outline-none transition-all font-semibold text-sm bg-white text-gray-900 focus:ring-2 focus:ring-black cursor-pointer shadow-2xs"
                         >
                           <option value={0}>-- Pilih Spesifikasi {c.name} --</option>
                           {subsForCriteria.map((sub: any) => (
@@ -297,7 +303,7 @@ export default function AddProductWeight() {
                         </span>
                         <span
                           className={`font-mono font-bold px-2.5 py-1 rounded-lg transition-all ${currentSelectedSub > 0
-                              ? "bg-purple-600 text-white shadow-xs"
+                              ? "bg-gray-200 text-gray-500 shadow-xs"
                               : "bg-gray-200 text-gray-500"
                             }`}
                         >

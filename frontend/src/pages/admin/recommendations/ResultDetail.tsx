@@ -18,7 +18,7 @@ import { Button } from "../../../components/ui/common/Button";
 import { useGet } from "../../../hooks/useGet";
 import { recommendationService } from "../../../services/recommendationService";
 import { productWeightService } from "../../../services/productWeightService";
-import { initialHistory } from "./ReqHistory";
+
 
 // Definisi Kriteria SPK Utama
 const CRITERIAS = [
@@ -140,7 +140,7 @@ export default function ResultDetail() {
     queryKey: ["recommendation-detail", id || ""],
     queryFn: () => recommendationService.getById(id!),
     enabled: !!id,
-    offlineFallbackData: initialHistory.find((item) => String(item.id) === String(id)) || initialHistory[0],
+   
   });
 
   // Fetch pemetaan kriteria-alternatif asli dari database (ProductCriteria)

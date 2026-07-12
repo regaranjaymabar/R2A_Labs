@@ -149,19 +149,26 @@ export function TabelProductWeightIndex({
 
   // Ekstrak daftar kriteria unik secara dinamis (mengutamakan parameter `criterias` dari API backend)
   const activeCriterias = useMemo(() => {
+    let list: any[] = [];
     if (criterias && criterias.length > 0) {
-      return [...criterias].sort((a, b) => a.code.localeCompare(b.code));
+      list = [...criterias];
+    } else {
+      const map = new Map<string, { code: string; name: string }>();
+      data.forEach((item) => {
+        if (item.criteria_code) {
+          map.set(item.criteria_code, {
+            code: item.criteria_code,
+            name: item.criteria_name || "Kriteria",
+          });
+        }
+      });
+      list = Array.from(map.values());
     }
-    const map = new Map<string, { code: string; name: string }>();
-    data.forEach((item) => {
-      if (item.criteria_code) {
-        map.set(item.criteria_code, {
-          code: item.criteria_code,
-          name: item.criteria_name || "Kriteria",
-        });
-      }
-    });
-    return Array.from(map.values()).sort((a, b) => a.code.localeCompare(b.code));
+
+    // Saring kriteria Harga (C1) agar tidak tampil di kolom tabel
+    return list
+      .filter((c) => c.code !== "C1" && c.name.toLowerCase() !== "harga")
+      .sort((a, b) => a.code.localeCompare(b.code));
   }, [data, criterias]);
 
   const columns = useMemo(() => {
