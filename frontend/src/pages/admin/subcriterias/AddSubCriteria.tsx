@@ -34,10 +34,10 @@ export default function AddSubCriteria() {
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
 
-      <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 pb-5">
+      <div className="flex items-center justify-between border-b border-gray-200 pb-5">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2.5">
               <span>Tambah Sub-Kriteria Baru</span>
             </h1>
           </div>
@@ -45,7 +45,7 @@ export default function AddSubCriteria() {
 
         <Link
           to="/admin/subcriterias"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold text-xs transition-all shadow-2xs active:scale-95"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition-all shadow-2xs active:scale-95"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Kembali ke Daftar Sub-Kriteria</span>
@@ -53,25 +53,25 @@ export default function AddSubCriteria() {
       </div>
 
       {/* 2. KARTU FORM UTAMA */}
-      <div className="bg-white dark:bg-[#151216] rounded-3xl border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden">
+      <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
         <div className="h-2 bg-black"></div>
 
         <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-8">
 
           <div className="space-y-4">
-            <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-800 text-sm font-bold text-black dark:text-purple-400">
+            <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-black">
               <span>Kriteria Induk</span>
             </div>
 
             <div className="flex flex-col gap-1">
-              <label htmlFor="criteria_id" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label htmlFor="criteria_id" className="text-sm font-medium text-gray-700">
                 Pilih Kriteria
               </label>
               <select
                 id="criteria_id"
                 {...register("criteria_id")}
                 disabled={isCriteriasLoading}
-                className={`w-full border border-gray-300 dark:border-gray-700 rounded-xl px-3.5 py-3 outline-none transition-all font-semibold text-sm bg-white dark:bg-[#181519] text-gray-900 dark:text-white focus:ring-2 focus:ring-blaxk dark:focus:border-black cursor-pointer ${errors.criteria_id ? "border-red-500 focus:ring-red-500" : ""
+                className={`w-full border border-gray-300 rounded-xl px-3.5 py-3 outline-none transition-all font-semibold text-sm bg-white text-gray-900 focus:ring-2 focus:ring-blaxk cursor-pointer ${errors.criteria_id ? "border-red-500 focus:ring-red-500" : ""
                   }`}
               >
                 <option value={0}>-- Pilih Kriteria SPK --</option>
@@ -82,7 +82,7 @@ export default function AddSubCriteria() {
                 ))}
               </select>
               {errors.criteria_id && (
-                <p className="text-xs font-semibold text-red-500 dark:text-red-400 animate-fadeIn">
+                <p className="text-xs font-semibold text-red-500 animate-fadeIn">
                   {errors.criteria_id.message}
                 </p>
               )}
@@ -90,7 +90,7 @@ export default function AddSubCriteria() {
           </div>
 
           <div className="space-y-4 pt-2">
-            <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-black text-sm font-bold text-black dark:text-black">
+            <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-black">
               <span>Konversi Angka Mutlak</span>
             </div>
 
@@ -120,15 +120,15 @@ export default function AddSubCriteria() {
           </div>
 
           {/* SECTION 3: LIVE PREVIEW KAMUS TERJEMAHAN */}
-          <div className="p-5 rounded-2xl dark:bg-[#181519] border border-black dark:border-black space-y-3 transition-all">
+          <div className="p-5 rounded-2xl border border-black space-y-3 transition-all">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider font-mono">
               <span>Live Preview</span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-3.5 rounded-xl bg-white dark:bg-[#151216] border border-purple-100 dark:border-gray-800 text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-3.5 rounded-xl bg-white border border-purple-100 text-xs">
               <div>
                 <span className="block text-gray-400 font-mono text-[11px]">KRITERIA INDUK:</span>
-                <span className="font-bold text-gray-900 dark:text-white mt-0.5 block">
+                <span className="font-bold text-gray-900 mt-0.5 block">
                   {selectedCriteria ? `[${selectedCriteria.code}] ${selectedCriteria.name}` : "Belum dipilih"}
                 </span>
               </div>
@@ -140,7 +140,7 @@ export default function AddSubCriteria() {
               </div>
               <div>
                 <span className="block text-gray-400 font-mono text-[11px]">Konfersi:</span>
-                <span className="font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 block font-mono text-sm">
+                <span className="font-bold text-emerald-600 mt-0.5 block font-mono text-sm">
                   {Number(watchValue || 0).toFixed(2)}
                 </span>
               </div>
@@ -148,7 +148,7 @@ export default function AddSubCriteria() {
           </div>
 
           {/* TOMBOL AKSI FORM */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-800">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
             <Button
               type="button"
               variant="secondary"

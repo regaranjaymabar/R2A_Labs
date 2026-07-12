@@ -79,10 +79,10 @@ export default function RegisterForm() {
     return (
         <div>
             <div className="mb-4 text-center sm:text-left">
-                <h2 className="text-center sm:text-left text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                <h2 className="text-center sm:text-left text-2xl font-extrabold text-gray-900 tracking-tight">
                     Buat Akun Pelanggan
                 </h2>
-                <p className="text-center sm:text-left text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-center sm:text-left text-xs text-gray-500 mt-1">
                     Lengkapi data di bawah ini untuk mendaftarkan akun Anda.
                 </p>
             </div>
@@ -127,9 +127,9 @@ export default function RegisterForm() {
                     />
                 </div>
 
-                <div className="mt-4 text-center text-xs text-gray-600 dark:text-gray-400">
+                <div className="mt-4 text-center text-xs text-gray-600">
                     Sudah punya akun?{" "}
-                    <Link to="/login" className="font-semibold text-black dark:text-white hover:underline transition-colors">
+                    <Link to="/login" className="font-semibold text-black hover:underline transition-colors">
                         Login di sini
                     </Link>
                 </div>

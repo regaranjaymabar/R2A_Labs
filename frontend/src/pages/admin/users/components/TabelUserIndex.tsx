@@ -30,7 +30,7 @@ export function TabelUserIndex({
           id: "id",
           header: () => <span className="font-semibold">ID</span>,
           cell: (info) => (
-            <span className="text-gray-500 dark:text-gray-400 font-mono font-bold">
+            <span className="text-gray-500 font-mono font-bold">
               #{info.getValue()}
             </span>
           ),
@@ -45,16 +45,16 @@ export function TabelUserIndex({
             <div className="py-1">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-gray-900 dark:text-white text-base">
+                  <span className="font-bold text-gray-900 text-base">
                     {info.getValue()}
                   </span>
                   {item.id === 1 && (
-                    <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-700">
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-purple-100 text-purple-700 border border-purple-300">
                       SUPER ADMIN UTAMA
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 font-mono mt-0.5">
+                <div className="flex items-center gap-1.5 text-xs text-gray-500 font-mono mt-0.5">
                   <span>{item.email}</span>
                 </div>
               </div>
@@ -68,20 +68,20 @@ export function TabelUserIndex({
           const role = info.getValue();
           if (role === "superadmin") {
             return (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60 shadow-2xs">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200 shadow-2xs">
                 <span>Super Admin</span>
               </span>
             );
           }
           if (role === "admin" || role === "store_admin") {
             return (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60 shadow-2xs">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs">
                 <span>Admin Toko</span>
               </span>
             );
           }
           return (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 shadow-2xs">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200 shadow-2xs">
               <span>User Biasa</span>
             </span>
           );
@@ -98,11 +98,11 @@ export function TabelUserIndex({
           cell: (info) => {
             const isActive = info.getValue();
             return isActive ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                 <span>Aktif</span>
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">
                 <span>Nonaktif</span>
               </span>
             );
@@ -119,9 +119,9 @@ export function TabelUserIndex({
             if (!raw || raw === "-") return <span className="text-xs text-gray-400">-</span>;
             try {
               const d = new Date(raw);
-              if (isNaN(d.getTime())) return <span className="text-xs text-gray-600 dark:text-gray-400 font-mono">{raw}</span>;
+              if (isNaN(d.getTime())) return <span className="text-xs text-gray-600 font-mono">{raw}</span>;
               return (
-                <span className="text-xs text-gray-600 dark:text-gray-400 font-mono">
+                <span className="text-xs text-gray-600 font-mono">
                   {d.toLocaleDateString("id-ID", {
                     day: "2-digit",
                     month: "short",
@@ -131,7 +131,7 @@ export function TabelUserIndex({
               );
             } catch {
               return (
-                <span className="text-xs text-gray-600 dark:text-gray-400 font-mono">
+                <span className="text-xs text-gray-600 font-mono">
                   {raw}
                 </span>
               );

@@ -45,16 +45,16 @@ export default function AdminDashboard() {
             title: "Total Laptop di Tokoku",
             value: storeSummary ? `${storeSummary.totalProducts} Model` : "Memuat...",
             change: "Terdaftar di katalog toko",
-            icon: <Package className="w-5 h-5 text-purple-600 dark:text-purple-400" />,
-            iconBg: "bg-purple-50 dark:bg-purple-900/30",
+            icon: <Package className="w-5 h-5 text-purple-600" />,
+            iconBg: "bg-purple-50",
             glowColor: "#9333ea",
         },
         {
             title: "Total Unit Stok",
             value: storeSummary ? `${storeSummary.totalStock} Unit` : "Memuat...",
             change: `${storeSummary?.availableCount || 0} model tersedia`,
-            icon: <Boxes className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />,
-            iconBg: "bg-emerald-50 dark:bg-emerald-900/30",
+            icon: <Boxes className="w-5 h-5 text-emerald-600" />,
+            iconBg: "bg-emerald-50",
             glowColor: "#10b981",
         },
         {
@@ -63,16 +63,16 @@ export default function AdminDashboard() {
                 ? `Rp ${(storeSummary.avgPrice || 0).toLocaleString("id-ID")}`
                 : "Memuat...",
             change: "Harga rata-rata toko",
-            icon: <DollarSign className="w-5 h-5 text-blue-600 dark:text-blue-400" />,
-            iconBg: "bg-blue-50 dark:bg-blue-900/30",
+            icon: <DollarSign className="w-5 h-5 text-blue-600" />,
+            iconBg: "bg-blue-50",
             glowColor: "#3b82f6",
         },
         {
             title: "Muncul di Rekomendasi",
             value: storeSummary ? `${storeSummary.recommendationAppearances} Kali` : "Memuat...",
             change: "Direkomendasikan SPK SAW",
-            icon: <Award className="w-5 h-5 text-amber-600 dark:text-amber-400" />,
-            iconBg: "bg-amber-50 dark:bg-amber-900/30",
+            icon: <Award className="w-5 h-5 text-amber-600" />,
+            iconBg: "bg-amber-50",
             glowColor: "#f59e0b",
         },
     ];
@@ -83,24 +83,24 @@ export default function AdminDashboard() {
             title: "Total Produk",
             value: `${products.length} Item`,
             change: "Master Laptop Terdaftar",
-            icon: <Package className="w-5 h-5 text-blue-600 dark:text-blue-400" />,
-            iconBg: "bg-blue-50 dark:bg-blue-900/30",
+            icon: <Package className="w-5 h-5 text-blue-600" />,
+            iconBg: "bg-blue-50",
             glowColor: "#3b82f6",
         },
         {
             title: "Total Merek",
             value: `${brands.length} Merek`,
             change: "Brand Partner",
-            icon: <Tag className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />,
-            iconBg: "bg-emerald-50 dark:bg-emerald-900/30",
+            icon: <Tag className="w-5 h-5 text-emerald-600" />,
+            iconBg: "bg-emerald-50",
             glowColor: "#10b981",
         },
         {
             title: "Total Toko",
             value: `${stores.length} Toko`,
             change: "Mitra Cabang Terdaftar",
-            icon: <Store className="w-5 h-5 text-amber-600 dark:text-amber-400" />,
-            iconBg: "bg-amber-50 dark:bg-amber-900/30",
+            icon: <Store className="w-5 h-5 text-amber-600" />,
+            iconBg: "bg-amber-50",
             glowColor: "#f59e0b",
         },
     ];
@@ -110,12 +110,12 @@ export default function AdminDashboard() {
     return (
         <div className="space-y-8 pb-10">
             {/* Header Welcome */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 pb-5">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h1 className="text-2xl font-bold text-gray-900">
                         Selamat Datang, {user?.name || "Admin"}
                     </h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-gray-500 mt-1">
                         {isStoreAdmin
                             ? "Pantau statistik inventaris, harga, dan performa rekomendasi toko kamu."
                             : "Panel kendali utama Sistem Pendukung Keputusan & Aggregator Laptop."}
@@ -126,7 +126,7 @@ export default function AdminDashboard() {
             {/* Glowing Cards Stat Section */}
             <div>
                 <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                    <h2 className="text-lg font-semibold text-gray-800">
                         Ringkasan Statistik {isStoreAdmin ? "Toko Saya" : "Global"}
                     </h2>
                 </div>
@@ -139,7 +139,7 @@ export default function AdminDashboard() {
                             className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1"
                         >
                             <div className="flex items-center justify-between mb-4">
-                                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                <span className="text-sm font-medium text-gray-500">
                                     {stat.title}
                                 </span>
                                 <div className={`p-2.5 rounded-xl ${stat.iconBg}`}>
@@ -148,10 +148,10 @@ export default function AdminDashboard() {
                             </div>
 
                             <div>
-                                <h3 className="text-2xl lg:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                                <h3 className="text-2xl lg:text-3xl font-extrabold text-gray-900 tracking-tight">
                                     {stat.value}
                                 </h3>
-                                <div className="flex items-center gap-1 mt-3 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                                <div className="flex items-center gap-1 mt-3 text-xs font-semibold text-emerald-600">
                                     <TrendingUp className="w-3.5 h-3.5" />
                                     <span>{stat.change}</span>
                                 </div>
@@ -164,42 +164,42 @@ export default function AdminDashboard() {
             {/* Quick Actions untuk Store Admin */}
             {isStoreAdmin && (
                 <div className="space-y-4 pt-4">
-                    <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                    <h2 className="text-lg font-semibold text-gray-800">
                         Aksi Cepat Toko
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <Link
                             to="/admin/productstores"
-                            className="p-6 rounded-3xl bg-white dark:bg-[#151216] border border-gray-200 dark:border-gray-800 hover:border-purple-500/50 dark:hover:border-purple-500/50 transition-all group shadow-lg"
+                            className="p-6 rounded-3xl bg-white border border-gray-200 hover:border-purple-500/50 transition-all group shadow-lg"
                         >
                             <div className="flex items-center justify-between mb-3">
-                                <div className="p-3 rounded-2xl bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400">
+                                <div className="p-3 rounded-2xl bg-purple-50 text-purple-600">
                                     <Boxes className="w-6 h-6" />
                                 </div>
                                 <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" />
                             </div>
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                            <h3 className="text-lg font-bold text-gray-900">
                                 Kelola Stok & Harga
                             </h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            <p className="text-sm text-gray-500 mt-1">
                                 Tambahkan laptop ke tokomu atau perbarui harga jual dan ketersediaan stok.
                             </p>
                         </Link>
 
                         <Link
                             to="/admin/my-store-profile"
-                            className="p-6 rounded-3xl bg-white dark:bg-[#151216] border border-gray-200 dark:border-gray-800 hover:border-purple-500/50 dark:hover:border-purple-500/50 transition-all group shadow-lg"
+                            className="p-6 rounded-3xl bg-white border border-gray-200 hover:border-purple-500/50 transition-all group shadow-lg"
                         >
                             <div className="flex items-center justify-between mb-3">
-                                <div className="p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+                                <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600">
                                     <Store className="w-6 h-6" />
                                 </div>
                                 <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
                             </div>
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                            <h3 className="text-lg font-bold text-gray-900">
                                 Profil Tokoku
                             </h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            <p className="text-sm text-gray-500 mt-1">
                                 Ubah nama cabang, alamat lengkap, kontak WhatsApp, dan koordinat GPS peta toko.
                             </p>
                         </Link>

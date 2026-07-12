@@ -256,7 +256,6 @@ export default function CriteriaIndex() {
         )}
       </Modal>
 
-      {/* MODAL KONFIRMASI HAPUS KRITERIA */}
       <ModalConfirm
         isOpen={Boolean(deleteTarget)}
         onClose={cancelDelete}

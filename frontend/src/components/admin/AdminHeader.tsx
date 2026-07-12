@@ -31,16 +31,16 @@ export default function AdminHeader() {
     .filter((segment) => segment && segment !== "admin");
 
   return (
-    <header className="sticky top-0 z-30 bg-white/80 dark:bg-[#151216]/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-4 sm:px-6 py-3.5 transition-colors">
+    <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 sm:px-6 py-3.5 transition-colors">
       <div className="flex items-center justify-between gap-4">
         {/* Kiri: Mini Breadcrumb Navigation */}
-        <nav aria-label="Breadcrumb" className="flex items-center text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 min-w-0">
+        <nav aria-label="Breadcrumb" className="flex items-center text-xs sm:text-sm font-medium text-gray-500 min-w-0">
           <ol className="flex items-center gap-1.5 flex-wrap">
             {/* Beranda Admin */}
             <li className="inline-flex items-center">
               <Link
                 to="/admin/dashboard"
-                className="inline-flex items-center gap-1.5 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
+                className="inline-flex items-center gap-1.5 text-gray-500 hover:text-gray-900 transition-colors"
                 title="Dasbor Admin"
               >
                 <Home className="w-3.5 h-3.5 shrink-0" />
@@ -59,15 +59,15 @@ export default function AdminHeader() {
 
               return (
                 <li key={to} className="inline-flex items-center gap-1.5">
-                  <ChevronRight className="w-3.5 h-3.5 text-gray-400 dark:text-gray-600 shrink-0" />
+                  <ChevronRight className="w-3.5 h-3.5 text-gray-400 shrink-0" />
                   {isLast ? (
-                    <span className="font-bold text-gray-900 dark:text-white capitalize truncate max-w-[160px] sm:max-w-xs">
+                    <span className="font-bold text-gray-900 capitalize truncate max-w-[160px] sm:max-w-xs">
                       {label}
                     </span>
                   ) : (
                     <Link
                       to={to}
-                      className="hover:text-gray-900 dark:hover:text-white transition-colors capitalize truncate max-w-[120px]"
+                      className="hover:text-gray-900 transition-colors capitalize truncate max-w-[120px]"
                     >
                       {label}
                     </Link>
@@ -80,7 +80,7 @@ export default function AdminHeader() {
 
         {/* Kanan: Mini Info Staf / Peran Aktif */}
         <div className="hidden md:flex items-center gap-2 text-xs font-mono shrink-0">
-          <span className="px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-bold border border-gray-200 dark:border-gray-700">
+          <span className="px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 font-bold border border-gray-200">
             {user?.role === "superadmin" || user?.role === "super_admin"
               ? "SUPER ADMIN"
               : "STORE ADMIN"}

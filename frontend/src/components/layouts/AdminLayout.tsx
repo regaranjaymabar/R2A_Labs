@@ -13,7 +13,7 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row min-h-screen bg-gray-100 dark:bg-[#0f0d11] overflow-x-hidden w-full">
+    <div className="flex flex-col sm:flex-row min-h-screen bg-gray-100 overflow-x-hidden w-full">
       <AdminSidebar />
       <div className="flex-1 min-w-0 w-full flex flex-col sm:ml-64 transition-all duration-300">
          <AdminHeader />

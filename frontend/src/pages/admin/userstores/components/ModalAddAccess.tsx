@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Modal } from "../../../../components/ui/common/Modal";
-import { InputSelect } from "../../../../components/ui/common/InputSelect";
+import { InputSearchSelect } from "../../../../components/ui/common/InputSearchSelect";
 import { Button } from "../../../../components/ui/common/Button";
 
 interface ModalAddAccessProps {
@@ -37,39 +37,37 @@ export function ModalAddAccess({
       title="Beri Akses Operasional Toko"
     >
       <form onSubmit={onSubmit} className="space-y-5">
-        <InputSelect
+        <InputSearchSelect
           label="Pilih Pegawai Admin Toko"
-          nama="selectedUserId"
           value={selectedUserId}
-          onChange={(e) => setSelectedUserId(Number(e.target.value))}
+          onChange={(val) => setSelectedUserId(Number(val))}
           options={availableStoreAdmins.map((adm) => ({
             value: adm.id,
             label: `${adm.name} — (${adm.email})`,
           }))}
-          placeholder=""
+          placeholder="Ketik nama atau email pegawai..."
           helperText={
             <span>
               *Ingin menugaskan pegawai baru? Daftarkan akunnya terlebih dahulu di menu{" "}
-              <Link to="/admin/users/add" className="underline font-bold text-blue-600 dark:text-blue-400">
+              <Link to="/admin/users/add" className="underline font-bold text-black">
                 Daftar Pengguna (users)
               </Link>.
             </span>
           }
         />
 
-        <InputSelect
+        <InputSearchSelect
           label="Pilih Cabang Toko"
-          nama="selectedStoreId"
           value={selectedStoreId}
-          onChange={(e) => setSelectedStoreId(Number(e.target.value))}
+          onChange={(val) => setSelectedStoreId(Number(val))}
           options={availableStores.map((st) => ({
             value: st.id,
             label: `${st.name} — Kota: ${st.city}`,
           }))}
-          placeholder=""
+          placeholder="Ketik nama toko atau kota..."
         />
 
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200 dark:border-gray-800">
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200">
           <Button
             type="button"
             variant="secondary"

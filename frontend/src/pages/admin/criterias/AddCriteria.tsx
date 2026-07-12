@@ -24,10 +24,10 @@ export default function AddCriteria() {
     return (
         <div className="max-w-3xl mx-auto space-y-6 pb-12">
             {/* Header Halaman */}
-            <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 pb-5">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-5">
                 <div>
                     <div className="flex items-center gap-2">
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        <h1 className="text-2xl font-bold text-gray-900">
                             Tambah Kriteria Baru
                         </h1>
                     </div>
@@ -35,36 +35,36 @@ export default function AddCriteria() {
 
                 <Link
                     to="/admin/criterias"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold text-xs transition-all shadow-2xs active:scale-95"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition-all shadow-2xs active:scale-95"
                 >
                     <ArrowLeft className="w-4 h-4" />
                     <span>Kembali</span>
                 </Link>
             </div>
             {/* Form Tambah Kriteria */}
-            <div className="bg-white dark:bg-[#151216] rounded-3xl border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden">
+            <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
                 <div className="h-2 bg-black"></div>
                 <form
                     onSubmit={handleSubmit}
-                    className="bg-white dark:bg-[#151216] border border-gray-200 dark:border-gray-800 rounded-3xl p-6 md:p-8 shadow-sm space-y-6"
+                    className="bg-white border border-gray-200 rounded-3xl p-6 md:p-8 shadow-sm space-y-6"
                 >
                     {/* Live Preview Badge */}
-                    <div className="bg-gray-50 dark:bg-[#1a171c] border border-gray-200 dark:border-gray-800/80 rounded-2xl p-4 flex items-center justify-between gap-3">
+                    <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2.5">
-                            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                            <span className="text-xs font-semibold text-gray-500">
                                 Preview:
                             </span>
-                            <span className="text-sm font-bold font-mono text-gray-900 dark:text-white px-2.5 py-1 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 shadow-2xs">
+                            <span className="text-sm font-bold font-mono text-gray-900 px-2.5 py-1 bg-white rounded-lg border border-gray-200 shadow-2xs">
                                 [{codeVal}] {nameVal}
                             </span>
                         </div>
                         <div>
                             {selectedType === "benefit" ? (
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                                     benefit
                                 </span>
                             ) : (
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-400 border border-red-200 dark:border-red-800/60">
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">
                                     cost
                                 </span>
                             )}
@@ -87,7 +87,7 @@ export default function AddCriteria() {
                         helperText="* Label spesifikasi laptop yang mudah dibaca oleh pengguna di antarmuka sistem."
                     />
 
-                    <div className="pt-2 border-t border-gray-100 dark:border-gray-800">
+                    <div className="pt-2 border-t border-gray-100">
                         <InputSelect
                             label="Tipe Atribut *"
                             nama="type"
@@ -101,7 +101,7 @@ export default function AddCriteria() {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-100 dark:border-gray-800">
+                    <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-100">
                         <Button
                             type="button"
                             variant="secondary"

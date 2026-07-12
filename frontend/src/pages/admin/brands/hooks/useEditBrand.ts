@@ -10,8 +10,7 @@ import { useUpdate } from "../../../../hooks/useUpdate";
 
 export function useEditBrand() {
   const { id } = useParams<{ id: string }>();
-
-  // 1. Inisialisasi React Hook Form + Zod Resolver
+  
   const {
     register,
     handleSubmit,
@@ -25,9 +24,8 @@ export function useEditBrand() {
     },
   });
 
- 
 
-  // 2. Fetch Data Eksisting menggunakan useQuery + brandService: GET /brands/:id
+  // fetch Data Eksisting menggunakan useQuery + brandService: GET /brands/:id
   const {
     data: brandData,
     isLoading: isLoadingData,
@@ -48,7 +46,7 @@ export function useEditBrand() {
     enabled: Boolean(id),
   });
 
-  // 3. Populate form begitu data berhasil dimuat
+  
   useEffect(() => {
     if (brandData) {
       reset({

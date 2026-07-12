@@ -45,20 +45,20 @@ export function ModalConfirm({
     >
       <div className="text-center py-2 px-1 sm:px-4">
         {/* Ikon Peringatan Bersinar */}
-        <div className="mx-auto flex items-center justify-center w-16 h-16 rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 mb-5 shadow-inner ring-8 ring-red-50 dark:ring-red-950/30">
+        <div className="mx-auto flex items-center justify-center w-16 h-16 rounded-full bg-red-100 text-red-600 mb-5 shadow-inner ring-8 ring-red-50">
           <AlertTriangle className="w-8 h-8 animate-pulse" />
         </div>
 
         {/* Judul & Pesan */}
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2.5">
+        <h3 className="text-xl font-bold text-gray-900 mb-2.5">
           {title}
         </h3>
-        <div className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed max-w-sm mx-auto">
+        <div className="text-sm text-gray-600 leading-relaxed max-w-sm mx-auto">
           {message}
         </div>
 
         {/* Tombol Aksi */}
-        <div className="flex items-center justify-center gap-3 mt-8 pt-5 border-t border-gray-100 dark:border-gray-800">
+        <div className="flex items-center justify-center gap-3 mt-8 pt-5 border-t border-gray-100">
           <Button
             type="button"
             variant="secondary"

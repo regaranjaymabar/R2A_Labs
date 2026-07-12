@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { productService } from "../../../../services/productService";
 import { useCreate } from "../../../../hooks/useCreate";
+import { getAutoMappedSubCriteriaIds } from "../../../../utils/spkAutoMapper";
 
 
 export const productSchema = z.object({
@@ -51,8 +52,12 @@ export function useAddProduct() {
       }`,
   });
 
-  const onSubmit = (data: ProductFormData) => {
-    createMutation.mutate(data);
+  const onSubmit = async (data: ProductFormData) => {
+    const subCriteriaIds = await getAutoMappedSubCriteriaIds(data);
+    createMutation.mutate({
+      ...data,
+      subCriteriaIds,
+    });
   };
 
   return {

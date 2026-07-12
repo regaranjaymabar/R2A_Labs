@@ -4,9 +4,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { storeAdminService, type StoreProfileData } from "../../../services/storeAdminService";
-import { Store, MapPin, CheckCircle2, Loader2, Save } from "lucide-react";
+import { MapPin, Loader2, Save, Navigation, Info } from "lucide-react";
 import { InputText } from "../../../components/ui/common/InputText";
+import { TextArea } from "../../../components/ui/common/TextArea";
 import { InputSearchSelect } from "../../../components/ui/common/InputSearchSelect";
+import { Button } from "../../../components/ui/common/Button";
 import { useIndonesianCities } from "../../../hooks/useIndonesianCities";
 
 export const storeProfileSchema = z.object({
@@ -31,6 +33,7 @@ export default function MyStoreProfile() {
     const queryClient = useQueryClient();
     const [successMsg, setSuccessMsg] = useState<string | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const [isLocating, setIsLocating] = useState(false);
     const { data: cities = [], isLoading: isCitiesLoading } = useIndonesianCities();
 
     const {
@@ -38,6 +41,8 @@ export default function MyStoreProfile() {
         control,
         handleSubmit,
         reset,
+        setValue,
+        watch,
         formState: { errors },
     } = useForm<StoreProfileFormInput, any, StoreProfileFormData>({
         resolver: zodResolver(storeProfileSchema) as any,
@@ -50,6 +55,31 @@ export default function MyStoreProfile() {
             longitude: "",
         },
     });
+
+    const handleGetCurrentLocation = () => {
+        if (!navigator.geolocation) {
+            setErrorMsg("Browser Anda tidak mendukung fitur deteksi lokasi (Geolocation).");
+            return;
+        }
+        setIsLocating(true);
+        setErrorMsg(null);
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const lat = Number(pos.coords.latitude.toFixed(6));
+                const lng = Number(pos.coords.longitude.toFixed(6));
+                setValue("latitude", String(lat), { shouldValidate: true });
+                setValue("longitude", String(lng), { shouldValidate: true });
+                setIsLocating(false);
+                setSuccessMsg("Berhasil mengambil koordinat lokasi toko Anda saat ini!");
+                setTimeout(() => setSuccessMsg(null), 4000);
+            },
+            () => {
+                setIsLocating(false);
+                setErrorMsg("Gagal mendeteksi lokasi. Pastikan izin akses lokasi aktif di browser Anda.");
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    };
 
     // Fetch Profil Toko
     const { data: profile, isLoading } = useQuery<StoreProfileData>({
@@ -89,11 +119,41 @@ export default function MyStoreProfile() {
         updateMutation.mutate(data as Partial<StoreProfileData>);
     };
 
+    const watchedLat = Number(watch("latitude"));
+    const watchedLng = Number(watch("longitude"));
+    const watchedCity = watch("city") || "";
+    const hasValidCoords = !isNaN(watchedLat) && !isNaN(watchedLng) && watchedLat !== 0 && watchedLng !== 0;
+    const displayLat = hasValidCoords ? watchedLat : -6.2088;
+    const displayLng = hasValidCoords ? watchedLng : 106.8456;
+
+    const [detectedLocation, setDetectedLocation] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!hasValidCoords) {
+            setDetectedLocation(null);
+            return;
+        }
+        const timer = setTimeout(() => {
+            fetch(`https://nominatim.openstreetmap.org/reverse?lat=${watchedLat}&lon=${watchedLng}&format=json`)
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data && data.address) {
+                        const addr = data.address;
+                        const area = addr.city || addr.regency || addr.county || addr.town || addr.state || "";
+                        const state = addr.state || "";
+                        setDetectedLocation(Array.from(new Set([area, state].filter(Boolean))).join(", "));
+                    }
+                })
+                .catch(() => setDetectedLocation(null));
+        }, 800);
+        return () => clearTimeout(timer);
+    }, [watchedLat, watchedLng, hasValidCoords]);
+
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px] space-y-3">
                 <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
-                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Memuat data profil toko...</span>
+                <span className="text-sm font-medium text-gray-500">Memuat data profil toko...</span>
             </div>
         );
     }
@@ -101,13 +161,12 @@ export default function MyStoreProfile() {
     return (
         <div className="max-w-4xl mx-auto space-y-6 pb-12">
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 pb-5">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-5">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
-                        <Store className="w-7 h-7 text-purple-600 dark:text-purple-400" />
-                        <span>Profil Tokoku (Store Profile)</span>
+                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2.5">
+                        <span>Profil Tokoku</span>
                     </h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-gray-500 mt-1">
                         Kelola identitas, alamat, dan titik lokasi toko kamu agar mudah dicari pelanggan.
                     </p>
                 </div>
@@ -115,27 +174,25 @@ export default function MyStoreProfile() {
 
             {/* Notification Banner */}
             {successMsg && (
-                <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm font-medium">
-                    <CheckCircle2 className="w-5 h-5 shrink-0" />
+                <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium">
                     <span>{successMsg}</span>
                 </div>
             )}
 
             {errorMsg && (
-                <div className="flex items-center gap-3 p-4 rounded-2xl bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-sm font-medium">
+                <div className="flex items-center gap-3 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-medium">
                     <span>{errorMsg}</span>
                 </div>
             )}
 
             {/* Form Box */}
-            <div className="bg-white dark:bg-[#151216] rounded-3xl border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden">
-                <div className="h-2 bg-linear-to-r from-purple-600 to-indigo-600"></div>
+            <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
+                <div className="h-2 bg-black"></div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="p-6 md:p-8 space-y-8">
                     {/* Section 1: Identitas Toko */}
                     <div className="space-y-4">
-                        <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-800 text-sm font-bold text-gray-900 dark:text-purple-400">
-                            <Store className="w-4 h-4" />
+                        <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-gray-900">
                             <span>Informasi Umum & Kontak</span>
                         </div>
 
@@ -146,7 +203,6 @@ export default function MyStoreProfile() {
                                     nama="name"
                                     register={register}
                                     error={errors.name?.message}
-                                    placeholder="Contoh: Laptop Zone Jakarta"
                                 />
                             </div>
 
@@ -156,7 +212,6 @@ export default function MyStoreProfile() {
                                     nama="phone"
                                     register={register}
                                     error={errors.phone?.message}
-                                    placeholder="Contoh: 081234567890"
                                 />
                             </div>
                         </div>
@@ -164,12 +219,11 @@ export default function MyStoreProfile() {
 
                     {/* Section 2: Alamat & Lokasi */}
                     <div className="space-y-4">
-                        <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-800 text-sm font-bold text-gray-900 dark:text-purple-400">
-                            <MapPin className="w-4 h-4" />
+                        <div className="flex items-center gap-2 pb-2 border-b border-gray-200 text-sm font-bold text-gray-900">
                             <span>Alamat Lengkap & Koordinat Peta</span>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 gap-6">
                             <div>
                                 <InputSearchSelect
                                     label="Kota *"
@@ -178,20 +232,72 @@ export default function MyStoreProfile() {
                                     options={cities}
                                     isLoading={isCitiesLoading}
                                     error={errors.city?.message}
-                                    placeholder="Cari atau pilih kota..."
                                 />
                             </div>
 
                             <div>
-                                <InputText
+                                <TextArea
                                     label="Alamat Jalan *"
                                     nama="address"
                                     register={register}
                                     error={errors.address?.message}
-                                    placeholder="Contoh: Jl. Sudirman No. 12"
+                                    rows={3}
                                 />
                             </div>
+                        </div>
 
+                        {/* Helper Lokasi GPS */}
+                        <div className="pt-2">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-purple-50 border border-purple-200">
+                                <div className="flex items-start gap-3">
+                                    <Info className="w-5 h-5 text-black mt-0.5 shrink-0" />
+                                    <div className="text-xs text-gray-700 space-y-1">
+                                        <p className="font-semibold text-gray-900">Koordinat GPS Toko (Latitude & Longitude)</p>
+                                        <p>
+                                            Klik tombol deteksi otomatis atau buka <b>Google Maps</b> → klik kanan pada titik toko Anda → klik angka koordinat untuk menyalin.
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={handleGetCurrentLocation}
+                                    disabled={isLocating}
+                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black hover:bg-gray-800    text-white font-medium text-xs shadow-sm transition-all active:scale-95 disabled:opacity-50 shrink-0 cursor-pointer"
+                                >
+                                    {isLocating ? (
+                                        <>
+                                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                            <span>Mendeteksi...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Navigation className="w-3.5 h-3.5" />
+                                            <span>Gunakan Lokasi Saat Ini</span>
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Smart Paste Google Maps */}
+                        <div className="p-4 rounded-2xl bg-white border border-indigo-200">
+                            <InputText
+                                label="Tempel lokasi google maps disini *"
+                                placeholder="Contoh tempel di sini: -6.879293230671416, 109.1337399269172"
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    const parts = val.split(",").map((s) => s.trim());
+                                    if (parts.length >= 2 && !isNaN(Number(parts[0])) && !isNaN(Number(parts[1]))) {
+                                        setValue("latitude", parts[0], { shouldValidate: true });
+                                        setValue("longitude", parts[1], { shouldValidate: true });
+                                        setSuccessMsg("Koordinat Google Maps berhasil dipisahkan otomatis ke Latitude & Longitude!");
+                                        setTimeout(() => setSuccessMsg(null), 3000);
+                                    }
+                                }}
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <InputText
                                     label="Latitude (Garis Lintang)"
@@ -200,7 +306,6 @@ export default function MyStoreProfile() {
                                     step="any"
                                     register={register}
                                     error={errors.latitude?.message}
-                                    placeholder="Contoh: -6.1754"
                                 />
                             </div>
 
@@ -212,31 +317,86 @@ export default function MyStoreProfile() {
                                     step="any"
                                     register={register}
                                     error={errors.longitude?.message}
-                                    placeholder="Contoh: 106.8272"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Reverse Geocode Badge & Mismatch Alert */}
+                        {detectedLocation && (
+                            <div className="space-y-2">
+                                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-semibold">
+                                    <span>📍 Wilayah Koordinat Terdeteksi:</span>
+                                    <span className="font-bold underline">{detectedLocation}</span>
+                                </div>
+
+                                {watchedCity &&
+                                    !detectedLocation
+                                        .toLowerCase()
+                                        .includes(
+                                            watchedCity
+                                                .toLowerCase()
+                                                .replace(/kabupaten|kota/gi, "")
+                                                .trim()
+                                        ) && (
+                                        <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs font-semibold flex items-start gap-2.5 animate-fadeIn">
+                                            <span className="text-base">⚠️</span>
+                                            <div>
+                                                <p className="font-bold">Perhatian: Potensi Perbedaan Lokasi!</p>
+                                                <p className="font-normal mt-0.5">
+                                                    Kota yang Anda pilih adalah <b>"{watchedCity}"</b>, namun koordinat GPS yang dimasukkan berada di area <b>"{detectedLocation}"</b>. Pastikan koordinat yang ditempel sudah sesuai dengan cabang toko.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                            </div>
+                        )}
+
+                        {/* Interactive OpenStreetMap Preview */}
+                        <div className="mt-4 rounded-2xl overflow-hidden border border-gray-200 shadow-md transition-all animate-fadeIn">
+                            <div className="bg-gray-50 px-4 py-3 flex flex-wrap items-center justify-between gap-2 border-b border-gray-200">
+                                <div className="flex items-center gap-2 text-xs font-semibold text-gray-700">
+                                    <MapPin className="w-4 h-4 text-purple-600 shrink-0" />
+                                    <span>
+                                        {hasValidCoords
+                                            ? "Pratinjau Titik Lokasi Toko di Peta (OpenStreetMap)"
+                                            : "Pratinjau Peta (Titik belum ditentukan — Klik tombol 'Gunakan Lokasi Saat Ini')"}
+                                    </span>
+                                </div>
+                                {hasValidCoords && (
+                                    <a
+                                        href={`https://www.google.com/maps?q=${watchedLat},${watchedLng}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs font-bold text-black hover:underline inline-flex items-center gap-1 shrink-0"
+                                    >
+                                        <span>Buka di Google Maps</span>
+                                        <span>↗</span>
+                                    </a>
+                                )}
+                            </div>
+                            <div className="w-full h-64 bg-gray-100 relative">
+                                <iframe
+                                    title="Peta Lokasi Toko"
+                                    width="100%"
+                                    height="100%"
+                                    frameBorder="0"
+                                    scrolling="no"
+                                    src={`https://maps.google.com/maps?q=${displayLat},${displayLng}&hl=id&z=15&output=embed`}
+                                    className="w-full h-full border-0"
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* Action Button */}
-                    <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-end">
-                        <button
+                    <div className="pt-4 border-t border-gray-100 flex justify-end">
+                        <Button
                             type="submit"
-                            disabled={updateMutation.isPending}
-                            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm shadow-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                        >
-                            {updateMutation.isPending ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    <span>Menyimpan...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <Save className="w-4 h-4" />
-                                    <span>Simpan Perubahan Profil</span>
-                                </>
-                            )}
-                        </button>
+                            variant="primary"
+                            isLoading={updateMutation.isPending}
+                            label="Simpan Perubahan Profil"
+                            icon={<Save className="w-4 h-4" />}
+                        />
                     </div>
                 </form>
             </div>

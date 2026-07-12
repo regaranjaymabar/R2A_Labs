@@ -85,4 +85,6 @@ export type RecommendationRequest = {
     weights?: RecommendationWeight;
     user_choice?: string;
     ranked_laptops?: RecommendationResult[];
+    recommendationWeights?: any[];
+    recommendationResults?: any[];
 };

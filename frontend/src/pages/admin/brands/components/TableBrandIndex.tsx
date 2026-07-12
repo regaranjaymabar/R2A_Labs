@@ -33,7 +33,7 @@ export function TableBrandIndex({
       columnHelper.accessor("id", {
         header: () => <span className="font-semibold">ID / No</span>,
         cell: (info) => (
-          <span className="text-gray-500 dark:text-gray-400 font-mono font-medium">
+          <span className="text-gray-500 font-mono font-medium">
             #{info.getValue()}
           </span>
         ),
@@ -43,7 +43,7 @@ export function TableBrandIndex({
         header: ({ column }) => <DataTableColumnHeader column={column} title="Nama Brand" />,
         cell: (info) => (
           <div className="flex items-center gap-3">
-            <span className="font-bold text-gray-900 dark:text-white text-base">
+            <span className="font-bold text-gray-900 text-base">
               {info.getValue()}
             </span>
           </div>

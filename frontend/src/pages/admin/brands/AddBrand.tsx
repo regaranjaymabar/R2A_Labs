@@ -13,10 +13,10 @@ export default function AddBrand() {
     return (
         <div className="max-w-3xl mx-auto space-y-6 pb-12">
 
-            <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 pb-5">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-5">
                 <div>
                     <div className="flex items-center gap-2.5">
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+                        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2.5">
                             <span>Tambah Brand Laptop Baru</span>
                         </h1>
                     </div>
@@ -24,14 +24,14 @@ export default function AddBrand() {
 
                 <Link
                     to="/admin/brands"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold text-xs transition-all shadow-2xs active:scale-95"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition-all shadow-2xs active:scale-95"
                 >
                     <ArrowLeft className="w-4 h-4" />
                     <span>Kembali</span>
                 </Link>
             </div>
 
-            <div className="bg-white dark:bg-[#151216] rounded-3xl border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden">
+            <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
                 <div className="h-2 bg-black"></div>
 
                 <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-7">
@@ -44,7 +44,7 @@ export default function AddBrand() {
                         />
                     </div>
 
-                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-800">
+                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
                         <Button
                             type="button"
                             variant="secondary"
