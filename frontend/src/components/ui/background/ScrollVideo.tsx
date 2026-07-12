@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import videoSrc from "../../../assets/macbookneo.webm";
 
-const VIDEO_START = 0;
+const VIDEO_START = 3;
 const VIDEO_END = 6;
 
 export default function ScrollVideo() {
@@ -15,7 +15,6 @@ export default function ScrollVideo() {
   useEffect(() => {
     const video = videoRef.current;
     const section = sectionRef.current;
-
     if (!video || !section) return;
 
     const range = VIDEO_END - VIDEO_START;

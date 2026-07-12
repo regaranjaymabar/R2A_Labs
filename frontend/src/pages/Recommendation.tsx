@@ -173,7 +173,7 @@ export default function Recommendation() {
         <div className="mb-20">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-4xl font-bold">Katalog Laptop</h2>
+              <h2 className="text-4xl font-bold">Our Laptops</h2>
               <p className="text-zinc-500 mt-2">
                 Menampilkan {filteredLaptops.length} dari {laptops.length} laptop
               </p>
