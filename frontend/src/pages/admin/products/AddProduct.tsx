@@ -165,10 +165,10 @@ export default function AddProduct() {
                                 <InputText
                                     label="Kapasitas Baterai (Wh / mAh)"
                                     nama="battery"
-                                    type="number"
+                                    type="text"
                                     register={register}
                                     error={errors.battery?.message}
-                                    helperText="* Angka kapasitas baterai."
+                                    helperText="* Angka atau teks kapasitas baterai (misal: 54Wh)."
                                 />
                             </div>
 

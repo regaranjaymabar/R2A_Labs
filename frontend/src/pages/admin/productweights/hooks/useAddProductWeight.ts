@@ -48,7 +48,10 @@ export function useAddProductWeight() {
 
   const batchMutation = useMutation({
     mutationFn: async (payloads: ProductWeightFormData[]) => {
-      return Promise.all(payloads.map((p) => productWeightService.create(p)));
+      if (payloads.length === 0) return;
+      const productId = payloads[0].product_id;
+      const subCriteriaIds = payloads.map((p) => p.sub_criteria_id);
+      return productWeightService.createBatch(productId, subCriteriaIds);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["productweights"] });

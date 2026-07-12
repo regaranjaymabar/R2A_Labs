@@ -3,7 +3,6 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "../../../components/ui/common/Button";
 import { InputText } from "../../../components/ui/common/InputText";
-import { InputSelect } from "../../../components/ui/common/InputSelect";
 import { InputSearchSelect } from "../../../components/ui/common/InputSearchSelect";
 import { storeService } from "../../../services/storeService";
 import { useEditUser } from "./hooks/useEditUser";

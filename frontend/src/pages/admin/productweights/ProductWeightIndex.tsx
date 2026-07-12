@@ -278,7 +278,6 @@ export default function ProductWeightIndex() {
               />
               <Button
                 type="submit"
-                variant="info"
                 label="Simpan Bobot Spek"
                 className="text-xs! py-2! px-5! rounded-xl font-bold shadow-md cursor-pointer"
               />

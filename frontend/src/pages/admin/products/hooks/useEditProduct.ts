@@ -8,6 +8,14 @@ import { useUpdate } from "../../../../hooks/useUpdate";
 import { productSchema, type ProductFormData } from "./useAddProduct";
 import type { Product } from "../../../../types/product";
 
+const parseNumberSafe = (val: any): number => {
+  if (typeof val === "number" && !isNaN(val)) return val;
+  if (val === undefined || val === null || val === "") return 0;
+  const cleaned = String(val).replace(/,/g, ".").replace(/[^0-9.]/g, "");
+  const num = parseFloat(cleaned);
+  return isNaN(num) ? 0 : num;
+};
+
 export function useEditProduct() {
   const { id } = useParams<{ id: string }>();
 
@@ -63,12 +71,12 @@ export function useEditProduct() {
         processor: productData.processor || "",
         ram: productData.ram || "",
         storage: productData.storage || "",
-        screenSize: Number(productData.screenSize || productData.screen_size || 0),
-        battery: String(productData.battery || ""),
-        weight: Number(productData.weight || 0),
+        screenSize: parseNumberSafe(productData.screenSize || productData.screen_size),
+        battery: String(productData.battery ?? ""),
+        weight: parseNumberSafe(productData.weight),
         releaseYear: formattedDate,
         subCriteriaIds: [],
-        is_active: Boolean(productData.is_active),
+        is_active: Boolean(productData.is_active ?? productData.isActive ?? true),
       });
     }
   }, [productData, reset]);

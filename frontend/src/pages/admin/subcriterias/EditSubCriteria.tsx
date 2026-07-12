@@ -80,11 +80,6 @@ export default function EditSubCriteria({
       isOpen={isOpen}
       onClose={onClose}
       maxWidth="lg"
-      badge={
-        <span className="text-blue-600 dark:text-blue-400">
-          Update Konversi (sub_criteria)
-        </span>
-      }
       title={
         item
           ? `[${item.criteria_code || `ID:${item.criteria_id}`}] ${
@@ -122,7 +117,7 @@ export default function EditSubCriteria({
           <div className="space-y-1.5">
             <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 items-center gap-1.5">
               <span>
-                Nilai Numerik (<code className="font-mono">value_numeric</code>)
+                Nilai Numerik 
               </span>
             </label>
             <p className="text-[11px] text-gray-500 dark:text-gray-400">
@@ -135,7 +130,7 @@ export default function EditSubCriteria({
                 min="0"
                 value={editValueNumeric}
                 onChange={(e) => setEditValueNumeric(Number(e.target.value))}
-                className="w-full px-4 py-2.5 text-base font-mono font-bold bg-blue-50/50 dark:bg-[#181519] border border-blue-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all shadow-2xs text-blue-700"
+                className="w-full px-4 py-2.5 text-base font-mono font-bold bg-white border border-black dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-black transition-all shadow-2xs text-black"
                 required
               />
             </div>
@@ -152,8 +147,6 @@ export default function EditSubCriteria({
             />
             <Button
               type="submit"
-              variant="info"
-              icon={<Save className="w-4 h-4" />}
               label={
                 updateMutation.isPending ? "Menyimpan..." : "Simpan Konversi"
               }
