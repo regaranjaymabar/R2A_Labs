@@ -10,8 +10,6 @@ import type { ProductStore } from "../../../../types/productStore";
 
 export function useEditProductStore() {
   const { id } = useParams<{ id: string }>();
-
-  // 1. Inisialisasi React Hook Form + Zod Resolver
   const {
     register,
     handleSubmit,
@@ -25,7 +23,6 @@ export function useEditProductStore() {
 
   const isAvailable = watch("is_available");
 
-  // 2. Fetch Data Eksisting menggunakan Generic Hook useGet + productStoreService: GET /productstores/:id
   const {
     data: productStoreData,
     isLoading: isLoadingData,
@@ -44,7 +41,6 @@ export function useEditProductStore() {
     },
   });
 
-  // 3. Populate form begitu data berhasil dimuat
   useEffect(() => {
     if (productStoreData) {
       reset({
@@ -57,7 +53,6 @@ export function useEditProductStore() {
     }
   }, [productStoreData, reset]);
 
-  // 4. Mutasi Update ke Backend menggunakan Generic Hook useUpdate + productStoreService: PUT /productstores/:id
   const updateMutation = useUpdate<ProductStoreFormData>({
     mutationFn: (payload) => productStoreService.update(id!, payload),
     queryKey: ["productstores"],

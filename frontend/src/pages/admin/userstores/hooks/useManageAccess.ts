@@ -89,15 +89,12 @@ export function useManageAccess() {
     }
   }, [availableStores, selectedStoreId]);
 
-  // State Modal Confirm Cabut/Pulihkan Akses
   const [revokeTarget, setRevokeTarget] = useState<UserStoreAccess | null>(null);
 
-  // Aksi Cabut Akses (Revoke) / Pulihkan Akses (Grant) - Buka Modal
   const handleToggleRevoke = (item: UserStoreAccess) => {
     setRevokeTarget(item);
   };
 
-  // Eksekusi perubahan dari ModalConfirm ke Backend API
   const confirmToggleRevoke = async () => {
     if (!revokeTarget) return;
 
@@ -121,7 +118,6 @@ export function useManageAccess() {
     }
   };
 
-  // Simpan Penugasan Baru ke Backend API
   const handleCreateAccess = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -150,7 +146,7 @@ export function useManageAccess() {
     }
   };
 
-  // Filter Data
+  // filter data
   const filteredData = useMemo(() => {
     return data.filter((item) => {
       const matchStore = filterStore === "all" || item.store_id.toString() === filterStore;
@@ -162,7 +158,6 @@ export function useManageAccess() {
     });
   }, [data, filterStore, filterStatus]);
 
-  // Statistik Ringkas
   const stats = useMemo(() => {
     return {
       total: data.length,

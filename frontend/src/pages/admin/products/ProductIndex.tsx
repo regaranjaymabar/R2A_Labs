@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { AlertCircle, Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { productService } from "../../../services/productService";
 import { TabelProductIndex } from "./components/TabelProductIndex";
@@ -10,7 +10,6 @@ import { laptops } from "../../../data/laptops";
 import type { Product } from "../../../types/product";
 export type { Product };
 
-// 2. Data Dummy Awal dari katalog laptops (Sesuai skema tabel products MySQL)
 export const initialProducts: Product[] = laptops.map((l) => ({
   id: l.id,
   brand_name: l.brand,
@@ -27,7 +26,6 @@ export const initialProducts: Product[] = laptops.map((l) => ({
 
 
 export default function ProductIndex() {
-  // 1. Ambil data produk menggunakan useQuery + productService
   const {
     data: productsData,
     isLoading,
@@ -48,8 +46,8 @@ export default function ProductIndex() {
   });
 
   const data = productsData || initialProducts;
+   const isDummyData = !isLoading && (productsData === initialProducts || !productsData);
 
-  // 2. Gunakan custom hook untuk hapus produk
   const {
     handleDelete,
     confirmDelete,
@@ -61,7 +59,6 @@ export default function ProductIndex() {
 
   return (
     <div className="space-y-6 pb-10">
-      {/* Header Halaman */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Daftar Produk</h1>
@@ -80,7 +77,18 @@ export default function ProductIndex() {
         </div>
       </div>
 
-      {/* Memanggil Komponen Tabel Produk Reusable */}
+      {isDummyData && (
+        <div className="bg-amber-50 dark:bg-amber-950/25 border border-amber-200 dark:border-amber-900/60 p-4 rounded-2xl flex items-start gap-3 text-amber-900 dark:text-amber-300">
+          <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div>
+            <h4 className="font-semibold text-sm">Mode Demo / Offline</h4>
+            <p className="text-xs mt-0.5 text-amber-700 dark:text-amber-400">
+              Gagal terhubung ke API backend. Data sub-kriteria yang ditampilkan di bawah ini adalah <strong>data dummy lokal</strong> untuk keperluan demonstrasi UI.
+            </p>
+          </div>
+        </div>
+      )}
+
       <TabelProductIndex
         data={data}
         isLoading={isLoading}
@@ -88,7 +96,6 @@ export default function ProductIndex() {
         deletingId={deletingId}
       />
 
-      {/* Modal Konfirmasi Hapus Produk */}
       <ModalConfirm
         isOpen={Boolean(deleteTarget)}
         onClose={cancelDelete}

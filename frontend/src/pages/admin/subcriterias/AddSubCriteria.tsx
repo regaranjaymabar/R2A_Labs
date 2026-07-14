@@ -14,7 +14,6 @@ export default function AddSubCriteria() {
   const navigate = useNavigate();
   const { register, handleSubmit, watch, errors, isSubmitting } = useAddSubCriteria();
 
-  // Fetch daftar Kriteria Induk dari backend dengan offlineFallbackData
   const { data: fetchedCriterias, isLoading: isCriteriasLoading } = useGet({
     queryKey: ["criterias"],
     queryFn: criteriaService.getAll,
@@ -22,7 +21,6 @@ export default function AddSubCriteria() {
   });
   const criterias = fetchedCriterias || initialCriterias;
 
-  // Pantau input untuk Live Preview Buku Kamus Terjemahan SPK
   const watchCriteriaId = watch("criteria_id");
   const watchDescription = watch("description");
   const watchValue = watch("value_numeric");
@@ -52,7 +50,6 @@ export default function AddSubCriteria() {
         </Link>
       </div>
 
-      {/* 2. KARTU FORM UTAMA */}
       <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
         <div className="h-2 bg-black"></div>
 
@@ -119,7 +116,6 @@ export default function AddSubCriteria() {
             </div>
           </div>
 
-          {/* SECTION 3: LIVE PREVIEW KAMUS TERJEMAHAN */}
           <div className="p-5 rounded-2xl border border-black space-y-3 transition-all">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider font-mono">
               <span>Live Preview</span>
@@ -146,8 +142,7 @@ export default function AddSubCriteria() {
               </div>
             </div>
           </div>
-
-          {/* TOMBOL AKSI FORM */}
+          
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
             <Button
               type="button"

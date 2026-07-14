@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { storeAdminService, type StoreProfileData } from "../../../services/storeAdminService";
-import { MapPin, Loader2, Save, Navigation, Info } from "lucide-react";
+import { Loader2, Save, Navigation, Info } from "lucide-react";
 import { InputText } from "../../../components/ui/common/InputText";
 import { TextArea } from "../../../components/ui/common/TextArea";
 import { InputSearchSelect } from "../../../components/ui/common/InputSearchSelect";
@@ -81,7 +81,6 @@ export default function MyStoreProfile() {
         );
     };
 
-    // Fetch Profil Toko
     const { data: profile, isLoading } = useQuery<StoreProfileData>({
         queryKey: ["store-profile"],
         queryFn: () => storeAdminService.getProfile(),
@@ -100,7 +99,6 @@ export default function MyStoreProfile() {
         }
     }, [profile, reset]);
 
-    // Update Profil Mutation
     const updateMutation = useMutation({
         mutationFn: (payload: Partial<StoreProfileData>) => storeAdminService.updateProfile(payload),
         onSuccess: () => {
@@ -160,19 +158,14 @@ export default function MyStoreProfile() {
 
     return (
         <div className="max-w-4xl mx-auto space-y-6 pb-12">
-            {/* Header */}
             <div className="flex items-center justify-between border-b border-gray-200 pb-5">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2.5">
                         <span>Profil Tokoku</span>
                     </h1>
-                    <p className="text-sm text-gray-500 mt-1">
-                        Kelola identitas, alamat, dan titik lokasi toko kamu agar mudah dicari pelanggan.
-                    </p>
                 </div>
             </div>
 
-            {/* Notification Banner */}
             {successMsg && (
                 <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium">
                     <span>{successMsg}</span>
@@ -185,12 +178,10 @@ export default function MyStoreProfile() {
                 </div>
             )}
 
-            {/* Form Box */}
             <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
                 <div className="h-2 bg-black"></div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="p-6 md:p-8 space-y-8">
-                    {/* Section 1: Identitas Toko */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-gray-900">
                             <span>Informasi Umum & Kontak</span>
@@ -216,8 +207,6 @@ export default function MyStoreProfile() {
                             </div>
                         </div>
                     </div>
-
-                    {/* Section 2: Alamat & Lokasi */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-2 pb-2 border-b border-gray-200 text-sm font-bold text-gray-900">
                             <span>Alamat Lengkap & Koordinat Peta</span>
@@ -246,7 +235,6 @@ export default function MyStoreProfile() {
                             </div>
                         </div>
 
-                        {/* Helper Lokasi GPS */}
                         <div className="pt-2">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-2xl bg-purple-50 border border-purple-200">
                                 <div className="flex items-start gap-3">
@@ -279,7 +267,6 @@ export default function MyStoreProfile() {
                             </div>
                         </div>
 
-                        {/* Smart Paste Google Maps */}
                         <div className="p-4 rounded-2xl bg-white border border-indigo-200">
                             <InputText
                                 label="Tempel lokasi google maps disini *"
@@ -321,11 +308,10 @@ export default function MyStoreProfile() {
                             </div>
                         </div>
 
-                        {/* Reverse Geocode Badge & Mismatch Alert */}
                         {detectedLocation && (
                             <div className="space-y-2">
                                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-semibold">
-                                    <span>📍 Wilayah Koordinat Terdeteksi:</span>
+                                    <span>Wilayah Koordinat Terdeteksi:</span>
                                     <span className="font-bold underline">{detectedLocation}</span>
                                 </div>
 
@@ -351,11 +337,9 @@ export default function MyStoreProfile() {
                             </div>
                         )}
 
-                        {/* Interactive OpenStreetMap Preview */}
                         <div className="mt-4 rounded-2xl overflow-hidden border border-gray-200 shadow-md transition-all animate-fadeIn">
                             <div className="bg-gray-50 px-4 py-3 flex flex-wrap items-center justify-between gap-2 border-b border-gray-200">
                                 <div className="flex items-center gap-2 text-xs font-semibold text-gray-700">
-                                    <MapPin className="w-4 h-4 text-purple-600 shrink-0" />
                                     <span>
                                         {hasValidCoords
                                             ? "Pratinjau Titik Lokasi Toko di Peta (OpenStreetMap)"
@@ -388,7 +372,6 @@ export default function MyStoreProfile() {
                         </div>
                     </div>
 
-                    {/* Action Button */}
                     <div className="pt-4 border-t border-gray-100 flex justify-end">
                         <Button
                             type="submit"

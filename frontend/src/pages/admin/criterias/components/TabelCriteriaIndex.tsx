@@ -22,7 +22,8 @@ export function TabelCriteriaIndex({
   onDelete,
   deletingId = null,
 }: TabelCriteriaIndexProps) {
-  // Definisi Kolom Tabel
+
+
   const columns = useMemo(
     () => [
       columnHelper.accessor("id", {

@@ -23,7 +23,6 @@ export default function AddCriteria() {
 
     return (
         <div className="max-w-3xl mx-auto space-y-6 pb-12">
-            {/* Header Halaman */}
             <div className="flex items-center justify-between border-b border-gray-200 pb-5">
                 <div>
                     <div className="flex items-center gap-2">
@@ -41,14 +40,12 @@ export default function AddCriteria() {
                     <span>Kembali</span>
                 </Link>
             </div>
-            {/* Form Tambah Kriteria */}
             <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
                 <div className="h-2 bg-black"></div>
                 <form
                     onSubmit={handleSubmit}
                     className="bg-white border border-gray-200 rounded-3xl p-6 md:p-8 shadow-sm space-y-6"
                 >
-                    {/* Live Preview Badge */}
                     <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2.5">
                             <span className="text-xs font-semibold text-gray-500">
@@ -100,7 +97,6 @@ export default function AddCriteria() {
                         />
                     </div>
 
-                    {/* Action Buttons */}
                     <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-100">
                         <Button
                             type="button"

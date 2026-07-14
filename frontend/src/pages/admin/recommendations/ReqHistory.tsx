@@ -2,9 +2,9 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { TabelReqHistory } from "./components/TabelReqHistory";
 import {
-  Filter,
   Calculator,
   ArrowRight,
+  Sliders,
 } from "lucide-react";
 import { Button } from "../../../components/ui/common/Button";
 import { Modal } from "../../../components/ui/common/Modal";
@@ -14,10 +14,6 @@ import { useGet } from "../../../hooks/useGet";
 import { recommendationService } from "../../../services/recommendationService";
 import type { RecommendationRequest } from "../../../types/recomendation";
 
-
-
-
-// 2. Data Dummy Awal (Termasuk studi kasus Andi Pratama sesuai contoh)
 const initialHistory: RecommendationRequest[] = [
   
 ];
@@ -34,7 +30,6 @@ export default function ReqHistory() {
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [selectedDetail, setSelectedDetail] = useState<RecommendationRequest | null>(null);
 
-  // Custom Hook Hapus Riwayat (Delete dengan Modal Confirm)
   const {
     handleDelete,
     confirmDelete,
@@ -43,18 +38,13 @@ export default function ReqHistory() {
     deletingId,
   } = useDeleteReqHistory();
 
-  // Filter berdasarkan status
   const filteredData = useMemo(() => {
     if (statusFilter === "ALL") return data;
     return data.filter((item) => item.status === statusFilter);
   }, [data, statusFilter]);
 
-  // Definisi Kolom Tabel
-
-
   return (
     <div className="space-y-6 pb-12">
-      {/* Header Halaman */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
         <div>
           <div className="flex items-center gap-2">
@@ -62,50 +52,37 @@ export default function ReqHistory() {
               <span>Riwayat Rekomendasi</span>
             </h1>
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Pantau preferensi nyata yang dicari oleh user biasa. Lihat bagaimana geseran bobot slider memengaruhi rekomendasi sistem SAW dan pilihan keputusan mereka.
-          </p>
         </div>
       </div>
 
-
-      {/* Bar Filter & Statistik Ringkas */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50 dark:bg-[#181519] p-4 rounded-2xl border border-gray-200 dark:border-gray-800">
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-black" />
-          <span className="font-semibold text-sm text-gray-700 dark:text-gray-300">Filter Status Pilihan:</span>
-          <div className="flex items-center gap-1.5 ml-2">
-            <button
-              type="button"
-              onClick={() => setStatusFilter("ALL")}
-              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${statusFilter === "ALL"
-                  ? "bg-purple-600 text-white shadow-sm"
-                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700"
-                }`}
-            >
-              Semua ({data.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setStatusFilter("CHOSEN")}
-              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${statusFilter === "CHOSEN"
-                  ? "bg-emerald-600 text-white shadow-sm"
-                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700"
-                }`}
-            >
-              Dipilih User ({data.filter((d) => d.status === "CHOSEN").length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setStatusFilter("COMPLETED")}
-              className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${statusFilter === "COMPLETED"
-                  ? "bg-blue-600 text-white shadow-sm"
-                  : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700"
-                }`}
-            >
-              Hanya Dilihat ({data.filter((d) => d.status === "COMPLETED").length})
-            </button>
-          </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1.5 mr-1 font-mono">
+            <Sliders className="w-3.5 h-3.5" />
+            <span>Filter Status:</span>
+          </span>
+          {(["ALL", "CALCULATED", "COMPLETED", "PENDING"] as const).map((status) => {
+            const labels = {
+              ALL: "Semua",
+              CALCULATED: "Dihitung",
+              COMPLETED: "Selesai",
+              PENDING: "Tertunda",
+            };
+            const isActive = statusFilter === status;
+            return (
+              <button
+                key={status}
+                type="button"
+                onClick={() => setStatusFilter(status)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${isActive
+                    ? "bg-black text-white dark:bg-purple-900/60 dark:text-purple-300 dark:border dark:border-purple-800 shadow-md"
+                    : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-gray-300"
+                  }`}
+              >
+                {labels[status]}
+              </button>
+            );
+          })}
         </div>
 
         <div className="text-xs font-mono text-gray-500 dark:text-gray-400">
@@ -113,7 +90,6 @@ export default function ReqHistory() {
         </div>
       </div>
 
-      {/* Tabel Riwayat Rekomendasi */}
       <TabelReqHistory
         data={filteredData}
         isLoading={isLoading}
@@ -122,7 +98,6 @@ export default function ReqHistory() {
         deletingId={deletingId}
       />
 
-      {/* MODAL DETAIL ANALISIS SPK */}
       <Modal
         isOpen={Boolean(selectedDetail)}
         onClose={() => setSelectedDetail(null)}
@@ -152,21 +127,19 @@ export default function ReqHistory() {
       >
         {selectedDetail && (
           <div className="space-y-5 text-sm">
-            {/* Kebutuhan & Budget */}
-            <div className="p-4 rounded-2xl bg-gray-50 dark:bg-[#181519] border border-gray-200 dark:border-gray-800 space-y-2">
+            <div className="p-4 rounded-2xl bg-gray-50 border border-gray-200 space-y-2">
               <div className="flex items-center justify-between text-xs font-semibold text-gray-500">
                 <span>Kebutuhan Penggunaan:</span>
                 <span>Rentang Budget:</span>
               </div>
-              <div className="flex items-center justify-between font-bold text-gray-900 dark:text-white">
-                <span className="text-black dark:text-purple-400">{selectedDetail.usage_purpose}</span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-mono">{selectedDetail.budget_range}</span>
+              <div className="flex items-center justify-between font-bold text-gray-900">
+                <span className="text-black">{selectedDetail.usage_purpose}</span>
+                <span className="text-emerald-600 font-mono">{selectedDetail.budget_range}</span>
               </div>
             </div>
 
-            {/* Rincian Bobot yang Digeser */}
             <div className="space-y-2">
-              <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block uppercase tracking-wider">
+              <span className="text-xs font-bold text-gray-700  block uppercase tracking-wider">
                 Penggeseran Slider Bobot Kriteria (%):
               </span>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
@@ -215,7 +188,6 @@ export default function ReqHistory() {
               </div>
             </div>
 
-            {/* Tombol ke halaman ResultDetail (Bedah Matriks SAW) */}
             <div className="pt-2 flex justify-end">
               <Link
                 to={`/admin/recommendations/${selectedDetail.id}`}
@@ -230,7 +202,6 @@ export default function ReqHistory() {
         )}
       </Modal>
 
-      {/* MODAL KONFIRMASI HAPUS RIWAYAT */}
       <ModalConfirm
         isOpen={Boolean(deleteTarget)}
         onClose={cancelDelete}

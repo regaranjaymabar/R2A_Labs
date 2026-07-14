@@ -4,7 +4,6 @@ import { z } from "zod";
 import { criteriaService } from "../../../../services/criteriaService";
 import { useCreate } from "../../../../hooks/useCreate";
 
-// 1. Skema Validasi Zod untuk tabel criterias di database
 export const criteriaSchema = z.object({
   code: z
     .string()
@@ -22,7 +21,6 @@ export const CriteriaSchema = criteriaSchema;
 export type CriteriaFormData = z.infer<typeof criteriaSchema>;
 
 export function useAddCriteria() {
-  // Inisialisasi React Hook Form + Zod Resolver
   const {
     register,
     handleSubmit,
@@ -40,7 +38,6 @@ export function useAddCriteria() {
 
   const selectedType = watch("type");
 
-  // Mutasi dengan Generic Hook useCreate + Criteria Service
   const createMutation = useCreate<CriteriaFormData>({
     mutationFn: (payload) => criteriaService.create(payload),
     queryKey: ["criterias"],

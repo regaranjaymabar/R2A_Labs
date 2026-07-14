@@ -39,7 +39,6 @@ export default function ProductWeightIndex() {
   });
   const products = fetchedProducts || initialProducts;
 
-  // Fetch seluruh kriteria dari database untuk header kolom dinamis
   const { data: fetchedCriterias } = useGet<any[]>({
     queryKey: ["criterias"],
     queryFn: criteriaService.getAll,
@@ -47,7 +46,6 @@ export default function ProductWeightIndex() {
   });
   const criterias = fetchedCriterias || initialCriterias;
 
-  // Fetch seluruh sub-kriteria dari database agar modal pilihan tidak kosong
   const { data: fetchedSubCriterias } = useGet<any[]>({
     queryKey: ["subcriterias"],
     queryFn: subCriteriaService.getAll,
@@ -62,14 +60,10 @@ export default function ProductWeightIndex() {
     deletingId,
   } = useDeleteProductWeight();
 
-  // Filter berdasarkan Produk
   const [selectedProductFilter, setSelectedProductFilter] = useState<string>("ALL");
 
-  // State Modal Edit Spek Pembobotan
   const [editingItem, setEditingItem] = useState<ProductWeight | null>(null);
   const [selectedSubCriteriaId, setSelectedSubCriteriaId] = useState<number>(0);
-
-  // Filter Data
   const filteredData = useMemo(() => {
     if (selectedProductFilter === "ALL") {
       return data;
@@ -77,7 +71,6 @@ export default function ProductWeightIndex() {
     return data.filter((item) => String(item.product_id) === selectedProductFilter);
   }, [data, selectedProductFilter]);
 
-  // Daftar produk unik untuk dropdown filter
   const uniqueProducts = useMemo(() => {
     if (products && products.length > 0) {
       return products.map((prod: any) => ({
@@ -101,24 +94,20 @@ export default function ProductWeightIndex() {
     return list;
   }, [data, products]);
 
-  // Buka Modal Update
   const handleOpenEdit = (item: ProductWeight) => {
     setEditingItem(item);
     setSelectedSubCriteriaId(item.sub_criteria_id);
   };
 
-  // Simpan Perubahan (Sesuai pilihan dropdown Sub-Kriteria)
   const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingItem) return;
 
-    // Cari data sub_criteria yang dipilih dari daftar asli database
     const selectedSub = subCriteriaList.find((opt) => Number(opt.id) === Number(selectedSubCriteriaId));
     if (!selectedSub) return;
 
     const valNumeric = Number(selectedSub.value_numeric ?? selectedSub.valueNumeric ?? 0);
 
-    // 1. Update cache lokal seketika agar UI langsung berubah tanpa jeda
     queryClient.setQueryData<ProductWeight[]>(["productweights"], (prev: ProductWeight[] | undefined) => {
       const list = prev || [];
       if (editingItem.id === 0) {
@@ -148,7 +137,6 @@ export default function ProductWeightIndex() {
 
     setEditingItem(null);
 
-    // 2. Kirim ke backend secara sinkron/berkelanjutan agar tersimpan di database
     try {
       const currentList = queryClient.getQueryData<ProductWeight[]>(["productweights"]) || [];
       const prodId = editingItem.product_id;
@@ -163,11 +151,10 @@ export default function ProductWeightIndex() {
         subCriteriaIds: subIds,
       });
     } catch (err) {
-      // Abaikan jika offline / 404 agar tidak mengganggu UI pengguna
+      console.error("Gagal mengupdate data:", err);
     }
   };
 
-  // Opsi Dropdown khusus kriteria yang sedang diedit
   const availableSubCriteriaOptions = useMemo(() => {
     if (!editingItem) return [];
     return subCriteriaList.filter(
@@ -181,7 +168,6 @@ export default function ProductWeightIndex() {
 
   return (
     <div className="space-y-6 pb-12">
-      {/* Header Halaman */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
         <div>
           <div className="flex items-center gap-2">
@@ -203,7 +189,6 @@ export default function ProductWeightIndex() {
 
       <div className="bg-gray-50 dark:bg-[#181519] border border-gray-200 dark:border-gray-800 p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs text-gray-800 dark:text-gray-300">
 
-        {/* Dropdown Filter Produk */}
         <div className="flex items-center gap-2 bg-white dark:bg-[#151216] px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xs shrink-0">
           <Filter className="w-4 h-4 text-gray-600 dark:text-gray-400" />
           <span className="font-semibold text-gray-700 dark:text-gray-300">Filter Laptop:</span>
@@ -222,7 +207,6 @@ export default function ProductWeightIndex() {
         </div>
       </div>
 
-      {/* Tabel Pembobotan (Modular) */}
       <TabelProductWeightIndex
         data={filteredData}
         products={products}
@@ -233,7 +217,6 @@ export default function ProductWeightIndex() {
         deletingId={deletingId}
       />
 
-      {/* MODAL UPDATE PEMBOBOTAN PRODUK */}
       <Modal
         isOpen={Boolean(editingItem)}
         onClose={() => setEditingItem(null)}
@@ -278,7 +261,6 @@ export default function ProductWeightIndex() {
               </div>
             </div>
 
-            {/* Action Buttons Menggunakan Komponen Button */}
             <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200 dark:border-gray-800">
               <Button
                 type="button"
@@ -298,7 +280,6 @@ export default function ProductWeightIndex() {
         )}
       </Modal>
 
-      {/* MODAL KONFIRMASI HAPUS BOBOT */}
       <ModalConfirm
         isOpen={Boolean(deleteTarget)}
         onClose={cancelDelete}

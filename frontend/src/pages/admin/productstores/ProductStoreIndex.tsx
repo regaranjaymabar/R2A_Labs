@@ -14,10 +14,6 @@ import { useGet } from "../../../hooks/useGet";
 import { productStoreService } from "../../../services/productStoreService";
 import { useAuthStore } from "../../../store/useAuthStore";
 
-
-
-
-// 2. Data Dummy Awal (Disesuaikan dengan angka persis di screenshot database kamu)
 const initialProductStores: ProductStore[] = [
   
 ];
@@ -34,7 +30,6 @@ export default function ProductStoreIndex() {
   const user = useAuthStore((state) => state.user);
   const isSuperAdmin = user?.role === "super_admin" || user?.role === "superadmin";
 
-  // Ambil data inventaris dari API / cache lokal
   const { data: fetchedData } = useGet({
     queryKey: ["productstores"],
     queryFn: productStoreService.getAll,
@@ -45,7 +40,6 @@ export default function ProductStoreIndex() {
 
   const [selectedStoreFilter, setSelectedStoreFilter] = useState<string>("ALL");
 
-  // State Modal Edit Operasional (3 Alur Aksi: Harga, Stok, Ketersediaan)
   const [editingItem, setEditingItem] = useState<ProductStore | null>(null);
   const [editPrice, setEditPrice] = useState<number | string>(0);
   const [editStock, setEditStock] = useState<number | string>(0);
@@ -61,21 +55,17 @@ export default function ProductStoreIndex() {
     item?.product_name ||
     `Product ID #${getProductId(item)}`;
 
-  // 1. Filter Data Berdasarkan Role & Toko yang Sedang Login
   const filteredData = useMemo(() => {
     if (!isSuperAdmin) {
-      // Store Admin hanya melihat tokonya sendiri
       const userStoreId = Number((user as any)?.store_id ?? (user as any)?.storeId ?? 1);
       return data.filter((item) => getStoreId(item) === userStoreId);
     }
-    // Super Admin: Bisa melihat semua atau filter per cabang
     if (selectedStoreFilter === "ALL") {
       return data;
     }
     return data.filter((item) => getStoreName(item) === selectedStoreFilter);
   }, [data, isSuperAdmin, user, selectedStoreFilter]);
 
-  // Daftar nama toko unik untuk dropdown filter
   const uniqueStores = useMemo(() => {
     const names = data.map((item) => getStoreName(item));
     return Array.from(new Set(names));
@@ -83,7 +73,6 @@ export default function ProductStoreIndex() {
 
   const [isSavingEdit, setIsSavingEdit] = useState<boolean>(false);
 
-  // Buka Modal Edit
   const handleOpenEdit = (item: ProductStore) => {
     setEditingItem(item);
     setEditPrice(item.price);
@@ -96,7 +85,6 @@ export default function ProductStoreIndex() {
     );
   };
 
-  // Simpan Perubahan Operasional (Update ke backend & state lokal)
   const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingItem) return;
@@ -133,12 +121,10 @@ export default function ProductStoreIndex() {
     }
   };
 
-  // Gunakan hook hapus yang sudah otomatis mengelola ModalConfirm
   const { handleDelete, confirmDelete, cancelDelete, deleteTarget, isDeleting, deletingId } = useDeleteProductStore();
 
   return (
     <div className="space-y-6 pb-12">
-      {/* Header Halaman & Kontrol Role */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
           <div className="flex items-center gap-2">
@@ -159,7 +145,6 @@ export default function ProductStoreIndex() {
         </div>
       </div>
 
-      {/* Filter Cabang (Khusus Super Admin) */}
       {isSuperAdmin && (
         <div className="flex items-center gap-3 bg-gray-50 p-4 rounded-2xl border border-gray-200/80">
           <Filter className="w-4 h-4 text-gray-500" />
@@ -171,10 +156,10 @@ export default function ProductStoreIndex() {
             onChange={(e) => setSelectedStoreFilter(e.target.value)}
             className="bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs cursor-pointer"
           >
-            <option value="ALL">🌐 Semua Cabang Toko ({data.length} barang)</option>
+            <option value="ALL">Semua Cabang Toko ({data.length} barang)</option>
             {uniqueStores.map((storeName) => (
               <option key={storeName} value={storeName}>
-                🏪 {storeName}
+                {storeName}
               </option>
             ))}
           </select>
@@ -190,7 +175,6 @@ export default function ProductStoreIndex() {
         </div>
       )}
 
-      {/* Indikator Status Banner jika Store Admin */}
       {!isSuperAdmin && (
         <div className="bg-blue-50 border border-blue-200 p-4 rounded-2xl flex items-center justify-between text-xs text-blue-800">
           <div className="flex items-center gap-2.5 font-medium">
@@ -205,7 +189,6 @@ export default function ProductStoreIndex() {
         </div>
       )}
 
-      {/* Tabel Reusable (Modular) */}
       <TableProductStoreIndex
         data={filteredData}
         onEdit={handleOpenEdit}
@@ -213,7 +196,6 @@ export default function ProductStoreIndex() {
         deletingId={deletingId}
       />
 
-      {/* MODAL UPDATE OPERASIONAL (3 ALUR AKSI UTAMA) */}
       <Modal
         isOpen={Boolean(editingItem)}
         onClose={() => setEditingItem(null)}
@@ -225,7 +207,6 @@ export default function ProductStoreIndex() {
       >
         {editingItem && (
           <form onSubmit={handleSaveEdit} className="space-y-5">
-            {/* 1. Penyesuaian Harga */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-gray-700 items-center gap-1.5">
                 <span>Penyesuaian Harga Jual (IDR)</span>
@@ -250,10 +231,9 @@ export default function ProductStoreIndex() {
               </div>
             </div>
 
-            {/* 2. Mutasi Stok */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-gray-700 items-center gap-1.5">
-                <span>Mutasi Stok Fisik (Unit)</span>
+                <span>Mutasi Stok Unit</span>
               </label>
               <p className="text-[11px] text-gray-500">
                 Perbarui kolom <code className="font-mono bg-gray-100 px-1 rounded">stock</code> saat ada barang masuk (restok) atau terjual offline.
@@ -268,15 +248,11 @@ export default function ProductStoreIndex() {
               />
             </div>
 
-            {/* 3. Ubah Ketersediaan (Saklar / Switch) */}
             <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200/80 flex items-center justify-between gap-4">
               <div className="space-y-0.5">
                 <label className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
                   <span>Ubah Ketersediaan</span>
                 </label>
-                <p className="text-[11px] text-gray-500">
-                  Matikan saklar jika laptop discontinued atau ditarik dari cabang.
-                </p>
               </div>
 
               <button
@@ -294,7 +270,6 @@ export default function ProductStoreIndex() {
               </button>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200">
               <Button
                 type="button"
@@ -315,7 +290,6 @@ export default function ProductStoreIndex() {
         )}
       </Modal>
 
-      {/* Modal Confirm Reusable Pengganti window.confirm */}
       <ModalConfirm
         isOpen={Boolean(deleteTarget)}
         onClose={cancelDelete}

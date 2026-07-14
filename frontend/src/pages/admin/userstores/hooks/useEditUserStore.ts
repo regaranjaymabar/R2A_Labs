@@ -12,7 +12,6 @@ import type { UserStoreAccess } from "../../../../types/userStore";
 export function useEditUserStore() {
   const { id } = useParams<{ id: string }>();
 
-  // 1. Inisialisasi React Hook Form + Zod Resolver
   const {
     register,
     handleSubmit,
@@ -33,7 +32,6 @@ export function useEditUserStore() {
   const selectedUserId = watch("user_id");
   const selectedStoreId = watch("store_id");
 
-  // 2. Fetch Data Eksisting menggunakan Generic Hook useGet + userStoreService: GET /userstores/:id
   const {
     data: userStoreData,
     isLoading: isLoadingData,
@@ -55,7 +53,6 @@ export function useEditUserStore() {
     },
   });
 
-  // 3. Populate form begitu data berhasil dimuat
   useEffect(() => {
     if (userStoreData) {
       reset({
@@ -66,7 +63,6 @@ export function useEditUserStore() {
     }
   }, [userStoreData, reset]);
 
-  // 4. Mutasi Update ke Backend menggunakan Generic Hook useUpdate + userStoreService: PUT /userstores/:id
   const updateMutation = useUpdate<UserStoreFormData>({
     mutationFn: (payload) => userStoreService.update(id!, payload),
     queryKey: ["userstores"],

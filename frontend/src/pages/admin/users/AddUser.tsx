@@ -32,7 +32,6 @@ export default function AddUser() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      {/* 1. HEADER HALAMAN */}
       <div className="flex items-center justify-between border-b border-gray-200 pb-5">
         <div>
           <div className="flex items-center gap-2.5">
@@ -51,12 +50,10 @@ export default function AddUser() {
         </Link>
       </div>
 
-      {/* 2. KARTU FORM UTAMA */}
       <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
-        <div className="h-2 bg-linear-to-r from-purple-600 to-blue-600"></div>
+        <div className="h-2 bg-linear-to-r from-black to-black"></div>
 
         <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-8">
-          {/* SECTION 1: IDENTITAS & KREDENSIAL AKUN */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-black">
               <span>Identitas & Penempatan Toko</span>
@@ -104,7 +101,6 @@ export default function AddUser() {
             </div>
           </div>
 
-          {/* SECTION 2: PEMBAGIAN PERAN (ROLE MANAGEMENT) */}
           <div className="space-y-4 pt-2 border-t border-gray-100">
             <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-black">
               <span>Pembagian Peran (Role)</span>
@@ -146,7 +142,6 @@ export default function AddUser() {
             </div>
           </div>
 
-          {/* SECTION 3: STATUS AKSES AKUN */}
           <div className="space-y-4 pt-2 border-t border-gray-100">
             <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-black">
               <span>Status Akses Akun</span>
@@ -174,7 +169,6 @@ export default function AddUser() {
             </div>
           </div>
 
-          {/* ACTION BUTTONS */}
           <div className="flex items-center justify-end gap-4 pt-4 border-t border-gray-200">
             <Link
               to="/admin/users"

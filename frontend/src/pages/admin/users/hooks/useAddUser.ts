@@ -4,7 +4,6 @@ import { z } from "zod";
 import { userService } from "../../../../services/userService";
 import { useCreate } from "../../../../hooks/useCreate";
 
-// 1. Skema Validasi Zod untuk tabel users di database
 export const userSchema = z.object({
   name: z
     .string()
@@ -26,12 +25,10 @@ export const userSchema = z.object({
   is_active: z.boolean(),
 });
 
-export const UserSchema = userSchema;
 
 export type UserFormData = z.infer<typeof userSchema>;
 
 export function useAddUser() {
-  // Inisialisasi React Hook Form + Zod Resolver
   const {
     register,
     control,
@@ -47,14 +44,13 @@ export function useAddUser() {
       password: "",
       role: "admin",
       storeId: 1,
-      is_active: true, // Default diatur ke Aktif (true)
+      is_active: true, 
     },
   });
 
   const isActive = watch("is_active");
   const selectedRole = watch("role");
 
-  // Mutasi dengan Generic Hook useCreate + User Service
   const createMutation = useCreate<UserFormData>({
     mutationFn: (payload) => userService.create(payload as any),
     queryKey: ["users"],

@@ -14,15 +14,11 @@ import { useDeleteBrand } from "./hooks/useDeleteBrand";
 import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
 import type { Brand } from "../../../types/brand";
 
-
-
-// Data Dummy Cadangan (Fallback jika server backend belum menyala saat development)
 const initialBrands: Brand[] = [
    
 ];
 
 export default function BrandIndex() {
-    // 2. FUNGSI FETCH DATA (READ) MENGGUNAKAN useQuery + BRAND SERVICE: GET /brands
     const {
         data: brandsData,
         isLoading,
@@ -31,7 +27,7 @@ export default function BrandIndex() {
         error: queryError,
         refetch,
     } = useQuery<Brand[], AxiosError<{ message?: string }>>({
-        queryKey: ["brands"], // Key cache unik untuk data merek
+        queryKey: ["brands"],
         queryFn: async () => {
             try {
                 return await brandService.getAll();
@@ -43,14 +39,11 @@ export default function BrandIndex() {
                 throw err;
             }
         },
-        retry: 1, // Coba ulang otomatis 1 kali jika gagal koneksi
-        staleTime: 5 * 60 * 1000, // Cache data dianggap fresh selama 5 menit
+        retry: 1,
+        staleTime: 5 * 60 * 1000, 
     });
 
-    // Gunakan data dari React Query, atau fallback ke initialBrands jika kosong
     const data = brandsData || initialBrands;
-
-    // 3. FUNGSI HAPUS DATA (DELETE) DIPISAH KE CUSTOM HOOK: useDeleteBrand()
 
     const errorMessage = queryError?.response?.data?.message || queryError?.message || "Gagal mengambil data dari server.";
 
@@ -59,11 +52,10 @@ export default function BrandIndex() {
 
     return (
         <div className="space-y-6 pb-10">
-            {/* Header Halaman */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
                 <div>
                     <div className="flex items-center gap-2.5">
-                        <h1 className="text-2xl font-bold text-gray-900">Daftar Merek / Brands</h1>
+                        <h1 className="text-2xl font-bold text-gray-900">Daftar Brands</h1>
                         {(isLoading || isFetching) && (
                             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 font-mono animate-pulse">
                                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -71,12 +63,8 @@ export default function BrandIndex() {
                             </span>
                         )}
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">
-                        Kelola katalog merek laptop (`id`, `name`,ang terdaftar di sistem R2A LABS.
-                    </p>
                 </div>
                 <div className="flex items-center gap-2.5">
-                    {/* Tombol Refresh Data dari Server (Refetch React Query via Button Component) */}
                     <Button
                         type="button"
                         variant="secondary"
@@ -97,7 +85,6 @@ export default function BrandIndex() {
                 </div>
             </div>
 
-            {/* Banner Error (muncul jika gagal koneksi ke backend) */}
             {isError && (
                 <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-start gap-3 text-amber-900 text-xs shadow-xs">
                     <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
@@ -111,7 +98,6 @@ export default function BrandIndex() {
                 </div>
             )}
 
-            {/* Memanggil Komponen Tabel Merek yang Sudah Dipisah (Modular) */}
             <TableBrandIndex
                 data={data}
                 isLoading={isLoading}

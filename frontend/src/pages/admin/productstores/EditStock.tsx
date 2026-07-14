@@ -15,7 +15,6 @@ export default function EditStock() {
   const [isAvailable, setIsAvailable] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Ambil data detail inventaris toko
   const { data: item, isLoading } = useQuery({
     queryKey: ["product-store", id],
     queryFn: async () => {
@@ -33,7 +32,6 @@ export default function EditStock() {
     }
   }, [item]);
 
-  // Format Rupiah Live Preview
   const formattedPrice = new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
@@ -77,7 +75,6 @@ export default function EditStock() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 pb-12">
-      {/* 1. TOMBOL KEMBALI */}
       <div>
         <Link
           to="/admin/productstores"
@@ -88,17 +85,12 @@ export default function EditStock() {
         </Link>
       </div>
 
-      {/* 2. JUDUL HALAMAN */}
       <div className="border-b border-gray-200 dark:border-gray-800 pb-5">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
           <span>Edit Stok & Harga Laptop</span>
         </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Perbarui harga jual resmi cabang, kuantitas stok fisik, dan status ketersediaan laptop di toko Anda.
-        </p>
       </div>
 
-      {/* 3. FORM KARTU UTAMA */}
       <div className="bg-white dark:bg-[#151216] rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
         {item && (
           <div className="p-4 bg-gray-50 dark:bg-white/5 border-b border-gray-200 dark:border-gray-800 flex items-center gap-3">
@@ -122,7 +114,6 @@ export default function EditStock() {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Input Harga Jual */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                 Harga Jual Toko (Rp) <span className="text-red-500">*</span>
@@ -146,7 +137,6 @@ export default function EditStock() {
               </p>
             </div>
 
-            {/* Input Kuantitas Stok */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                 Stok Fisik Tersedia (Unit) <span className="text-red-500">*</span>
@@ -171,7 +161,6 @@ export default function EditStock() {
             </div>
           </div>
 
-          {/* Toggle Ketersediaan */}
           <div className="pt-2">
             <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
               Status Ketersediaan Katalog
@@ -205,7 +194,6 @@ export default function EditStock() {
             </div>
           </div>
 
-          {/* Tombol Aksi */}
           <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-100 dark:border-gray-800">
             <Link
               to="/admin/productstores"

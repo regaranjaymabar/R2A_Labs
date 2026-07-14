@@ -29,7 +29,6 @@ export default function Login() {
   const login = useAuthStore((state) => state.login);
   const [searchParams] = useSearchParams();
 
-  // Otomatis tentukan mode berdasarkan URL (/admin/login atau /login?role=admin)
   const roleMode: "customer" | "admin" =
     location.pathname.includes("/admin") || searchParams.get("role") === "admin"
       ? "admin"
@@ -92,14 +91,13 @@ export default function Login() {
   return (
     <div>
       <div className="flex flex-col items-center text-center mb-6">
-        {/* Logo Apple / AMBALABS */}
+
         <img
           src="https://cdn-icons-png.flaticon.com/512/0/747.png"
           alt="Logo AMBALABS"
           className="w-14 h-14 rounded-2xl"
         />
 
-        {/* Teks di bawah logo */}
         <div className="mt-3">
           <h1 className="text-2xl font-bold tracking-tight flex items-center justify-center gap-2">
             <span>AMBALABS</span>
@@ -117,7 +115,6 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Segmented Role Switcher (otomatis ubah URL di browser) */}
       <div className="grid grid-cols-2 gap-1.5 p-1.5 bg-zinc-100 rounded-2xl mb-6">
         <button
           type="button"

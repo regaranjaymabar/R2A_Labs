@@ -16,15 +16,11 @@ import { GlowingCards, GlowingCard } from "../../../components/ui/glowing-cards"
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { userService } from "../../../services/userService";
 import type { UserData } from "../../../types/user";
-
 export type { UserData };
-
-
 
 const initialUsers: UserData[] = [
 
 ];
-
 
 export default function UserIndex() {
   const queryClient = useQueryClient();
@@ -42,13 +38,9 @@ export default function UserIndex() {
 
   const data = usersData || initialUsers;
 
-  // State Filter
   const [filterRole, setFilterRole] = useState<"all" | "superadmin" | "admin" | "store_admin" | "user">("all");
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive">("all");
 
-
-
-  // State Modal Edit Pengguna
   const [editingUser, setEditingUser] = useState<UserData | null>(null);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [editName, setEditName] = useState("");
@@ -57,21 +49,17 @@ export default function UserIndex() {
   const [editRole, setEditRole] = useState<"superadmin" | "admin" | "user">("user");
   const [editIsActive, setEditIsActive] = useState(true);
 
-  // State untuk Modal Confirm Hapus Permanen
   const [deleteTarget, setDeleteTarget] = useState<UserData | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Buka Modal Edit
   const handleOpenEdit = (user: UserData) => {
     setEditingUser(user);
     setEditName(user.name);
     setEditEmail(user.email);
-    setEditPassword(""); // Password dikosongkan secara default saat edit
+    setEditPassword("");
     setEditRole((user.role as any) || "user");
     setEditIsActive(Boolean(user.isActive ?? user.is_active ?? true));
   };
-
-  // Simpan Perubahan Edit Pengguna ke Backend
   const handleUpdateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingUser || !editName.trim() || !editEmail.trim()) {
@@ -103,7 +91,6 @@ export default function UserIndex() {
     }
   };
 
-  // Aksi Hapus Permanen Pengguna - Buka Modal Confirm
   const handleDeleteUser = (user: UserData) => {
     if (user.id === 1) {
       alert("⚠️ Akun Super Admin Utama (#1) tidak boleh dihapus!");
@@ -111,8 +98,7 @@ export default function UserIndex() {
     }
     setDeleteTarget(user);
   };
-
-  // Eksekusi Hapus Permanen Akun dari Database
+  
   const confirmDeleteUser = async () => {
     if (!deleteTarget) return;
 
@@ -128,7 +114,6 @@ export default function UserIndex() {
     }
   };
 
-  // Filter Data
   const filteredData = useMemo(() => {
     return data.filter((item) => {
       const matchRole =
@@ -146,7 +131,6 @@ export default function UserIndex() {
     });
   }, [data, filterRole, filterStatus]);
 
-  // Statistik Ringkas
   const stats = useMemo(() => {
     return {
       total: data.length,
@@ -163,7 +147,6 @@ export default function UserIndex() {
 
   return (
     <div className="space-y-6 pb-12">
-      {/* 1. HEADER & KARTU INFORMASI SUPER ADMIN */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
           <div className="flex items-center gap-2.5">
@@ -183,7 +166,6 @@ export default function UserIndex() {
           </Link>
         </div>
       </div>
-      {/* 3. KARTU STATISTIK RINGKAS (GLOWING CARDS) */}
       <GlowingCards gap="1rem" maxWidth="100%" padding="0">
         <GlowingCard glowColor="#6366f1" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
           <span className="text-xs font-bold text-gray-500 block uppercase font-mono">Total Akun</span>
@@ -207,7 +189,6 @@ export default function UserIndex() {
         </GlowingCard>
       </GlowingCards>
 
-      {/* 4. BAR FILTER & PENCARIAN */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-200">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1.5 mr-1 font-mono">
@@ -227,11 +208,10 @@ export default function UserIndex() {
                 key={role}
                 type="button"
                 onClick={() => setFilterRole(role)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  isActive
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${isActive
                     ? "bg-black text-white shadow-md"
                     : "bg-white text-gray-600 border border-gray-200 hover:border-gray-300"
-                }`}
+                  }`}
               >
                 {labels[role]}
               </button>
@@ -247,14 +227,11 @@ export default function UserIndex() {
             className="px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer shadow-2xs"
           >
             <option value="all">Semua Status</option>
-            <option value="active">🟢 Aktif (Live)</option>
-            <option value="inactive">🔴 Nonaktif (Soft Deleted)</option>
+            <option value="active">Aktif</option>
+            <option value="inactive">Nonaktif</option>
           </select>
         </div>
       </div>
-
-      {/* 5. TABEL DATA PENGGUNA */}
-      {/* 5. TABEL DATA PENGGUNA (Modular) */}
       <TabelUserIndex
         data={filteredData}
         onEdit={handleOpenEdit}
@@ -264,7 +241,6 @@ export default function UserIndex() {
 
 
 
-      {/* MODAL 2: EDIT PENGGUNA & PERAN */}
       <Modal
         isOpen={Boolean(editingUser)}
         onClose={() => setEditingUser(null)}
@@ -274,7 +250,6 @@ export default function UserIndex() {
       >
         {editingUser && (
           <form onSubmit={handleUpdateUser} className="space-y-5">
-            {/* 1. Nama Lengkap */}
             <InputText
               label="Nama Lengkap"
               value={editName}
@@ -282,7 +257,6 @@ export default function UserIndex() {
               required
             />
 
-            {/* 2. Alamat Email */}
             <InputText
               label="Alamat Email"
               type="email"
@@ -291,7 +265,6 @@ export default function UserIndex() {
               required
             />
 
-            {/* 3. Password Baru (Opsional) */}
             <InputText
               label="Reset Password"
               value={editPassword}
@@ -299,10 +272,9 @@ export default function UserIndex() {
               placeholder="Ketikan password baru (opsional)..."
             />
 
-            {/* 4. Pemilihan Peran (Role Management) */}
             <div className="space-y-2">
               <label className="block text-xs font-bold text-gray-700">
-                Pembagian Peran 
+                Pembagian Peran
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {(
@@ -322,12 +294,12 @@ export default function UserIndex() {
                       disabled={isSuperAdminMain && roleOpt.id !== "superadmin"}
                       onClick={() => setEditRole(roleOpt.id as any)}
                       className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between ${isSelected
-                          ? roleOpt.color === "purple"
-                            ? "bg-purple-50 border-purple-500 text-purple-900 ring-2 ring-purple-500/20"
-                            : roleOpt.color === "blue"
-                              ? "bg-blue-50 border-blue-500 text-blue-900 ring-2 ring-blue-500/20"
-                              : "bg-gray-100 border-gray-400 text-gray-900 ring-2 ring-gray-400/20"
-                          : "bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300"
+                        ? roleOpt.color === "purple"
+                          ? "bg-purple-50 border-purple-500 text-purple-900 ring-2 ring-purple-500/20"
+                          : roleOpt.color === "blue"
+                            ? "bg-blue-50 border-blue-500 text-blue-900 ring-2 ring-blue-500/20"
+                            : "bg-gray-100 border-gray-400 text-gray-900 ring-2 ring-gray-400/20"
+                        : "bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300"
                         } ${isSuperAdminMain && roleOpt.id !== "superadmin" ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
                     >
                       <div className="flex items-center gap-2 font-bold text-xs">
@@ -343,7 +315,6 @@ export default function UserIndex() {
               </div>
             </div>
 
-            {/* 5. Status Akun (is_active - Soft Delete) */}
             <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200/80 flex items-center justify-between gap-4">
               <div>
                 <label className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
@@ -364,7 +335,6 @@ export default function UserIndex() {
               </button>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200">
               <Button
                 type="button"
@@ -379,7 +349,7 @@ export default function UserIndex() {
                 label={isSavingEdit ? "Menyimpan..." : "Simpan Perubahan Role"}
                 className="text-xs! py-2! px-5! rounded-xl font-bold shadow-md cursor-pointer disabled:opacity-50"
               />
-              
+
             </div>
           </form>
         )}

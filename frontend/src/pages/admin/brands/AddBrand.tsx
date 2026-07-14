@@ -56,7 +56,7 @@ export default function AddBrand() {
                             type="submit"
                             variant="primary"
                             disabled={isSubmitting}
-                            label={isSubmitting ? "Menyimpan..." : "Simpan Merek Baru"}
+                            label={isSubmitting ? "Menyimpan..." : "Simpan Brand Baru"}
                             className="text-sm! py-2.5! px-6! rounded-xl font-bold shadow-lg cursor-pointer"
                         />
                     </div>

@@ -9,27 +9,25 @@ import { laptops } from "../../../../data/laptops";
 
 export interface TabelProductWeightIndexProps {
   data: ProductCriteria[];
-  products?: any[]; // <-- Properti ini 
-  criterias?: any[]; // <-- Tambah properti ini agar dinamis
+  products?: any[]; 
+  criterias?: any[]; 
   isLoading?: boolean;
   onEdit: (item: ProductCriteria) => void;
   onDelete: (id: number, prodName: string, critName: string) => void;
   deletingId?: number | null;
 }
 
-// Struktur data yang dikelompokkan per Laptop (Matriks Keputusan SPK)
 export interface GroupedLaptopWeight {
   product_id: number;
   product_name: string;
-  product?: any; // <-- Tambah properti data product
+  product?: any;
   items: {
-    [criteria_code: string]: ProductCriteria; // "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8"
+    [criteria_code: string]: ProductCriteria; 
   };
   allItems: ProductCriteria[];
   search_string: string;
 }
 
-// Helper to get raw specification from product or fallback laptop dataset
 const getRawSpecValue = (code: string, prod: any, productId: number): string => {
   const localLaptop = laptops.find((l) => l.id === productId);
 
@@ -63,10 +61,9 @@ export function TabelProductWeightIndex({
   onEdit,
   onDelete,
   deletingId = null,
-  products = [], // Default ke array kosong
-  criterias = [], // Default ke array kosong
+  products = [], 
+  criterias = [], 
 }: TabelProductWeightIndexProps) {
-  // 1. Mengelompokkan baris data relasi menjadi 1 Baris per Laptop
   const groupedData: GroupedLaptopWeight[] = useMemo(() => {
     const map = new Map<number, GroupedLaptopWeight>();
     data.forEach((item) => {
@@ -91,7 +88,6 @@ export function TabelProductWeightIndex({
     return Array.from(map.values());
   }, [data, products]);
 
-  // Helper untuk merender sel kriteria yang interaktif & indah (Monochrome Style)
   const renderCriteriaCell = (
     group: GroupedLaptopWeight,
     code: string,
@@ -120,7 +116,6 @@ export function TabelProductWeightIndex({
           onClick={() => !isDeleting && onEdit(crit)}
           title={`Klik untuk mengubah spesifikasi [${defaultName}]`}
         >
-          {/* Bagian Atas: Deskripsi Sub Kriteria */}
           <div className="flex flex-col gap-1 mb-2">
             <span className="text-[10px] uppercase font-extrabold text-gray-400 dark:text-gray-500 tracking-wider">
               Spek Asli:
@@ -136,7 +131,6 @@ export function TabelProductWeightIndex({
             </span>
           </div>
 
-          {/* Bagian Bawah: Skor Numerik & Indikator Ubah */}
           <div className="flex items-center justify-between gap-1 pt-1.5 border-t border-black/5 dark:border-white/5">
             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-mono font-extrabold ${theme.badge} ${theme.badgeText} shadow-2xs`}>
               {Number(crit.value_numeric ?? crit.value_numeric ?? 0).toFixed(2)}
@@ -147,7 +141,6 @@ export function TabelProductWeightIndex({
     );
   };
 
-  // Ekstrak daftar kriteria unik secara dinamis (mengutamakan parameter `criterias` dari API backend)
   const activeCriterias = useMemo(() => {
     let list: any[] = [];
     if (criterias && criterias.length > 0) {
@@ -165,7 +158,6 @@ export function TabelProductWeightIndex({
       list = Array.from(map.values());
     }
 
-    // Saring kriteria Harga (C1) agar tidak tampil di kolom tabel
     return list
       .filter((c) => c.code !== "C1" && c.name.toLowerCase() !== "harga")
       .sort((a, b) => a.code.localeCompare(b.code));
@@ -207,7 +199,6 @@ export function TabelProductWeightIndex({
       }),
     ];
 
-    // Generate kolom kriteria dinamis
     activeCriterias.forEach((crit) => {
       list.push(
         columnHelper.display({
@@ -235,7 +226,6 @@ export function TabelProductWeightIndex({
       );
     });
 
-    // Generate kolom aksi di akhir
     list.push(
       columnHelper.display({
         id: "actions",
