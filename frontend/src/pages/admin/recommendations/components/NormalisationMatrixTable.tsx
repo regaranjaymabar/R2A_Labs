@@ -214,12 +214,16 @@ export function NormalisationMatrixTable({
 
                     const rawXVal = Number(row.norms[crit.code + "_raw"] ?? 1);
                     const formulaDesc =
-                      `Pangkat Bobot Ternormalisasi w_j = W_j / sum(W_j)\n` +
-                      `w_${crit.code} = ${w} / ${totalW.toFixed(4)} = ${normW.toFixed(4)} ${isCost ? "(Cost -> negatif)" : "(Benefit -> positif)"}\n\n` +
-                      `Perhitungan Nilai Pangkat X_ij^w_j:\n` +
+                      `1. Langkah Normalisasi Bobot Kriteria:\n` +
+                      `   - Bobot Asli (W) = ${w.toFixed(2)}\n` +
+                      `   - Total Semua Bobot = ${totalW.toFixed(2)}\n` +
+                      `   - Hasil Bobot Ternormalisasi (w) = ${w.toFixed(2)} / ${totalW.toFixed(2)} = ${normW.toFixed(4)}\n` +
+                      `   *Karena kriteria ini bertipe ${isCost ? "COST (Biaya)" : "BENEFIT (Keuntungan)"}, maka pangkatnya bernilai: ${exponent.toFixed(4)}\n\n` +
+                      `2. Perhitungan Nilai Preferensi (X pangkat w):\n` +
                       (crit.code === "C1"
-                        ? `Nilai Keputusan X = ${rawXVal.toFixed(3)} Juta pangkat ${exponent.toFixed(4)} = ${normVal.toFixed(4)}`
-                        : `Nilai Skala X = ${rawXVal} pangkat ${exponent.toFixed(4)} = ${normVal.toFixed(4)}`);
+                        ? `   - Nilai Harga (X) = ${rawXVal.toFixed(3)} Juta\n`
+                        : `   - Nilai Skala (X) = ${rawXVal} (Skala 1-5)\n`) +
+                      `   - Hasil Pangkat = ${rawXVal.toFixed(3)} pangkat (${exponent.toFixed(4)}) = ${normVal.toFixed(4)}`;
 
                     const activeCellKey = `${idx}-${crit.code}`;
                     const isCellSelected = activeFormulaDetails?.cellKey === activeCellKey;

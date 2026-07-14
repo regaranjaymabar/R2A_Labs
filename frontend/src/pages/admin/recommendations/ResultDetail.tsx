@@ -496,7 +496,7 @@ export default function ResultDetail() {
                 <span className="font-extrabold text-black block">
                   Detail Kalkulasi Matematika:
                 </span>
-                <p className="text-gray-900 font-mono leading-relaxed break-all font-semibold">
+                <p className="text-gray-900 font-mono leading-relaxed break-all font-semibold whitespace-pre-wrap">
                   {activeFormulaDetails.description}
                 </p>
               </div>
