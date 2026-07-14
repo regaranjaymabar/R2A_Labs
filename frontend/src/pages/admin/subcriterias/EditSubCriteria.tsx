@@ -49,7 +49,6 @@ export default function EditSubCriteria({
       value_numeric: Number(editValueNumeric),
     };
 
-    // Optimistic cache update agar UI seketika terperbarui
     queryClient.setQueryData<SubCriteria[]>(["subcriterias"], (old = []) =>
       old.map((sub) =>
         Number(sub.id) === Number(item.id)
@@ -94,7 +93,6 @@ export default function EditSubCriteria({
     >
       {item && (
         <form onSubmit={handleSaveEdit} className="space-y-5">
-          {/* 1. Deskripsi Spesifikasi / Rentang */}
           <div className="space-y-1.5">
             <label className="block text-xs font-bold text-gray-700">
               Deskripsi Spesifikasi (<code className="font-mono">description</code>)
@@ -112,7 +110,6 @@ export default function EditSubCriteria({
             />
           </div>
 
-          {/* 2. Nilai Numerik Skala Matriks */}
           <div className="space-y-1.5">
             <label className="block text-xs font-bold text-gray-700 items-center gap-1.5">
               <span>
@@ -135,7 +132,6 @@ export default function EditSubCriteria({
             </div>
           </div>
 
-          {/* Action Buttons Menggunakan Komponen Button */}
           <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200">
             <Button
               type="button"

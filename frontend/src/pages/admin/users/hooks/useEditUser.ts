@@ -27,7 +27,6 @@ const editUserSchema = z.object({
 export function useEditUser() {
   const { id } = useParams<{ id: string }>();
 
-  // 1. Inisialisasi React Hook Form + Zod Resolver
   const {
     register,
     control,
@@ -51,7 +50,6 @@ export function useEditUser() {
   const isActive = watch("is_active");
   const selectedRole = watch("role");
 
-  // 2. Fetch Data Eksisting menggunakan Generic Hook useGet + userService: GET /users/:id
   const {
     data: userData,
     isLoading: isLoadingData,
@@ -71,13 +69,12 @@ export function useEditUser() {
     },
   });
 
-  // 3. Populate form begitu data berhasil dimuat
   useEffect(() => {
     if (userData) {
       reset({
         name: userData.name,
         email: userData.email,
-        password: "", // Jangan tampilkan password eksisting
+        password: "", 
         role: (userData.role as any) || "admin",
         storeId: userData.storeId || userData.store?.id || 1,
         is_active: Boolean(userData.isActive ?? userData.is_active ?? true),
@@ -85,7 +82,6 @@ export function useEditUser() {
     }
   }, [userData, reset]);
 
-  // 4. Mutasi Update ke Backend menggunakan Generic Hook useUpdate + userService: PUT /users/:id
   const updateMutation = useUpdate<UserFormData>({
     mutationFn: (payload) => userService.update(id!, payload as any),
     queryKey: ["users"],

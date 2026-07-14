@@ -12,21 +12,20 @@ import {
     ListFilter,
     ListTree,
     Scale,
-    History,
     Users,
     ShieldCheck,
     LogOut,
     ChevronDown,
     ChevronRight,
     Menu,
-    X
+    X,
+    History
 } from "lucide-react";
 
 export default function AdminSidebar() {
     const navigate = useNavigate();
     const user = useAuthStore((state) => state.user);
     const logout = useAuthStore((state) => state.logout);
-    // Hanya superadmin yang bisa lihat master data & konfigurasi global
     const isSuperAdmin = user?.role === "superadmin" || user?.role === "super_admin";
     const location = useLocation();
     const [isSpkOpen, setIsSpkOpen] = useState(false);
@@ -45,8 +44,7 @@ export default function AdminSidebar() {
     };
     const isSpkActive = isActive("/admin/criterias") ||
         isActive("/admin/subcriterias") ||
-        isActive("/admin/productweights") ||
-        isActive("/admin/recommendations");
+        isActive("/admin/productweights");
 
     return (
         <>
@@ -187,6 +185,21 @@ export default function AdminSidebar() {
                                 </Link>
                             </li>
 
+                            <li>
+                                <Link
+                                    to="/admin/recommendations"
+                                    onClick={() => setIsMobileOpen(false)}
+                                    className={`flex items-center p-2.5 text-sm rounded-xl transition-all duration-200 group ${
+                                        isActive("/admin/recommendations")
+                                            ? "bg-gray-100 text-gray-950 font-semibold shadow-xs border-l-4 border-gray-900"
+                                            : "text-gray-600 hover:bg-gray-100/80 hover:text-gray-950"
+                                    }`}
+                                >
+                                    <History className={`w-5 h-5 transition duration-150 ${isActive("/admin/recommendations") ? "text-gray-950" : "text-gray-500 group-hover:text-gray-950"}`} />
+                                    <span className="ml-3">Riwayat Rekomendasi</span>
+                                </Link>
+                            </li>
+
                             {isSuperAdmin && (
                                 <li>
                                     <button
@@ -253,20 +266,7 @@ export default function AdminSidebar() {
                                                     Pembobotan Produk
                                                 </Link>
                                             </li>
-                                            <li>
-                                                <Link
-                                                    to="/admin/recommendations"
-                                                    onClick={() => setIsMobileOpen(false)}
-                                                    className={`flex items-center p-2 pl-2 text-sm rounded-lg transition duration-150 ${
-                                                        isActive("/admin/recommendations")
-                                                            ? "text-gray-950 font-semibold bg-gray-100"
-                                                            : "text-gray-600 hover:bg-gray-100/80 hover:text-gray-950"
-                                                    }`}
-                                                >
-                                                    <History className="w-4 h-4 mr-2 text-gray-500" />
-                                                    Riwayat Rekomendasi
-                                                </Link>
-                                            </li>
+
                                         </ul>
                                     )}
                                 </li>

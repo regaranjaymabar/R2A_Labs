@@ -7,7 +7,7 @@ import { getAutoMappedSubCriteriaIds } from "../../../../utils/spkAutoMapper";
 
 
 export const productSchema = z.object({
-  brandId: z.coerce.number().min(1, "Pilih merek laptop terlebih dahulu!"),
+  brandId: z.coerce.number().min(1, "Pilih brand laptop terlebih dahulu!"),
   modelName: z.string().min(1, "Nama model laptop wajib diisi!"),
   screenSize: z.coerce.number().optional(),
   processor: z.string().min(1, "Processor wajib diisi!"),

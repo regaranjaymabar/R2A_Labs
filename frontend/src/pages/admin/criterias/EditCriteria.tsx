@@ -1,215 +1,185 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Scale } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
+import { Modal } from "../../../components/ui/common/Modal";
 import { Button } from "../../../components/ui/common/Button";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { InputText } from "../../../components/ui/common/InputText";
 import { criteriaService } from "../../../services/criteriaService";
+import { useQueryClient } from "@tanstack/react-query";
+import type { Criteria } from "../../../types/criteria";
 
-export default function EditCriteria() {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+interface EditCriteriaProps {
+  editingItem: Criteria | null;
+  onClose: () => void;
+  onSuccess: () => Promise<any> | void;
+}
+
+export default function EditCriteria({
+  editingItem,
+  onClose,
+  onSuccess,
+}: EditCriteriaProps) {
   const queryClient = useQueryClient();
-
-  const [code, setCode] = useState("");
-  const [name, setName] = useState("");
-  const [type, setType] = useState<"benefit" | "cost">("benefit");
-  const [weight, setWeight] = useState("");
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  const { data: criteriaItem, isLoading } = useQuery({
-    queryKey: ["criteria", id],
-    queryFn: async () => {
-      if (!id) throw new Error("ID kriteria tidak valid");
-      return await criteriaService.getById(id);
-    },
-    enabled: Boolean(id),
-  });
+  const [editCode, setEditCode] = useState<string>("");
+  const [editName, setEditName] = useState<string>("");
+  const [editType, setEditType] = useState<"benefit" | "cost">("benefit");
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
 
   useEffect(() => {
-    if (criteriaItem) {
-      setCode(criteriaItem.code || "");
-      setName(criteriaItem.name || "");
-      setType((criteriaItem.type as "benefit" | "cost") || "benefit");
-      setWeight(String(criteriaItem.weight ?? 0));
+    if (editingItem) {
+      setEditCode(editingItem.code);
+      setEditName(editingItem.name);
+      setEditType(
+        (editingItem.type.toLowerCase() === "cost" ? "cost" : "benefit") as
+          | "benefit"
+          | "cost"
+      );
     }
-  }, [criteriaItem]);
+  }, [editingItem]);
 
-  const updateMutation = useMutation({
-    mutationFn: async () => {
-      if (!id) throw new Error("ID kriteria tidak valid");
-      return await criteriaService.update(id, {
-        code,
-        name,
-        type,
-        weight: Number(weight),
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["criterias"] });
-      navigate("/admin/criterias");
-    },
-    onError: (err: any) => {
-      const msg = err?.response?.data?.message || err?.message || "Gagal memperbarui kriteria SPK.";
-      setErrorMsg(msg);
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg(null);
-    updateMutation.mutate();
+    if (!editingItem) return;
+
+    try {
+      setIsSavingEdit(true);
+      await criteriaService.update(editingItem.id, {
+        code: editCode.toUpperCase(),
+        name: editName.trim(),
+        type: editType,
+      });
+
+      queryClient.setQueryData<Criteria[]>(["criterias"], (old = []) =>
+        old.map((item) =>
+          Number(item.id) === Number(editingItem.id)
+            ? {
+                ...item,
+                code: editCode.toUpperCase(),
+                name: editName.trim(),
+                type: editType,
+              }
+            : item
+        )
+      );
+
+      onClose();
+      if (onSuccess) {
+        await onSuccess();
+      }
+      await queryClient.invalidateQueries({ queryKey: ["criterias"] });
+    } catch (err: any) {
+      alert(
+        `Gagal memperbarui kriteria: ${
+          err?.response?.data?.message || err?.message || "Error"
+        }`
+      );
+    } finally {
+      setIsSavingEdit(false);
+    }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px] text-gray-500 font-semibold">
-        Memuat data kriteria SPK...
-      </div>
-    );
-  }
-
   return (
-    <div className="max-w-3xl mx-auto space-y-6 pb-12">
-      {/* Header Halaman */}
-      <div className="flex items-center justify-between border-b border-gray-200 pb-5">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2.5">
-              <Scale className="w-6 h-6 text-blue-600" />
-              <span>Edit Kriteria SPK SAW</span>
-            </h1>
-          </div>
-          <p className="text-sm text-gray-500 mt-1">
-            Perbarui kode, nama atribut, tipe benefit/cost, dan nilai bobot penimbangan kriteria.
-          </p>
-        </div>
+    <Modal
+      isOpen={Boolean(editingItem)}
+      onClose={onClose}
+      maxWidth="lg"
+      badge={
+        <span className="text-black dark:text-gray-400">
+          Update Dimensi Penilaian
+        </span>
+      }
+      title={editingItem ? `[${editingItem.code}] ${editingItem.name}` : ""}
+    >
+      {editingItem && (
+        <form onSubmit={handleSaveEdit} className="space-y-5">
+          <InputText
+            label="Kode Dimensi (Label Perhitungan SAW)"
+            value={editCode}
+            onChange={(e) => setEditCode(e.target.value)}
+            placeholder="Misal: C1, C2"
+            required
+            className="font-mono font-bold uppercase"
+          />
 
-        <Link
-          to="/admin/criterias"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition-all shadow-2xs active:scale-95"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Kembali</span>
-        </Link>
-      </div>
+          <InputText
+            label="Nama Dimensi Penilaian"
+            value={editName}
+            onChange={(e) => setEditName(e.target.value)}
+            placeholder="Misal: Harga, RAM, Storage"
+            required
+          />
 
-      {/* Form Edit Kriteria */}
-      <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
-        <div className="h-2 bg-linear-to-r from-blue-600 via-indigo-500 to-purple-600"></div>
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white p-6 md:p-8 space-y-6"
-        >
-          {errorMsg && (
-            <div className="p-3.5 rounded-xl bg-red-50 text-red-600 text-xs font-bold">
-              {errorMsg}
-            </div>
-          )}
-
-          {/* Live Preview Badge */}
-          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <span className="text-xs font-semibold text-gray-500">
-                Preview Kriteria:
+          <div className="space-y-2">
+            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 items-center gap-1.5">
+              <span>
+                Tipe Atribut Algoritma SAW (
+                <code className="font-mono text-[11px]">type</code>)
               </span>
-              <span className="text-sm font-bold font-mono text-gray-900 px-2.5 py-1 bg-white rounded-lg border border-gray-200 shadow-2xs">
-                [{code || "C?"}] {name || "Nama Kriteria"}
-              </span>
-            </div>
+            </label>
 
-            <span
-              className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                type === "benefit"
-                  ? "bg-emerald-100 text-emerald-700"
-                  : "bg-amber-100 text-amber-700"
-              }`}
-            >
-              {type === "benefit" ? "Benefit (+)" : "Cost (-)"}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
-                Kode Kriteria <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                required
-                placeholder="C1"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
-                Nama Kriteria <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                placeholder="Harga Laptop"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
-                Tipe Atribut <span className="text-red-500">*</span>
-              </label>
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value as "benefit" | "cost")}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setEditType("benefit")}
+                className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col gap-1 ${
+                  editType === "benefit"
+                    ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-900 dark:text-emerald-300 ring-2 ring-emerald-500/20"
+                    : "bg-gray-50 dark:bg-[#181519] border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-gray-300"
+                }`}
               >
-                <option value="benefit">Benefit (Semakin tinggi semakin baik)</option>
-                <option value="cost">Cost (Semakin rendah semakin baik)</option>
-              </select>
-            </div>
+                <div className="flex items-center gap-2 font-bold text-xs">
+                  <TrendingUp
+                    className={`w-4 h-4 ${
+                      editType === "benefit" ? "text-emerald-600" : "text-gray-400"
+                    }`}
+                  />
+                  <span>benefit</span>
+                </div>
+                <span className="text-[10px] opacity-80">
+                  Semakin besar nilainya semakin bagus
+                </span>
+              </button>
 
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
-                Bobot Kriteria (0.0 - 1.0) <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                max="1"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-                required
-                placeholder="0.25"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <p className="text-xs text-gray-500">
-                Pastikan total penjumlahan seluruh bobot kriteria bernilai 1.0 (100%).
-              </p>
+              <button
+                type="button"
+                onClick={() => setEditType("cost")}
+                className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col gap-1 ${
+                  editType === "cost"
+                    ? "bg-red-50 dark:bg-red-950/40 border-red-500 text-red-900 dark:text-red-300 ring-2 ring-red-500/20"
+                    : "bg-gray-50 dark:bg-[#181519] border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-gray-300"
+                }`}
+              >
+                <div className="flex items-center gap-2 font-bold text-xs">
+                  <TrendingDown
+                    className={`w-4 h-4 ${
+                      editType === "cost" ? "text-red-600" : "text-gray-400"
+                    }`}
+                  />
+                  <span>cost</span>
+                </div>
+                <span className="text-[10px] opacity-80">
+                  Semakin kecil nilainya semakin bagus
+                </span>
+              </button>
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-100">
-            <Link
-              to="/admin/criterias"
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100 transition-colors"
-            >
-              Batal
-            </Link>
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200 dark:border-gray-800">
             <Button
-              label={updateMutation.isPending ? "Menyimpan Perubahan..." : "Simpan Perubahan Kriteria"}
+              type="button"
+              variant="secondary"
+              onClick={onClose}
+              label="Batal"
+              className="!text-xs! py-2! px-5! rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 cursor-pointer"
+            />
+            <Button
               type="submit"
-              variant="primary"
-              disabled={updateMutation.isPending}
+              disabled={isSavingEdit}
+              label={isSavingEdit ? "Menyimpan..." : "Simpan Kriteria"}
+              className="text-xs! py-2! px-5! rounded-xl font-bold shadow-md cursor-pointer disabled:opacity-50"
             />
           </div>
         </form>
-      </div>
-    </div>
+      )}
+    </Modal>
   );
 }

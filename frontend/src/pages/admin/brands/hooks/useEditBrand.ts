@@ -25,7 +25,7 @@ export function useEditBrand() {
   });
 
 
-  // fetch Data Eksisting menggunakan useQuery + brandService: GET /brands/:id
+
   const {
     data: brandData,
     isLoading: isLoadingData,
@@ -55,12 +55,12 @@ export function useEditBrand() {
     }
   }, [brandData, reset]);
 
-  // 4. Mutasi Update ke Backend menggunakan Generic Hook useUpdate + brandService: PUT /brands/:id
+  
   const updateMutation = useUpdate<BrandFormData>({
     mutationFn: (payload) => brandService.update(id!, payload),
     queryKey: ["brands"],
     navigateTo: "/admin/brands",
-    successMessage: (variables) => `Merek "${variables.name}" berhasil diperbarui!`,
+    successMessage: (variables) => `Brand "${variables.name}" berhasil diperbarui!`,
     errorMessage: (variables, err) =>
       `Gagal memperbarui brand "${variables.name}": ${
         err?.response?.data?.message || err?.message || "Error"

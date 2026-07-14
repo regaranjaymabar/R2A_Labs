@@ -7,7 +7,7 @@ export default function AdminLayout() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const user = useAuthStore((state) => state.user);
 
-  // Proteksi rute admin: Jika belum login, redirect ke halaman login admin
+  
   if (!isAuthenticated || !user) {
     return <Navigate to="/admin/login" replace />;
   }

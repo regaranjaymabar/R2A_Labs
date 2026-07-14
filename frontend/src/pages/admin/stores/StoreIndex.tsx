@@ -10,20 +10,10 @@ import type { Store } from "../../../types/store";
 export type { Store };
 
 export const initialStores: Store[] = [
-  { id: 1, name: "Toko Asus Official Jakarta", address: "Mangga Dua Mall Lt. 2 No. 45", city: "Jakarta Pusat", phone: "081234567801", is_active: 1 },
-  { id: 2, name: "Lenovo Exclusive Store", address: "Harco Mangga Dua Lt. 1 No. 12", city: "Jakarta Pusat", phone: "081234567802", is_active: 1 },
-  { id: 3, name: "HP Store Bandung", address: "Bandung Electronic Center Lt. 3", city: "Bandung", phone: "081234567803", is_active: 1 },
-  { id: 4, name: "Acer Point Surabaya", address: "Hi-Tech Mall Surabaya Lt. Dasar", city: "Surabaya", phone: "081234567804", is_active: 1 },
-  { id: 5, name: "iBox Apple Authorized", address: "Grand Indonesia West Mall Lt. 3", city: "Jakarta Pusat", phone: "081234567805", is_active: 1 },
-  { id: 6, name: "MSI Gaming Store Jogja", address: "Jogjatronik Mall Lt. 2 No. 88", city: "Yogyakarta", phone: "081234567806", is_active: 1 },
-  { id: 7, name: "Dell Concept Store", address: "Plaza Simpang Lima Lt. 1", city: "Semarang", phone: "081234567807", is_active: 1 },
-  { id: 8, name: "Axioo Class Program", address: "Jl. Boulevard Raya Blok LA4 No. 15", city: "Jakarta Utara", phone: "081234567808", is_active: 1 },
-  { id: 9, name: "Razer Store Bali", address: "Mall Bali Galeria Lt. 2", city: "Denpasar", phone: "081234567809", is_active: 0 },
-  { id: 10, name: "Samsung Experience Store", address: "Pondok Indah Mall 2 Lt. 1", city: "Jakarta Selatan", phone: "081234567810", is_active: 1 },
+  
 ];
 
 export default function StoreIndex() {
-  // Fetch Data Toko menggunakan Generic Hook useGet + storeService
   const {
     data: storesData,
     isLoading,
@@ -46,7 +36,6 @@ export default function StoreIndex() {
 
   const data = storesData || initialStores;
 
-  // Custom Hook Hapus Data (Delete dengan Modal Confirm)
   const {
     handleDelete,
     confirmDelete,
@@ -58,7 +47,6 @@ export default function StoreIndex() {
 
   return (
     <div className="space-y-6 pb-10">
-      {/* Header Halaman */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Daftar Toko / Stores</h1>
@@ -74,15 +62,13 @@ export default function StoreIndex() {
         </div>
       </div>
 
-      {/* Memanggil Komponen Tabel Reusable (Modular) */}
       <TabelStoreIndex
         data={data}
         isLoading={isLoading}
         onDelete={handleDelete}
         deletingId={deletingId}
       />
-
-      {/* MODAL CONFIRM DELETE */}
+      
       <ModalConfirm
         isOpen={Boolean(deleteTarget)}
         onClose={cancelDelete}

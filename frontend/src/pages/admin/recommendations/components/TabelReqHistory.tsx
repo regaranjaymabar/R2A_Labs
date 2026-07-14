@@ -37,7 +37,7 @@ export function TabelReqHistory({
             }),
             columnHelper.accessor((row: any) => row.customer?.name || row.user_name || row.customerName || "Customer", {
                 id: "user_name",
-                header: ({ column }) => <DataTableColumnHeader column={column} title="Pencari (User)" />,
+                header: ({ column }) => <DataTableColumnHeader column={column} title="Customers" />,
                 cell: (info) => {
                     const item: any = info.row.original;
                     const userName = item.customer?.name || item.user_name || item.customerName || "Customer";
@@ -69,63 +69,83 @@ export function TabelReqHistory({
                             : "-");
                     return (
                         <div>
-                            <div className="font-bold text-gray-900 dark:text-gray-100 text-sm flex items-center gap-1.5">
+                            <div className="font-bold text-gray-900 text-sm flex items-center gap-1.5">
                                 <span>{purpose}</span>
                             </div>
-                            <div className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold font-mono mt-0.5 flex items-center gap-1">
+                            <div className="text-xs text-emerald-600 font-semibold font-mono mt-0.5 flex items-center gap-1">
                                 <span>Budget: {budgetText}</span>
                             </div>
                         </div>
                     );
                 },
             }),
-            columnHelper.accessor("weights", {
+            columnHelper.accessor("recommendationWeights", {
                 header: ({ column }) => <DataTableColumnHeader column={column} title="Preferensi Bobot" />,
                 cell: (info) => {
-                    const w = info.getValue();
-                    if (!w) return null;
+                    const rw = info.getValue();
+                    if (!rw || !Array.isArray(rw) || rw.length === 0) return <span className="text-gray-400 font-mono text-xs">-</span>;
+
+                    const getCriteriaColorClass = (codeOrName: string) => {
+                        const term = codeOrName.toLowerCase();
+                        if (term.includes("harga") || term.includes("c1")) {
+                            return "bg-red-100 text-red-700 border-red";
+                        }
+                        if (term.includes("ram") || term.includes("c2")) {
+                            return "bg-gray-100 text-gray-700 border-gray-200";
+                        }
+                        if (term.includes("processor") || term.includes("cpu") || term.includes("c6")) {
+                            return "bg-blue-100 text-blue-700 border-blue-200";
+                        }
+                        if (term.includes("storage") || term.includes("c3")) {
+                            return "bg-gray-100 text-gray-700 border-gray-200";
+                        }
+                        return "bg-gray-100 text-gray-700 border-gray-200";
+                    };
+
                     return (
                         <div className="flex flex-wrap gap-1.5 max-w-xs">
-                            <span className="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
-                                RAM: {w.ram}%
-                            </span>
-                            <span className="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
-                                Harga: {w.price}%
-                            </span>
-                            {w.processor && (
-                                <span className="px-2 py-0.5 rounded-md text-[11px] font-mono font-bold bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                                    CPU: {w.processor}%
-                                </span>
-                            )}
+                            {rw.map((w: any, index: number) => {
+                                const label = w.criteria?.name || w.criteria?.code || `C${w.criteriaId}`;
+                                const percentage = w.weightPercentage ?? (w.weight ? w.weight * 100 : 0);
+                                return (
+                                    <span
+                                        key={index}
+                                        className={`px-2 py-0.5 rounded-md text-[11px] font-mono font-bold border ${getCriteriaColorClass(label)}`}
+                                    >
+                                        {label}: {percentage}%
+                                    </span>
+                                );
+                            })}
                         </div>
                     );
                 },
             }),
-            columnHelper.accessor("top_recommendation", {
+            columnHelper.accessor("recommendationResults", {
                 header: ({ column }) => <DataTableColumnHeader column={column} title="Rekomendasi" />,
                 cell: (info) => {
-                    const rec = info.getValue();
-                    if (!rec) return null;
-                    const item = info.row.original;
-                    const isChosen = item.user_choice === rec.product_name;
+                    const results = info.getValue();
+                    if (!results || !Array.isArray(results) || results.length === 0) return <span className="text-gray-400 dark:text-gray-600 font-mono text-xs">-</span>;
+                    
+                    const topSaw = results.find(
+                        (r: any) =>
+                            (r.methodUsed === "SAW" || r.method_used === "SAW") &&
+                            (r.ranking === 1 || r.rank === 1)
+                    ) || results[0];
+
+                    const productName = topSaw.productStore?.product?.modelName || topSaw.product_name || "Laptop";
+                    const score = topSaw.score ?? topSaw.saw_score ?? 0;
+
                     return (
-                        <div className="p-2.5 rounded-2xl bg-gray-50 dark:bg-[#181519] border border-gray-200 dark:border-gray-800 w-fit">
+                        <div className="p-2.5 rounded-2xl bg-gray-50 w-fit">
                             <div className="flex items-center gap-1.5">
-                                <span className="font-bold text-gray-900 dark:text-white text-sm">
-                                    {rec.product_name}
+                                <span className="font-bold text-gray-900 text-sm">
+                                    {productName}
                                 </span>
                             </div>
                             <div className="flex items-center justify-between gap-3 mt-1 text-xs">
                                 <span className="font-mono text-gray-500 font-semibold">
-                                    Skor: <strong className="text-black dark:text-purple-400">{rec.saw_score}</strong>
+                                    Skor: <strong className="text-black">{Number(score).toFixed(4)}</strong>
                                 </span>
-                                {isChosen ? (
-                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-[10px] border border-emerald-200 dark:border-emerald-800">
-                                        Dipilih User!
-                                    </span>
-                                ) : (
-                                    <span className="text-[10px] text-gray-400 italic">Hanya dilihat</span>
-                                )}
                             </div>
                         </div>
                     );
@@ -138,20 +158,12 @@ export function TabelReqHistory({
                     const item = info.row.original;
                     return (
                         <div className="flex items-center gap-2">
-                            <button
-                                type="button"
-                                onClick={() => onSelectDetail(item)}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/60 font-semibold text-xs rounded-xl border border-blue-200 dark:border-blue-800/60 transition-all active:scale-95 shadow-2xs cursor-pointer"
-                                title="Lihat Detail Analisis & Rincian Bobot"
-                            >
-                                <span>Analisis</span>
-                            </button>
                             <Link
                                 to={`/admin/recommendations/${item.id}`}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950/40 text-black dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-900/60 font-semibold text-xs rounded-xl border border-purple-200 dark:border-purple-800/60 transition-all active:scale-95 shadow-2xs"
-                                title="Lihat Bedah Matriks Normalisasi SAW (ResultDetail)"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-black text-white hover:bg-gray-500 font-semibold text-xs rounded-xl transition-all active:scale-95 shadow-2xs"
+                                title="Lihat Bedah Matriks Normalisasi(ResultDetail)" 
                             >
-                                <span>Detail SAW</span>
+                                <span>Detail Metode</span>
                             </Link>
                             <Button
                                 type="button"

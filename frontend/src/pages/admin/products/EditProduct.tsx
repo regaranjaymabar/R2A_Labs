@@ -24,7 +24,7 @@ export default function EditProduct() {
         isFetchError,
     } = useEditProduct();
 
-    // Fetch daftar merek dari backend untuk dropdown Brand
+    // ambil data brand
     const { data: brands = [], isLoading: isBrandsLoading } = useQuery({
         queryKey: ["brands"],
         queryFn: brandService.getAll,
@@ -61,7 +61,6 @@ export default function EditProduct() {
 
     return (
         <div className="max-w-4xl mx-auto space-y-6 pb-12">
-            {/* 1. HEADER HALAMAN */}
             <div className="flex items-center justify-between border-b border-gray-200 pb-5">
                 <div>
                     <div className="flex items-center gap-2.5">
@@ -80,20 +79,15 @@ export default function EditProduct() {
                 </Link>
             </div>
 
-            {/* 2. KARTU FORM UTAMA */}
             <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
-                {/* Decorative Top Accent */}
                 <div className="h-2 bg-black"></div>
-
                 <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-8">
-                    {/* SECTION 1: INFORMASI DASAR & MEREK */}
                     <div className="space-y-4">
                         <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-black">
                             <span>Informasi Laptop</span>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {/* 1. Merek (Brand) */}
                             <div className="md:col-span-1">
                                 <InputSearchSelect
                                     label="Brand Laptop *"
@@ -104,27 +98,25 @@ export default function EditProduct() {
                                         label: b.name,
                                     }))}
                                     placeholder={
-                                        isBrandsLoading ? "Memuat Merek..." : "-- Cari atau Pilih Merek --"
+                                        isBrandsLoading ? "Memuat Brand..." : "-- Cari atau Pilih Brand --"
                                     }
                                     isLoading={isBrandsLoading}
                                     disabled={isBrandsLoading}
                                     error={errors.brandId?.message}
-                                    helperText="* Merek dari tabel brands (Bisa diketik)."
+                                    helperText="* Brand dari tabel brands (Bisa diketik)."
                                 />
                             </div>
 
-                            {/* 2. Nama Model */}
                             <div className="md:col-span-1">
                                 <InputText
                                     label="Nama Model Laptop"
                                     nama="modelName"
                                     register={register}
                                     error={errors.modelName?.message}
-                                    helperText="* Nama tipe/model tanpa nama merek."
+                                    helperText="* Nama tipe/model tanpa nama brand."
                                 />
                             </div>
 
-                            {/* 9. Tahun Rilis */}
                             <div className="md:col-span-1">
                                 <InputText
                                     label="Tanggal / Tahun Rilis"
@@ -138,14 +130,13 @@ export default function EditProduct() {
                         </div>
                     </div>
 
-                    {/* SECTION 2: SPESIFIKASI DAPUR PACU (PERFORMA) */}
                     <div className="space-y-4 pt-2">
                         <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-black">
                             <span>Spesifikasi Dapur Pacu & Penyimpanan</span>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {/* 4. Processor */}
+                          
                             <div>
                                 <InputText
                                     label="Processor"
@@ -156,7 +147,6 @@ export default function EditProduct() {
                                 />
                             </div>
 
-                            {/* 5. Kapasitas RAM */}
                             <div>
                                 <InputText
                                     label="Kapasitas RAM (GB)"
@@ -167,7 +157,6 @@ export default function EditProduct() {
                                 />
                             </div>
 
-                            {/* 6. Storage */}
                             <div>
                                 <InputText
                                     label="Storage (SSD / NVMe)"
@@ -180,14 +169,12 @@ export default function EditProduct() {
                         </div>
                     </div>
 
-                    {/* SECTION 3: LAYAR, BATERAI & FISIK */}
                     <div className="space-y-4 pt-2">
                         <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-black">
                             <span>Layar, Baterai & Dimensi Fisik</span>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {/* 3. Ukuran Layar */}
                             <div>
                                 <InputText
                                     label="Ukuran Layar (Inci)"
@@ -199,7 +186,6 @@ export default function EditProduct() {
                                 />
                             </div>
 
-                            {/* 7. Kapasitas Baterai */}
                             <div>
                                 <InputText
                                     label="Kapasitas Baterai (Wh / mAh)"
@@ -211,7 +197,6 @@ export default function EditProduct() {
                                 />
                             </div>
 
-                            {/* 8. Berat Laptop */}
                             <div>
                                 <InputText
                                     label="Berat Laptop (Kg)"
@@ -225,7 +210,6 @@ export default function EditProduct() {
                         </div>
                     </div>
 
-                    {/* TOMBOL AKSI FORM */}
                     <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
                         <Button
                             type="button"

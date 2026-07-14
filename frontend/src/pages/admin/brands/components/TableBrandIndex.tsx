@@ -26,8 +26,7 @@ export function TableBrandIndex({
   deletingId = null,
 }: TableBrandIndexProps) {
   const navigate = useNavigate();
-
-  // Definisi Kolom Tabel (id, name, is_active, dan actions)
+  
   const columns = useMemo(
     () => [
       columnHelper.accessor("id", {

@@ -6,7 +6,6 @@ import { useCreate } from "../../../../hooks/useCreate";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-// Skema Validasi Zod untuk pembobotan kriteria produk (product_criteria)
 export const productWeightSchema = z.object({
   product_id: z.coerce.number().min(1, "Pilih produk laptop terlebih dahulu!"),
   criteria_id: z.coerce.number().min(1, "Pilih kriteria penilaian terlebih dahulu!"),

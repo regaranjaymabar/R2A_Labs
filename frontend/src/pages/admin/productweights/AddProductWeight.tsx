@@ -13,8 +13,6 @@ import { productService } from "../../../services/productService";
 import { criteriaService } from "../../../services/criteriaService";
 import { subCriteriaService } from "../../../services/subCriteriaService";
 import { productWeightService } from "../../../services/productWeightService";
-
-// Fallback data lokal untuk pengujian offline/tanpa backend server
 import { initialProducts } from "../products/ProductIndex";
 import { initialCriterias } from "../criterias/CriteriaIndex";
 import { initialSubCriterias } from "../subcriterias/SubCriteriaIndex";
@@ -23,20 +21,12 @@ import { initialProductCriterias } from "./ProductWeightIndex";
 export default function AddProductWeight() {
   const navigate = useNavigate();
   const { isSubmitting, mutateBatch } = useAddProductWeight();
-
-  // State untuk melacak produk laptop yang dipilih
   const [selectedProductId, setSelectedProductId] = useState<number>(0);
-  // State untuk opsi menanmpilkan seluruh laptop (termasuk yang sudah dibobot)
   const [showAllProducts, setShowAllProducts] = useState<boolean>(false);
-
-  // State untuk melacak pilihan sub-kriteria dinamis (key: criteria_id, value: sub_criteria_id)
   const [selectedSubs, setSelectedSubs] = useState<Record<number, number>>({});
-  // State untuk melacak nilai numerik konversi (key: criteria_id, value: numeric_value)
   const [numericValues, setNumericValues] = useState<Record<number, number>>({});
-  // State untuk pesan error validasi manual
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  // 1. Fetch seluruh data Master (menggunakan useGet + offlineFallbackData agar otomatis aktif saat offline/tanpa backend)
   const { data: fetchedProducts, isLoading: isProductsLoading } = useGet({
     queryKey: ["products"],
     queryFn: productService.getAll,
@@ -65,7 +55,6 @@ export default function AddProductWeight() {
   });
   const existingWeights = fetchedWeights || initialProductCriterias;
 
-  // 2. Filter laptop yang BELUM dibobot (atau tampilkan semua jika toggle aktif)
   const availableProducts = useMemo(() => {
     if (showAllProducts) return products;
     const gradedProductIds = new Set(
@@ -74,7 +63,6 @@ export default function AddProductWeight() {
     return products.filter((p: any) => !gradedProductIds.has(Number(p.id)));
   }, [products, existingWeights, showAllProducts]);
 
-  // 3. Handle perubahan pada dynamic dropdown sub-kriteria
   const handleSubCriteriaChange = (criteriaId: number, subId: number) => {
     setValidationError(null);
     const foundSub = allSubCriterias.find((s: any) => Number(s.id) === subId);
@@ -86,18 +74,15 @@ export default function AddProductWeight() {
     setNumericValues((prev) => ({ ...prev, [criteriaId]: numVal }));
   };
 
-  // 4. Handle Simpan Seluruh Bobot (Batch Submission)
   const handleBatchSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationError(null);
 
-    // Validasi 1: Produk harus dipilih
     if (!selectedProductId || selectedProductId <= 0) {
       setValidationError("Silakan pilih produk laptop yang akan dibobot terlebih dahulu!");
       return;
     }
 
-    // Validasi 2: Seluruh kriteria yang aktif harus dipilih spesifikasinya (kecuali Harga / C1 yang opsional)
     const unselectedCriterias = criterias.filter(
       (c: any) =>
         c.code !== "C1" &&
@@ -113,7 +98,6 @@ export default function AddProductWeight() {
       return;
     }
 
-    // Siapkan array payload untuk seluruh kriteria yang terpilih saja
     const payloads = criterias
       .filter((c: any) => selectedSubs[c.id] && selectedSubs[c.id] > 0)
       .map((c: any) => ({
@@ -137,7 +121,6 @@ export default function AddProductWeight() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      {/* 1. HEADER HALAMAN */}
       <div className="flex items-center justify-between border-b border-gray-200 pb-5">
         <div>
           <div className="flex items-center gap-2.5">
@@ -163,7 +146,6 @@ export default function AddProductWeight() {
         </div>
       )}
 
-      {/* 2. KARTU FORM UTAMA */}
       <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
         <div className="h-2 bg-black"></div>
 
@@ -225,7 +207,6 @@ export default function AddProductWeight() {
             </div>
           </div>
 
-        {/* 2. Daftar Spesifikasi per Kriteria */}
         {selectedProductId !== 0 && (
           <div className="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs space-y-6">
             <div className="flex items-center justify-between border-b border-gray-100 pb-4">
@@ -278,7 +259,6 @@ export default function AddProductWeight() {
                         </span>
                       </div>
 
-                      {/* Dropdown Pilihan Subkriteria */}
                       <div>
                         <select
                           value={currentSelectedSub}

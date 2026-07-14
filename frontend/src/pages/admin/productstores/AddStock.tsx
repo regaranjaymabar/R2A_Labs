@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   CheckCircle2,
   Ban,
-  Lock,
 } from "lucide-react";
 import { Button } from "../../../components/ui/common/Button";
 import { InputText } from "../../../components/ui/common/InputText";
@@ -34,7 +33,6 @@ export default function AddStock() {
     isAvailable,
   } = useAddProductStore();
 
-  // Fetch daftar Toko dari backend (Tabel stores) dengan offlineFallbackData
   const { data: fetchedStores, isLoading: isStoresLoading } = useGet({
     queryKey: ["stores"],
     queryFn: storeService.getAll,
@@ -42,7 +40,6 @@ export default function AddStock() {
   });
   const stores = fetchedStores && fetchedStores.length > 0 ? fetchedStores : initialStores;
 
-  // Fetch daftar Produk dari backend (Tabel products) dengan offlineFallbackData
   const { data: fetchedProducts, isLoading: isProductsLoading } = useGet({
     queryKey: ["products"],
     queryFn: productService.getAll,
@@ -50,7 +47,6 @@ export default function AddStock() {
   });
   const products = fetchedProducts && fetchedProducts.length > 0 ? fetchedProducts : initialProducts;
 
-  // Pantau input harga untuk menampilkan format Rupiah live preview
   const watchPrice = watch("price");
   const formattedPrice = new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -59,7 +55,7 @@ export default function AddStock() {
     maximumFractionDigits: 0,
   }).format(Number(watchPrice || 0));
 
-  // Logika Bisnis: Jika masuk sebagai Store Admin, otomatis kunci store_id ke toko user (atau toko pertama jika tidak ada ID)
+  // Jika masuk sebagai Store Admin, maka kunci store_id
   useEffect(() => {
     if (isStoreAdmin) {
       const userStoreId = (user as any)?.store_id || (stores.length > 0 ? stores[0].id : 1);
@@ -69,7 +65,6 @@ export default function AddStock() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      {/* 1. HEADER HALAMAN & ROLE BADGE */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 pb-5 gap-4">
         <div>
           <div className="flex items-center gap-2.5">
@@ -80,13 +75,12 @@ export default function AddStock() {
         </div>
 
         <div className="flex items-center gap-3 self-start sm:self-auto">
-          {/* Badge Peran Pengguna Aktif */}
           <div className="bg-gray-100 px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xs font-bold border border-gray-200">
             {isSuperAdmin ? (
-              <span className="text-blue-600">⚡ Super Admin (Full Akses)</span>
+              <span className="text-blue-600">Super Admin (Full Akses)</span>
             ) : (
-              <span className="text-purple-600 flex items-center gap-1">
-                <Lock className="w-3 h-3" /> Store Admin
+              <span className="text-blue-600 flex items-center gap-1">
+                Store Admin
               </span>
             )}
           </div>
@@ -101,24 +95,20 @@ export default function AddStock() {
         </div>
       </div>
 
-      {/* 2. KARTU FORM UTAMA */}
       <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
-        {/* Decorative Top Accent */}
         <div className="h-2 bg-black"></div>
 
         <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-8">
-          {/* SECTION 1: PENJODOHAN TOKO & PRODUK */}
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* 1. Pilih Toko (Dropdown dari tabel stores) */}
               <div className={isStoreAdmin ? "pointer-events-none opacity-80" : ""}>
                 <InputSearchSelect
                   label={
                     <span className="flex items-center justify-between">
-                      <span>Pilih Toko Cabang *</span>
+                      <span>Pilih Toko Cabang</span>
                       {isStoreAdmin && (
                         <span className="text-[10px] font-mono font-bold text-black flex items-center gap-1 bg-purple-100 px-2 py-0.5 rounded-full">
-                          <Lock className="w-2.5 h-2.5" /> Terkunci
+                          {user?.name}
                         </span>
                       )}
                     </span>
@@ -132,7 +122,7 @@ export default function AddStock() {
                   placeholder={
                     isStoresLoading && stores.length === 0
                       ? "Memuat Toko..."
-                      : "-- Cari & Pilih Cabang Toko --"
+                      : "Cari & Pilih Cabang Toko"
                   }
                   isLoading={isStoresLoading && stores.length === 0}
                   disabled={isStoresLoading && stores.length === 0}
@@ -141,10 +131,9 @@ export default function AddStock() {
                 />
               </div>
 
-              {/* 2. Pilih Produk Laptop (Dropdown dari tabel products) */}
               <div>
                 <InputSearchSelect
-                  label="Pilih Produk Laptop (Master Data) *"
+                  label="Pilih Produk Laptop"
                   name="product_id"
                   control={control}
                   options={products.map((p: any) => ({
@@ -158,25 +147,23 @@ export default function AddStock() {
                   placeholder={
                     isProductsLoading && products.length === 0
                       ? "Memuat Produk..."
-                      : "-- Cari Model atau Merek Laptop --"
+                      : "Cari Model atau Brand Laptop"
                   }
                   isLoading={isProductsLoading && products.length === 0}
                   disabled={isProductsLoading && products.length === 0}
                   error={errors.product_id?.message}
-                  helperText="* Ketik model/merek laptop dari katalog master."
+                  helperText="* Ketik model/brand laptop dari katalog master."
                 />
               </div>
             </div>
           </div>
 
-          {/* SECTION 2: HARGA JUAL & STOK AWAL */}
           <div className="space-y-4 pt-2">
             <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-black">
               <span>Penetapan Harga Lokal & Stok Fisik</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* 3. Harga Jual Cabang */}
               <div>
                 <InputText
                   label="Harga Jual"
@@ -197,21 +184,18 @@ export default function AddStock() {
                 />
               </div>
 
-              {/* 4. Stok Awal */}
               <div>
                 <InputText
-                  label="Stok (Unit / Kardus)"
+                  label="Stok Unit"
                   nama="stock"
                   type="number"
                   register={register}
                   error={errors.stock?.message}
-                  helperText="* Jumlah fisik barang yang tersedia langsung."
                 />
               </div>
             </div>
           </div>
 
-          {/* SECTION 3: STATUS KETERSEDIAAN CABANG */}
           <div className="space-y-3 pt-4 border-t border-gray-100">
             <label className="block text-sm font-bold text-gray-900 items-center justify-between">
               <span className="flex items-center gap-2">
@@ -220,7 +204,6 @@ export default function AddStock() {
             </label>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Opsi 1: Aktif (Tersedia) */}
               <button
                 type="button"
                 onClick={() =>
@@ -251,7 +234,6 @@ export default function AddStock() {
                 </div>
               </button>
 
-              {/* Opsi 2: Nonaktif (Discontinued / Habis) */}
               <button
                 type="button"
                 onClick={() =>
@@ -284,7 +266,6 @@ export default function AddStock() {
             </div>
           </div>
 
-          {/* TOMBOL AKSI FORM */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
             <Button
               type="button"

@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { ChevronRight, Home } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 
-// Pemetaan judul halaman berdasarkan rute (pathname)
+
 const routeLabels: Record<string, string> = {
   dashboard: "Dashboard",
   brands: "Brands",
@@ -14,7 +14,6 @@ const routeLabels: Record<string, string> = {
   criterias: "Kriteria",
   subcriterias: "Sub-Kriteria",
   productweights: "Pembobotan Produk",
-  recommendations: "Riwayat Rekomendasi",
   users: "Daftar Pengguna",
   "user-stores": "Hak Akses Toko",
   add: "Tambah Baru",
@@ -25,7 +24,6 @@ export default function AdminHeader() {
   const location = useLocation();
   const user = useAuthStore((state) => state.user);
 
-  // Pecah rute menjadi segmen path (misal: ['admin', 'products', 'add'])
   const pathSegments = location.pathname
     .split("/")
     .filter((segment) => segment && segment !== "admin");
@@ -33,10 +31,8 @@ export default function AdminHeader() {
   return (
     <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 sm:px-6 py-3.5 transition-colors">
       <div className="flex items-center justify-between gap-4">
-        {/* Kiri: Mini Breadcrumb Navigation */}
         <nav aria-label="Breadcrumb" className="flex items-center text-xs sm:text-sm font-medium text-gray-500 min-w-0">
           <ol className="flex items-center gap-1.5 flex-wrap">
-            {/* Beranda Admin */}
             <li className="inline-flex items-center">
               <Link
                 to="/admin/dashboard"
@@ -48,9 +44,8 @@ export default function AdminHeader() {
               </Link>
             </li>
 
-            {/* Iterasi Segmen Rute */}
             {pathSegments.map((segment, index) => {
-              // Abaikan jika segmen berupa angka ID (misal: /edit/12)
+              
               if (!isNaN(Number(segment))) return null;
 
               const isLast = index === pathSegments.length - 1;
@@ -78,7 +73,6 @@ export default function AdminHeader() {
           </ol>
         </nav>
 
-        {/* Kanan: Mini Info Staf / Peran Aktif */}
         <div className="hidden md:flex items-center gap-2 text-xs font-mono shrink-0">
           <span className="px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 font-bold border border-gray-200">
             {user?.role === "superadmin" || user?.role === "super_admin"

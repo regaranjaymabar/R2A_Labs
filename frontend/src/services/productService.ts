@@ -47,6 +47,7 @@ export const productService = {
             modelName: payload.modelName ?? (payload as any).model_name ?? "",
             screenSize: Number(payload.screenSize ?? (payload as any).screen_size ?? 0),
             releaseYear: String(payload.releaseYear ?? (payload as any).release_year ?? "").slice(0, 4),
+            subCriteriaIds: payload.subCriteriaIds ?? [],
         };
 
         const response = await api.post("/api/superadmin/products", apiPayload);

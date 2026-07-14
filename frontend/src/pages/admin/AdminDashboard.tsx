@@ -13,14 +13,13 @@ export default function AdminDashboard() {
     const isSuperAdmin = user?.role === "superadmin" || user?.role === "super_admin";
     const isStoreAdmin = !isSuperAdmin;
 
-    // Fetch summary jika yang login adalah store admin
     const { data: storeSummary } = useQuery({
         queryKey: ["admin-summary"],
         queryFn: () => storeAdminService.getSummary(),
         enabled: isStoreAdmin,
     });
 
-    // Fetch data untuk Superadmin (Produk, Merek, Toko)
+    // ambil data untuk Superadmin
     const { data: products = [] } = useQuery({
         queryKey: ["products"],
         queryFn: () => productService.getAll(),
@@ -39,7 +38,6 @@ export default function AdminDashboard() {
         enabled: !isStoreAdmin,
     });
 
-    // Statistik untuk Store Admin (Dinamis dari API /api/admin/reports/summary)
     const storeAdminStats = [
         {
             title: "Total Laptop di Tokoku",
@@ -77,7 +75,6 @@ export default function AdminDashboard() {
         },
     ];
 
-    // Statistik Dinamis / Superadmin (Mengikuti database)
     const superAdminStats = [
         {
             title: "Total Produk",
@@ -109,7 +106,6 @@ export default function AdminDashboard() {
 
     return (
         <div className="space-y-8 pb-10">
-            {/* Header Welcome */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 pb-5">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">
@@ -123,7 +119,6 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            {/* Glowing Cards Stat Section */}
             <div>
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-semibold text-gray-800">
@@ -161,7 +156,6 @@ export default function AdminDashboard() {
                 </GlowingCards>
             </div>
 
-            {/* Quick Actions untuk Store Admin */}
             {isStoreAdmin && (
                 <div className="space-y-4 pt-4">
                     <h2 className="text-lg font-semibold text-gray-800">
@@ -203,6 +197,117 @@ export default function AdminDashboard() {
                                 Ubah nama cabang, alamat lengkap, kontak WhatsApp, dan koordinat GPS peta toko.
                             </p>
                         </Link>
+                    </div>
+                </div>
+            )}
+
+            {!isStoreAdmin && products.length > 0 && (
+                <div className="space-y-4 pt-4">
+                    <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                        <div>
+                            <h2 className="text-lg font-semibold text-gray-800">
+                                Distribusi Laptop per Brand
+                            </h2>
+                            <p className="text-xs text-gray-500 mt-1">
+                                Jumlah total laptop yang terdaftar per brand partner di katalog sistem.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs space-y-4">
+                            <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                Peringkat Brand 
+                            </h3>
+                            <div className="space-y-4">
+                                {(() => {
+                                    const brandCounts: Record<string, number> = {};
+                                    products.forEach((p: any) => {
+                                        const bName = p.brand_name || p.brand?.name || "Lainnya";
+                                        brandCounts[bName] = (brandCounts[bName] || 0) + 1;
+                                    });
+
+                                    const sortedBrands = Object.entries(brandCounts)
+                                        .map(([name, count]) => ({ name, count }))
+                                        .sort((a, b) => b.count - a.count);
+
+                                    const maxCount = Math.max(...sortedBrands.map(b => b.count), 1);
+                                    
+                                    return sortedBrands.slice(0, 5).map((b, idx) => {
+                                        return (
+                                            <div key={idx} className="space-y-1.5">
+                                                <div className="flex items-center justify-between text-sm font-semibold text-gray-700">
+                                                    <span className="flex items-center gap-2">
+                                                        <span className="w-5 h-5 flex items-center justify-center bg-gray-100 rounded-full text-xs font-bold text-gray-600">
+                                                            {idx + 1}
+                                                        </span>
+                                                        {b.name}
+                                                    </span>
+                                                    <span>
+                                                        {b.count} Item
+                                                    </span>
+                                                </div>
+                                                <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                                                    <div 
+                                                        className="h-full bg-black rounded-full transition-all duration-500"
+                                                        style={{ width: `${(b.count / maxCount) * 100}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        );
+                                    });
+                                })()}
+                            </div>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs flex flex-col justify-between">
+                            <div className="space-y-4">
+                                <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                    Informasi Katalog SPK
+                                </h3>
+                                <div className="space-y-3.5">
+                                    {(() => {
+                                        const activeCount = products.filter((p: any) => {
+                                            const val = p.is_active !== undefined ? p.is_active : p.isActive;
+                                            return val === undefined || val === 1 || val === true || Number(val) === 1;
+                                        }).length;
+                                        const nonActiveCount = products.length - activeCount;
+                                        const uniqueBrands = new Set(products.map((p: any) => p.brand_name || p.brand?.name)).size;
+                                        
+                                        return (
+                                            <>
+                                                <div className="flex items-center justify-between text-sm border-b border-gray-100 pb-2">
+                                                    <span className="text-gray-500 font-medium">Laptop Aktif di Rekomendasi</span>
+                                                    <span className="font-bold text-emerald-600">{activeCount} Laptop</span>
+                                                </div>
+                                                <div className="flex items-center justify-between text-sm border-b border-gray-100 pb-2">
+                                                    <span className="text-gray-500 font-medium">Laptop Nonaktif</span>
+                                                    <span className="font-bold text-gray-500">{nonActiveCount} Laptop</span>
+                                                </div>
+                                                <div className="flex items-center justify-between text-sm border-b border-gray-100 pb-2">
+                                                    <span className="text-gray-500 font-medium">Rata-rata Model per Brand</span>
+                                                    <span className="font-bold text-gray-900">{(products.length / (uniqueBrands || 1)).toFixed(1)} Model</span>
+                                                </div>
+                                                <div className="flex items-center justify-between text-sm">
+                                                    <span className="text-gray-500 font-medium">Total Kombinasi Model & Spek</span>
+                                                    <span className="font-bold text-purple-600">{products.length} Variasi</span>
+                                                </div>
+                                            </>
+                                        );
+                                    })()}
+                                </div>
+                            </div>
+                            
+                            <div className="pt-4 border-t border-gray-100 flex justify-end">
+                                <Link 
+                                    to="/admin/products"
+                                    className="inline-flex items-center gap-1.5 text-sm font-bold text-gray-700 hover:text-black transition-colors"
+                                >
+                                    <span>Buka Katalog Laptop</span>
+                                    <ArrowRight className="w-4 h-4" />
+                                </Link>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

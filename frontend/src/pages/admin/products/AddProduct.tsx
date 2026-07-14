@@ -14,7 +14,7 @@ export default function AddProduct() {
     const { register, control, handleSubmit, errors, isSubmitting } =
         useAddProduct();
 
-    // Fetch daftar merek dari backend untuk dropdown Brand
+    // Fetch daftar brand
     const { data: brands = [], isLoading: isBrandsLoading } = useQuery({
         queryKey: ["brands"],
         queryFn: brandService.getAll,
@@ -65,12 +65,12 @@ export default function AddProduct() {
                                         label: b.name,
                                     }))}
                                     placeholder={
-                                        isBrandsLoading ? "Memuat Merek..." : "-- Cari atau Pilih Merek --"
+                                        isBrandsLoading ? "Memuat Brand..." : "-- Cari atau Pilih Brand --"
                                     }
                                     isLoading={isBrandsLoading}
                                     disabled={isBrandsLoading}
                                     error={errors.brandId?.message}
-                                    helperText="* Merek dari tabel brands (Bisa diketik)."
+                                    helperText="* Brand dari tabel brands (Bisa diketik)."
                                 />
                             </div>
 

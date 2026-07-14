@@ -7,11 +7,11 @@ import { useGet } from "../../../../hooks/useGet";
 import { useUpdate } from "../../../../hooks/useUpdate";
 import { productSchema, type ProductFormData } from "./useAddProduct";
 import type { Product } from "../../../../types/product";
+import { getAutoMappedSubCriteriaIds } from "../../../../utils/spkAutoMapper";
 
 export function useEditProduct() {
   const { id } = useParams<{ id: string }>();
 
-  // 1. Inisialisasi React Hook Form + Zod Resolver
   const {
     register,
     control,
@@ -26,7 +26,6 @@ export function useEditProduct() {
 
   const isActive = watch("is_active");
 
-  // 2. Fetch Data Eksisting menggunakan Generic Hook useGet + productService: GET /products/:id
   const {
     data: productData,
     isLoading: isLoadingData,
@@ -50,7 +49,7 @@ export function useEditProduct() {
     },
   });
 
-  // 3. Populate form begitu data berhasil dimuat
+
   useEffect(() => {
     if (productData) {
       const rawYear = String(productData.releaseYear || productData.release_year || new Date().getFullYear());
@@ -79,7 +78,6 @@ export function useEditProduct() {
     }
   }, [productData, reset]);
 
-  // 4. Mutasi Update ke Backend menggunakan Generic Hook useUpdate + productService: PUT /products/:id
   const updateMutation = useUpdate<ProductFormData>({
     mutationFn: (payload) => productService.update(id!, payload),
     queryKey: ["products"],
@@ -91,8 +89,12 @@ export function useEditProduct() {
       }`,
   });
 
-  const onSubmit = (data: ProductFormData) => {
-    updateMutation.mutate(data);
+  const onSubmit = async (data: ProductFormData) => {
+    const subCriteriaIds = await getAutoMappedSubCriteriaIds(data);
+    updateMutation.mutate({
+      ...data,
+      subCriteriaIds,
+    });
   };
 
   return {

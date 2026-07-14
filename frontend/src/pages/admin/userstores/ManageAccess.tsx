@@ -32,7 +32,6 @@ export default function ManageAccess() {
 
   return (
     <div className="space-y-6 pb-12">
-      {/* 1. HEADER HALAMAN */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
           <div className="flex items-center gap-2.5">
@@ -54,7 +53,6 @@ export default function ManageAccess() {
         </div>
       </div>
 
-      {/* 2. KARTU STATISTIK RINGKAS (GLOWING CARDS) */}
       <GlowingCards gap="1rem" maxWidth="100%" padding="0">
         <GlowingCard glowColor="#6366f1" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
           <span className="text-xs font-bold text-gray-500 block uppercase font-mono">Total Delegasi</span>
@@ -74,7 +72,6 @@ export default function ManageAccess() {
         </GlowingCard>
       </GlowingCards>
 
-      {/* 3. FILTER BAR */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-200">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1.5 mr-1 font-mono">
@@ -121,13 +118,11 @@ export default function ManageAccess() {
         </div>
       </div>
 
-      {/* 4. TABEL DATA */}
       <TabelManageAccess
         data={filteredData}
         onToggleRevoke={handleToggleRevoke}
       />
 
-      {/* 5. MODAL TAMBAH AKSES */}
       <ModalAddAccess
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
@@ -141,7 +136,6 @@ export default function ManageAccess() {
         isSubmitting={isSubmitting}
       />
 
-      {/* 6. MODAL KONFIRMASI CABUT/PULIHKAN AKSES */}
       <ModalConfirm
         isOpen={Boolean(revokeTarget)}
         onClose={() => setRevokeTarget(null)}

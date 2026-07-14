@@ -24,13 +24,10 @@ import AddStock from "./pages/admin/productstores/AddStock";
 import EditStock from "./pages/admin/productstores/EditStock";
 import CriteriaIndex from "./pages/admin/criterias/CriteriaIndex";
 import AddCriteria from "./pages/admin/criterias/AddCriteria";
-import EditCriteria from "./pages/admin/criterias/EditCriteria";
 import SubCriteriaIndex from "./pages/admin/subcriterias/SubCriteriaIndex";
 import AddSubCriteria from "./pages/admin/subcriterias/AddSubCriteria";
 import ProductWeightIndex from "./pages/admin/productweights/ProductWeightIndex";
 import AddProductWeight from "./pages/admin/productweights/AddProductWeight";
-import ReqHistory from "./pages/admin/recommendations/ReqHistory";
-import ResultDetail from "./pages/admin/recommendations/ResultDetail";
 import UserIndex from "./pages/admin/users/UserIndex";
 import MyStoreProfile from "./pages/admin/store-profile/MyStoreProfile";
 import AddUser from "./pages/admin/users/AddUser";
@@ -38,6 +35,8 @@ import EditUser from "./pages/admin/users/EditUser";
 import ManageAccess from "./pages/admin/userstores/ManageAccess";
 import ProductDetail from "./pages/ProductDetail";
 import Marketplace from "./pages/Marketplace";
+import ReqHistory from "./pages/admin/recommendations/ReqHistory";
+import ResultDetail from "./pages/admin/recommendations/ResultDetail";
 
 import { Toaster } from "react-hot-toast";
 
@@ -139,7 +138,6 @@ function App() {
               <Route path="criterias">
                 <Route index element={<CriteriaIndex />} />
                 <Route path="add" element={<AddCriteria />} />
-                <Route path="edit/:id" element={<EditCriteria />} />
               </Route>
 
               <Route path="subcriterias">
@@ -152,11 +150,6 @@ function App() {
                 <Route path="add" element={<AddProductWeight />} />
               </Route>
 
-              <Route path="recommendations">
-                <Route index element={<ReqHistory />} />
-                <Route path=":id" element={<ResultDetail />} />
-              </Route>
-
               <Route path="users">
                 <Route index element={<UserIndex />} />
                 <Route path="add" element={<AddUser />} />
@@ -164,6 +157,11 @@ function App() {
               </Route>
 
               <Route path="user-stores" element={<ManageAccess />} />
+
+              <Route path="recommendations">
+                <Route index element={<ReqHistory />} />
+                <Route path=":id" element={<ResultDetail />} />
+              </Route>
 
             </Route>
           </Route>
