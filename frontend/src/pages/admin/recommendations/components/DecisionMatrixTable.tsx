@@ -1,5 +1,4 @@
 import { HelpCircle } from "lucide-react";
-import { CRITERIAS } from "../ResultDetail";
 
 interface DecisionMatrixTableProps {
   decisionMatrix: Array<{
@@ -12,6 +11,7 @@ interface DecisionMatrixTableProps {
   activeAlternatives: any[];
   activeFormulaDetails: { cellKey: string; description: string } | null;
   onCellClick: (cellKey: string, description: string) => void;
+  criterias: any[];
 }
 
 export function DecisionMatrixTable({
@@ -19,12 +19,13 @@ export function DecisionMatrixTable({
   activeAlternatives,
   activeFormulaDetails,
   onCellClick,
+  criterias,
 }: DecisionMatrixTableProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between text-xs text-gray-500">
         <span>* Menunjukkan konversi nilai spesifikasi ke skala skala numerik [1 sampai 5]</span>
-        <span className="font-mono text-purple-600 flex items-center gap-1 bg-purple-50 px-2.5 py-1 rounded-lg">
+          <span className="font-mono text-black flex items-center gap-1 bg-white px-2.5 py-1 rounded-lg">
           <HelpCircle className="w-3.5 h-3.5" />
           Klik sel nilai untuk melihat spesifikasi mentahnya!
         </span>
@@ -34,7 +35,7 @@ export function DecisionMatrixTable({
         <thead>
           <tr className="border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider">
             <th className="py-3 px-4 min-w-[200px]">Alternatif Laptop</th>
-            {CRITERIAS.map((c) => (
+            {criterias.map((c) => (
               <th key={c.code} className="py-3 px-3 text-center" title={c.desc}>
                 <span className="block font-mono text-[10px] text-gray-900 bg-gray-200/80 px-1 rounded-sm w-fit mx-auto mb-0.5">{c.code}</span>
                 <span>{c.name}</span>
@@ -60,12 +61,12 @@ export function DecisionMatrixTable({
                   )}
                 </div>
                 <span className="text-[10px] text-gray-400 font-medium block">
-                  {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
+                  {row.brand} | Toko: <span className="text-black font-semibold">{row.storeName}</span>
                 </span>
               </td>
-              {CRITERIAS.map((crit) => {
+              {criterias.map((crit) => {
                 const val = row.values[crit.code];
-                const rawAlt = activeAlternatives.find((a) => a.name === row.alternativeName);
+                const rawAlt = activeAlternatives.find((a) => a.name === row.alternativeName && a.storeName === row.storeName);
                 let rawSpec = "-";
                 if (rawAlt) {
                   if (crit.code === "C1") rawSpec = `Rp ${rawAlt.price.toLocaleString("id-ID")}`;
@@ -81,21 +82,24 @@ export function DecisionMatrixTable({
                 const activeCellKey = `${idx}-${crit.code}`;
                 const isCellSelected = activeFormulaDetails?.cellKey === activeCellKey;
 
+                const formulaDesc =
+                  `Laptop: ${row.alternativeName}\n` +
+                  `Harga : ${rawSpec}\n` +
+                  `Tipe Kriteria: ${crit.type.toUpperCase()}${crit.desc ? ` (${crit.desc})` : ""}\n` +
+                  (crit.code === "C1"
+                    ? `Nilai Keputusan (X_ij): Rp ${rawAlt ? rawAlt.price.toLocaleString("id-ID") : "-"} -> ${val.toFixed(3)} Juta`
+                    : `Skala Mapped (X_ij): ${val} (Skala 1-5)`);
+
                 return (
                   <td
                     key={crit.code}
-                    onClick={() =>
-                      onCellClick(
-                        activeCellKey,
-                        `Laptop: ${row.alternativeName}\nSpesifikasi mentah: "${rawSpec}"\nTipe Kriteria: ${crit.type.toUpperCase()} (${crit.desc})\nSkala Mapped: ${val} (Skala 1-5)`
-                      )
-                    }
+                    onClick={() => onCellClick(activeCellKey, formulaDesc)}
                     className={`py-3.5 px-3 text-center font-mono font-bold transition-all cursor-pointer ${
                       isCellSelected ? "bg-purple-100 text-purple-900 ring-2 ring-purple-500/20 rounded-lg scale-95" : "text-gray-900"
                     }`}
                   >
                     <span className="bg-gray-100 px-2.5 py-1 rounded-lg border border-gray-200/50 block hover:bg-purple-50">
-                      {val}
+                      {crit.code === "C1" ? val.toFixed(3) : val}
                     </span>
                   </td>
                 );

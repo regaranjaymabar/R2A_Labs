@@ -1,5 +1,4 @@
 import { HelpCircle } from "lucide-react";
-import { CRITERIAS } from "../ResultDetail";
 
 interface NormalisationMatrixTableProps {
   activeMethod: "SAW" | "WP" | "TOPSIS";
@@ -7,6 +6,7 @@ interface NormalisationMatrixTableProps {
   setTopsisSubTab: (tab: "R" | "Y" | "D") => void;
   activeFormulaDetails: { cellKey: string; description: string } | null;
   onCellClick: (cellKey: string, description: string) => void;
+  criterias: any[];
   
   // SAW props
   sawNormalizedMatrix: Array<{
@@ -55,6 +55,7 @@ export function NormalisationMatrixTable({
   setTopsisSubTab,
   activeFormulaDetails,
   onCellClick,
+  criterias,
   sawNormalizedMatrix,
   columnExtremes,
   wpCalculations,
@@ -104,7 +105,7 @@ export function NormalisationMatrixTable({
 
       <div className="flex items-center justify-between text-xs text-gray-500">
         <span>* Menampilkan hasil normalisasi berdasarkan sifat kriteria (Benefit / Cost)</span>
-        <span className="font-mono text-purple-600 flex items-center gap-1 bg-purple-50 px-2.5 py-1 rounded-lg">
+        <span className="font-mono text-black flex items-center gap-1 bg-purple-50 px-2.5 py-1 rounded-lg">
           <HelpCircle className="w-3.5 h-3.5" />
           Klik sel nilai untuk melihat rumus matematika rincinya!
         </span>
@@ -115,7 +116,7 @@ export function NormalisationMatrixTable({
           <tr className="border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider">
             <th className="py-3 px-4 min-w-[200px]">Alternatif Laptop</th>
             {(activeMethod !== "TOPSIS" || topsisSubTab === "R" || topsisSubTab === "Y") &&
-              CRITERIAS.map((c) => (
+              criterias.map((c) => (
                 <th key={c.code} className="py-3 px-3 text-center" title={c.desc}>
                   <span className="block font-mono text-[10px] text-gray-900 bg-gray-200/80 px-1 rounded-sm w-fit mx-auto mb-0.5">{c.code}</span>
                   <span>{c.name}</span>
@@ -150,10 +151,10 @@ export function NormalisationMatrixTable({
                 <td className="py-3.5 px-4 font-bold text-gray-900">
                   {row.alternativeName}
                   <span className="text-[10px] text-gray-400 font-medium block">
-                    {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
+                    {row.brand} | Toko: <span className="text-black font-semibold">{row.storeName}</span>
                   </span>
                 </td>
-                {CRITERIAS.map((crit) => {
+                {criterias.map((crit) => {
                   const val = row.norms[crit.code];
                   const x = row.rawValues[crit.code];
                   const ext = columnExtremes[crit.code];
@@ -161,7 +162,9 @@ export function NormalisationMatrixTable({
                   const isCost = crit.type === "cost";
                   const formulaDesc = isCost
                     ? `Rumus Cost: R_ij = min(X_kj) / X_ij\n` +
-                      `Perhitungan: ${ext.min} / ${x} = ${val.toFixed(4)}`
+                      (crit.code === "C1"
+                        ? `Perhitungan: ${ext.min.toFixed(3)} Juta / ${x.toFixed(3)} Juta = ${val.toFixed(4)}`
+                        : `Perhitungan: ${ext.min} / ${x} = ${val.toFixed(4)}`)
                     : `Rumus Benefit: R_ij = X_ij / max(X_kj)\n` +
                       `Perhitungan: ${x} / ${ext.max} = ${val.toFixed(4)}`;
 
@@ -198,22 +201,25 @@ export function NormalisationMatrixTable({
                   <td className="py-3.5 px-4 font-bold text-gray-900">
                     {row.alternativeName}
                     <span className="text-[10px] text-gray-400 font-medium block">
-                      {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
+                      {row.brand} | Toko: <span className="text-black font-semibold">{row.storeName}</span>
                     </span>
                   </td>
-                  {CRITERIAS.map((crit) => {
+                  {criterias.map((crit) => {
                     const normVal = row.norms[crit.code];
                     const w = weightsMap[crit.code] ?? 0;
-                    const totalW = CRITERIAS.reduce((sum, c) => sum + (weightsMap[c.code] ?? 0), 0);
+                    const totalW = criterias.reduce((sum, c) => sum + (weightsMap[c.code] ?? 0), 0);
                     const normW = totalW > 0 ? w / totalW : 0;
                     const isCost = crit.type === "cost";
                     const exponent = isCost ? -normW : normW;
 
+                    const rawXVal = Number(row.norms[crit.code + "_raw"] ?? 1);
                     const formulaDesc =
                       `Pangkat Bobot Ternormalisasi w_j = W_j / sum(W_j)\n` +
                       `w_${crit.code} = ${w} / ${totalW.toFixed(4)} = ${normW.toFixed(4)} ${isCost ? "(Cost -> negatif)" : "(Benefit -> positif)"}\n\n` +
                       `Perhitungan Nilai Pangkat X_ij^w_j:\n` +
-                      `Nilai Skala X = ${Number(row.norms[crit.code + "_raw"] ?? 1)} pangkat ${exponent.toFixed(4)} = ${normVal.toFixed(4)}`;
+                      (crit.code === "C1"
+                        ? `Nilai Keputusan X = ${rawXVal.toFixed(3)} Juta pangkat ${exponent.toFixed(4)} = ${normVal.toFixed(4)}`
+                        : `Nilai Skala X = ${rawXVal} pangkat ${exponent.toFixed(4)} = ${normVal.toFixed(4)}`);
 
                     const activeCellKey = `${idx}-${crit.code}`;
                     const isCellSelected = activeFormulaDetails?.cellKey === activeCellKey;
@@ -280,10 +286,10 @@ export function NormalisationMatrixTable({
                   <td className="py-3.5 px-4 font-bold text-gray-900">
                     {row.alternativeName}
                     <span className="text-[10px] text-gray-400 font-medium block">
-                      {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
+                      {row.brand} | Toko: <span className="text-black font-semibold">{row.storeName}</span>
                     </span>
                   </td>
-                  {CRITERIAS.map((crit) => {
+                  {criterias.map((crit) => {
                     const rVal = row.rValues[crit.code];
                     const squareSum = columnSquareSums[crit.code];
                     const x = row.values[crit.code];
@@ -293,7 +299,9 @@ export function NormalisationMatrixTable({
 
                     const formulaDesc =
                       `Normalisasi Vektor R_ij = X_ij / sqrt(sum(X_kj^2))\n` +
-                      `Perhitungan R: ${x} / ${squareSum.toFixed(4)} = ${rVal.toFixed(4)}`;
+                      (crit.code === "C1"
+                        ? `Perhitungan R: ${x.toFixed(3)} Juta / ${squareSum.toFixed(4)} = ${rVal.toFixed(4)}`
+                        : `Perhitungan R: ${x} / ${squareSum.toFixed(4)} = ${rVal.toFixed(4)}`);
 
                     return (
                       <td
@@ -314,7 +322,7 @@ export function NormalisationMatrixTable({
               {/* Row Pembagi */}
               <tr className="bg-gray-100/60 border-t-2 border-gray-200 font-bold text-gray-900">
                 <td className="py-3 px-4 font-bold">Pembagi (Xⱼ)</td>
-                {CRITERIAS.map((crit) => {
+                {criterias.map((crit) => {
                   const val = columnSquareSums[crit.code] ?? 0;
                   return (
                     <td key={crit.code} className="py-3 px-3 text-center font-mono">
@@ -339,10 +347,10 @@ export function NormalisationMatrixTable({
                   <td className="py-3.5 px-4 font-bold text-gray-900">
                     {row.alternativeName}
                     <span className="text-[10px] text-gray-400 font-medium block">
-                      {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
+                      {row.brand} | Toko: <span className="text-black font-semibold">{row.storeName}</span>
                     </span>
                   </td>
-                  {CRITERIAS.map((crit) => {
+                  {criterias.map((crit) => {
                     const rVal = row.rValues[crit.code];
                     const vVal = row.vValues[crit.code];
                     const w = weightsMap[crit.code] ?? 0;
@@ -374,7 +382,7 @@ export function NormalisationMatrixTable({
               {/* Row A+ */}
               <tr className="bg-purple-50/40 border-t border-gray-200 font-bold text-purple-900">
                 <td className="py-3 px-4 font-bold">Ideal Positif (A⁺)</td>
-                {CRITERIAS.map((crit) => {
+                {criterias.map((crit) => {
                   const val = topsisCalculations[0]?.idealPositive?.[crit.code] ?? 0;
                   return (
                     <td key={crit.code} className="py-3 px-3 text-center font-mono text-purple-700">
@@ -387,7 +395,7 @@ export function NormalisationMatrixTable({
               {/* Row A- */}
               <tr className="bg-amber-50/40 border-t border-gray-200 font-bold text-amber-900">
                 <td className="py-3 px-4 font-bold">Ideal Negatif (A⁻)</td>
-                {CRITERIAS.map((crit) => {
+                {criterias.map((crit) => {
                   const val = topsisCalculations[0]?.idealNegative?.[crit.code] ?? 0;
                   return (
                     <td key={crit.code} className="py-3 px-3 text-center font-mono text-amber-700">
@@ -411,7 +419,7 @@ export function NormalisationMatrixTable({
                 <td className="py-3.5 px-4 font-bold text-gray-900">
                   {row.alternativeName}
                   <span className="text-[10px] text-gray-400 font-medium block">
-                    {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
+                    {row.brand} | Toko: <span className="text-black font-semibold">{row.storeName}</span>
                   </span>
                 </td>
                 {/* D+ */}

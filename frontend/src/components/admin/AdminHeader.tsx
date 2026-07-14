@@ -74,10 +74,10 @@ export default function AdminHeader() {
         </nav>
 
         <div className="hidden md:flex items-center gap-2 text-xs font-mono shrink-0">
-          <span className="px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 font-bold border border-gray-200">
+          <span className="px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 font-bold border border-gray-200 uppercase">
             {user?.role === "superadmin" || user?.role === "super_admin"
               ? "SUPER ADMIN"
-              : "STORE ADMIN"}
+              : `STORE ADMIN - ${(user as any)?.store?.name || "TOKO"}`}
           </span>
         </div>
       </div>
