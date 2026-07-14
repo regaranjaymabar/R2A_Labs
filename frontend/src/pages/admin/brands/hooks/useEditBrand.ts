@@ -4,14 +4,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { brandService } from "../../../../services/brandService";
 import { brandSchema, type BrandFormData } from "./useAddBrand";
-import { type Brand } from "../BrandIndex";
+import type { Brand } from "../../../../types/brand";
 import { useQuery } from "@tanstack/react-query";
 import { useUpdate } from "../../../../hooks/useUpdate";
 
 export function useEditBrand() {
   const { id } = useParams<{ id: string }>();
-
-  // 1. Inisialisasi React Hook Form + Zod Resolver
+  
   const {
     register,
     handleSubmit,
@@ -25,9 +24,8 @@ export function useEditBrand() {
     },
   });
 
- 
 
-  // 2. Fetch Data Eksisting menggunakan useQuery + brandService: GET /brands/:id
+
   const {
     data: brandData,
     isLoading: isLoadingData,
@@ -48,7 +46,7 @@ export function useEditBrand() {
     enabled: Boolean(id),
   });
 
-  // 3. Populate form begitu data berhasil dimuat
+  
   useEffect(() => {
     if (brandData) {
       reset({
@@ -57,12 +55,12 @@ export function useEditBrand() {
     }
   }, [brandData, reset]);
 
-  // 4. Mutasi Update ke Backend menggunakan Generic Hook useUpdate + brandService: PUT /brands/:id
+  
   const updateMutation = useUpdate<BrandFormData>({
     mutationFn: (payload) => brandService.update(id!, payload),
     queryKey: ["brands"],
     navigateTo: "/admin/brands",
-    successMessage: (variables) => `Merek "${variables.name}" berhasil diperbarui!`,
+    successMessage: (variables) => `Brand "${variables.name}" berhasil diperbarui!`,
     errorMessage: (variables, err) =>
       `Gagal memperbarui brand "${variables.name}": ${
         err?.response?.data?.message || err?.message || "Error"

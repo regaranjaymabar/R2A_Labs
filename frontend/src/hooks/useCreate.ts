@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export interface CreateOptions<TVariables = any, TData = any> {
   mutationFn: (data: TVariables) => Promise<TData>;
@@ -25,7 +26,7 @@ export function useCreate<TVariables = any, TData = any>({
     mutationFn,
     onSuccess: (_, variables) => {
       if (successMessage) {
-        alert(successMessage(variables));
+        toast.success(successMessage(variables));
       }
 
       queryClient.invalidateQueries({
@@ -39,10 +40,10 @@ export function useCreate<TVariables = any, TData = any>({
     onError: (err: any, variables) => {
       console.error("Mutation Create Error:", err);
       if (errorMessage) {
-        alert(errorMessage(variables, err));
+        toast.error(errorMessage(variables, err));
       } else {
         const defaultMsg = err?.response?.data?.message || err?.message || "Gagal menyimpan data.";
-        alert(`Gagal menyimpan data: ${defaultMsg}`);
+        toast.error(`Gagal menyimpan data: ${defaultMsg}`);
       }
 
       // Fallback untuk development lokal jika backend offline:
@@ -51,7 +52,7 @@ export function useCreate<TVariables = any, TData = any>({
           onOfflineFallback(variables);
         } else if (navigateTo) {
           if (successMessage) {
-            alert(`${successMessage(variables)} (Simulasi Lokal/Offline)`);
+            toast.success(`${successMessage(variables)} (Simulasi Lokal/Offline)`);
           }
           navigate(navigateTo);
         }

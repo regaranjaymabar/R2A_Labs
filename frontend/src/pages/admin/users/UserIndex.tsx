@@ -5,236 +5,202 @@ import {
   ShieldCheck,
   Store,
   Filter,
-  Save,
-  Edit,
   UserIcon,
 } from "lucide-react";
 import { TabelUserIndex } from "./components/TabelUserIndex";
 import { Button } from "../../../components/ui/common/Button";
+import { InputText } from "../../../components/ui/common/InputText";
 import { Modal } from "../../../components/ui/common/Modal";
 import { ModalConfirm } from "../../../components/ui/common/ModalConfirm";
 import { GlowingCards, GlowingCard } from "../../../components/ui/glowing-cards";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { userService } from "../../../services/userService";
 import type { UserData } from "../../../types/user";
+export type { UserData };
 
-// 1. Definisi Interface Pengguna (UserData) sesuai skema tabel users di database MySQL
-
-
-// 2. Data Dummy Awal (Merepresentasikan Kondisi Nyata di Sistem SPK Laptop)
 const initialUsers: UserData[] = [
-  {
-    id: 1,
-    name: "Adies (Super Admin)",
-    email: "superadmin@r2a-labs.com",
-    role: "admin",
-    is_active: true,
-    created_at: "2026-01-10 08:00:00",
-  },
-  {
-    id: 2,
-    name: "Budi Santoso (Manajer Toko Jakarta)",
-    email: "budi.store@r2a-labs.com",
-    role: "store_admin",
-    is_active: true,
-    created_at: "2026-02-15 10:30:00",
-  },
-  {
-    id: 3,
-    name: "Siti Rahmawati (Manajer Toko Surabaya)",
-    email: "siti.store@r2a-labs.com",
-    role: "store_admin",
-    is_active: true,
-    created_at: "2026-03-01 09:15:00",
-  },
-  {
-    id: 4,
-    name: "Andi Pratama",
-    email: "andi.pratama@gmail.com",
-    role: "user",
-    is_active: true,
-    created_at: "2026-07-01 14:20:00",
-  },
-  {
-    id: 5,
-    name: "Doni Saputra",
-    email: "doni.s@yahoo.com",
-    role: "user",
-    is_active: false,
-    created_at: "2026-05-12 11:45:00",
-  },
-  {
-    id: 6,
-    name: "Rina Wati (Resigned Employee)",
-    email: "rina.old@r2a-labs.com",
-    role: "store_admin",
-    is_active: false,
-    created_at: "2026-01-20 16:00:00",
-  },
+
 ];
 
-
 export default function UserIndex() {
-  const [data, setData] = useState<UserData[]>(initialUsers);
+  const queryClient = useQueryClient();
+  const { data: usersData } = useQuery<UserData[]>({
+    queryKey: ["users"],
+    queryFn: async () => {
+      try {
+        return await userService.getAll();
+      } catch {
+        return initialUsers;
+      }
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
-  // State Filter
-  const [filterRole, setFilterRole] = useState<"all" | "admin" | "store_admin" | "user">("all");
+  const data = usersData || initialUsers;
+
+  const [filterRole, setFilterRole] = useState<"all" | "superadmin" | "admin" | "store_admin" | "user">("all");
   const [filterStatus, setFilterStatus] = useState<"all" | "active" | "inactive">("all");
 
-
-
-  // State Modal Edit Pengguna
   const [editingUser, setEditingUser] = useState<UserData | null>(null);
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editPassword, setEditPassword] = useState("");
-  const [editRole, setEditRole] = useState<"admin" | "store_admin" | "user">("user");
+  const [editRole, setEditRole] = useState<"superadmin" | "admin" | "user">("user");
   const [editIsActive, setEditIsActive] = useState(true);
 
-  // State untuk Modal Confirm Status Akun (Soft Delete)
-  const [statusTarget, setStatusTarget] = useState<UserData | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<UserData | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // Buka Modal Edit
   const handleOpenEdit = (user: UserData) => {
     setEditingUser(user);
     setEditName(user.name);
     setEditEmail(user.email);
-    setEditPassword(""); // Password dikosongkan secara default saat edit
-    setEditRole(user.role);
-    setEditIsActive(user.is_active);
+    setEditPassword("");
+    setEditRole((user.role as any) || "user");
+    setEditIsActive(Boolean(user.isActive ?? user.is_active ?? true));
   };
-
-
-
-  // Simpan Perubahan Edit Pengguna
-  const handleUpdateUser = (e: React.FormEvent) => {
+  const handleUpdateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingUser || !editName.trim() || !editEmail.trim()) {
       alert("Nama dan Email tidak boleh kosong!");
       return;
     }
 
-    setData((prev) =>
-      prev.map((item) =>
-        item.id === editingUser.id
-          ? {
-            ...item,
-            name: editName.trim(),
-            email: editEmail.trim().toLowerCase(),
-            role: editRole,
-            is_active: editIsActive,
-          }
-          : item
-      )
-    );
-    setEditingUser(null);
+    try {
+      setIsSavingEdit(true);
+      const payload: any = {
+        name: editName.trim(),
+        email: editEmail.trim().toLowerCase(),
+        role: editRole,
+        storeId: editingUser.storeId || editingUser.store?.id || 1,
+        is_active: editIsActive,
+      };
+      if (editPassword && editPassword.trim() !== "") {
+        payload.password = editPassword.trim();
+      }
+
+      await userService.update(editingUser.id, payload);
+
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
+      setEditingUser(null);
+    } catch (err: any) {
+      alert(`Gagal memperbarui pengguna: ${err?.response?.data?.message || err?.message || "Error"}`);
+    } finally {
+      setIsSavingEdit(false);
+    }
   };
 
-  // Aksi Soft Delete / Restore Akses (Toggle is_active) - Buka Modal
-  const handleToggleSoftDelete = (user: UserData) => {
-    if (user.role === "admin" && user.id === 1) {
-      alert("⚠️ Akun Super Admin Utama (#1) tidak boleh dinonaktifkan!");
+  const handleDeleteUser = (user: UserData) => {
+    if (user.id === 1) {
+      alert("⚠️ Akun Super Admin Utama (#1) tidak boleh dihapus!");
       return;
     }
-    setStatusTarget(user);
+    setDeleteTarget(user);
   };
+  
+  const confirmDeleteUser = async () => {
+    if (!deleteTarget) return;
 
-  // Eksekusi perubahan status dari ModalConfirm
-  const confirmToggleStatus = () => {
-    if (statusTarget) {
-      setData((prev) =>
-        prev.map((item) =>
-          item.id === statusTarget.id ? { ...item, is_active: !statusTarget.is_active } : item
-        )
-      );
-      setStatusTarget(null);
+    try {
+      setIsDeleting(true);
+      await userService.delete(deleteTarget.id);
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
+      setDeleteTarget(null);
+    } catch (err: any) {
+      alert(`Gagal menghapus pengguna: ${err?.response?.data?.message || err?.message || "Error"}`);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
-  // Filter Data
   const filteredData = useMemo(() => {
     return data.filter((item) => {
-      const matchRole = filterRole === "all" || item.role === filterRole;
+      const matchRole =
+        filterRole === "all" ||
+        (filterRole === "superadmin" && item.role === "superadmin") ||
+        (filterRole === "admin" && (item.role === "admin" || item.role === "store_admin")) ||
+        (filterRole === "user" && (item.role === "user" || !item.role));
+
+      const active = Boolean(item.isActive ?? item.is_active ?? true);
       const matchStatus =
         filterStatus === "all" ||
-        (filterStatus === "active" && item.is_active) ||
-        (filterStatus === "inactive" && !item.is_active);
+        (filterStatus === "active" && active) ||
+        (filterStatus === "inactive" && !active);
       return matchRole && matchStatus;
     });
   }, [data, filterRole, filterStatus]);
 
-  // Statistik Ringkas
   const stats = useMemo(() => {
     return {
       total: data.length,
-      admins: data.filter((u) => u.role === "admin").length,
-      storeAdmins: data.filter((u) => u.role === "store_admin").length,
-      users: data.filter((u) => u.role === "user").length,
-      inactive: data.filter((u) => !u.is_active).length,
+      admins: data.filter((u) => u.role === "superadmin").length,
+      storeAdmins: data.filter((u) => u.role === "admin" || u.role === "store_admin").length,
+      users: data.filter((u) => u.role === "user" || !u.role).length,
+      inactive: data.filter((u) => {
+        const active = u.isActive ?? u.is_active;
+        return active === false || active === 0;
+      }).length,
     };
   }, [data]);
 
 
   return (
     <div className="space-y-6 pb-12">
-      {/* 1. HEADER & KARTU INFORMASI SUPER ADMIN */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2.5">
               <span>Daftar Pengguna & Hak Akses</span>
             </h1>
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Pusat kendali keamanan sistem eksklusif Super Admin. Atur pembagian peran (<code className="font-mono text-xs">role</code>) dan manajemen status akses (<code className="font-mono text-xs">is_active</code>).
-          </p>
         </div>
 
         <div className="flex items-center gap-3">
           <Link
             to="/admin/users/add"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#151216] dark:bg-white text-white dark:text-gray-900 hover:bg-[#262128] dark:hover:bg-gray-200 font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#151216] text-white hover:bg-[#262128] font-bold text-xs shadow-md transition-all active:scale-95 cursor-pointer"
           >
             <UserPlus className="w-4 h-4" />
             <span>Tambah Pengguna / Pegawai</span>
           </Link>
         </div>
       </div>
-      {/* 3. KARTU STATISTIK RINGKAS (GLOWING CARDS) */}
       <GlowingCards gap="1rem" maxWidth="100%" padding="0">
         <GlowingCard glowColor="#6366f1" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-gray-500 dark:text-gray-400 block uppercase font-mono">Total Akun</span>
-          <span className="text-2xl font-extrabold text-gray-900 dark:text-white mt-1 block">{stats.total}</span>
+          <span className="text-xs font-bold text-gray-500 block uppercase font-mono">Total Akun</span>
+          <span className="text-2xl font-extrabold text-gray-900 mt-1 block">{stats.total}</span>
         </GlowingCard>
         <GlowingCard glowColor="#a855f7" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-purple-700 dark:text-purple-300 block uppercase font-mono">Super Admin</span>
-          <span className="text-2xl font-extrabold text-purple-900 dark:text-purple-100 mt-1 block">{stats.admins}</span>
+          <span className="text-xs font-bold text-purple-700 block uppercase font-mono">Super Admin</span>
+          <span className="text-2xl font-extrabold text-purple-900 mt-1 block">{stats.admins}</span>
         </GlowingCard>
         <GlowingCard glowColor="#3b82f6" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-blue-700 dark:text-blue-300 block uppercase font-mono">Admin Toko</span>
-          <span className="text-2xl font-extrabold text-blue-900 dark:text-blue-100 mt-1 block">{stats.storeAdmins}</span>
+          <span className="text-xs font-bold text-blue-700 block uppercase font-mono">Admin Toko</span>
+          <span className="text-2xl font-extrabold text-blue-900 mt-1 block">{stats.storeAdmins}</span>
         </GlowingCard>
         <GlowingCard glowColor="#10b981" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block uppercase font-mono">UserData Biasa</span>
-          <span className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 mt-1 block">{stats.users}</span>
+          <span className="text-xs font-bold text-gray-700 block uppercase font-mono">UserData Biasa</span>
+          <span className="text-2xl font-extrabold text-gray-900 mt-1 block">{stats.users}</span>
         </GlowingCard>
         <GlowingCard glowColor="#ef4444" className="flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1">
-          <span className="text-xs font-bold text-red-700 dark:text-red-300 block uppercase font-mono">Nonaktif (Soft Del)</span>
-          <span className="text-2xl font-extrabold text-red-900 dark:text-red-100 mt-1 block">{stats.inactive}</span>
+          <span className="text-xs font-bold text-red-700 block uppercase font-mono">Nonaktif (Soft Del)</span>
+          <span className="text-2xl font-extrabold text-red-900 mt-1 block">{stats.inactive}</span>
         </GlowingCard>
       </GlowingCards>
 
-      {/* 4. BAR FILTER & PENCARIAN */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50 dark:bg-[#181519] p-4 rounded-2xl border border-gray-200 dark:border-gray-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-200">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1.5 mr-1 font-mono">
             <Filter className="w-3.5 h-3.5" />
             <span>Filter Role:</span>
           </span>
-          {(["all", "admin", "store_admin", "user"] as const).map((role) => {
+          {(["all", "superadmin", "admin", "user"] as const).map((role) => {
             const labels = {
               all: "Semua Role",
-              admin: "Super Admin",
-              store_admin: "Admin Toko",
-              user: "UserData Biasa",
+              superadmin: "Super Admin",
+              admin: "Admin Toko",
+              user: "User Biasa",
             };
             const isActive = filterRole === role;
             return (
@@ -244,7 +210,7 @@ export default function UserIndex() {
                 onClick={() => setFilterRole(role)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${isActive
                     ? "bg-black text-white shadow-md"
-                    : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-gray-300"
+                    : "bg-white text-gray-600 border border-gray-200 hover:border-gray-300"
                   }`}
               >
                 {labels[role]}
@@ -258,95 +224,64 @@ export default function UserIndex() {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value as any)}
-            className="px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-purple-500 dark:text-white cursor-pointer shadow-2xs"
+            className="px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer shadow-2xs"
           >
             <option value="all">Semua Status</option>
-            <option value="active">🟢 Aktif (Live)</option>
-            <option value="inactive">🔴 Nonaktif (Soft Deleted)</option>
+            <option value="active">Aktif</option>
+            <option value="inactive">Nonaktif</option>
           </select>
         </div>
       </div>
-
-      {/* 5. TABEL DATA PENGGUNA */}
-      {/* 5. TABEL DATA PENGGUNA (Modular) */}
       <TabelUserIndex
         data={filteredData}
         onEdit={handleOpenEdit}
-        onToggleStatus={handleToggleSoftDelete}
+        onDelete={handleDeleteUser}
+        deletingId={isDeleting ? deleteTarget?.id : null}
       />
 
 
 
-      {/* MODAL 2: EDIT PENGGUNA & PERAN */}
       <Modal
         isOpen={Boolean(editingUser)}
         onClose={() => setEditingUser(null)}
         maxWidth="lg"
-        badge={
-          <span className="text-blue-600 dark:text-blue-400 flex items-center gap-1.5 font-mono">
-            <Edit className="w-3.5 h-3.5" />
-            <span>Update Identitas & Role</span>
-          </span>
-        }
         title={editingUser ? `Edit: ${editingUser.name}` : ""}
         subtitle={editingUser ? `ID: #${editingUser.id} | Terdaftar: ${editingUser.created_at}` : undefined}
       >
         {editingUser && (
           <form onSubmit={handleUpdateUser} className="space-y-5">
-            {/* 1. Nama Lengkap */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
-                Nama Lengkap (<code className="font-mono">name</code>)
-              </label>
-              <input
-                type="text"
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                className="w-full px-4 py-2.5 text-sm font-semibold bg-gray-50 dark:bg-[#181519] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all shadow-2xs"
-                required
-              />
-            </div>
+            <InputText
+              label="Nama Lengkap"
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              required
+            />
 
-            {/* 2. Alamat Email */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
-                Alamat Email (<code className="font-mono">email</code>)
-              </label>
-              <input
-                type="email"
-                value={editEmail}
-                onChange={(e) => setEditEmail(e.target.value)}
-                className="w-full px-4 py-2.5 text-sm font-mono bg-gray-50 dark:bg-[#181519] border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all shadow-2xs"
-                required
-              />
-            </div>
+            <InputText
+              label="Alamat Email"
+              type="email"
+              value={editEmail}
+              onChange={(e) => setEditEmail(e.target.value)}
+              required
+            />
 
-            {/* 3. Password Baru (Opsional) */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 items-center justify-between">
-                <span>Reset Password (<code className="font-mono">password</code>)</span>
-                <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold">Kosongkan jika tidak ingin mengubah password</span>
-              </label>
-              <input
-                type="text"
-                value={editPassword}
-                onChange={(e) => setEditPassword(e.target.value)}
-                placeholder="Ketikan password baru (opsional)..."
-                className="w-full px-4 py-2.5 text-sm font-mono bg-amber-50/40 dark:bg-[#181519] border border-amber-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 dark:text-white transition-all shadow-2xs text-amber-800 placeholder:text-gray-400 placeholder:font-normal"
-              />
-            </div>
+            <InputText
+              label="Reset Password"
+              value={editPassword}
+              onChange={(e) => setEditPassword(e.target.value)}
+              placeholder="Ketikan password baru (opsional)..."
+            />
 
-            {/* 4. Pemilihan Peran (Role Management) */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
-                Pembagian Peran (<code className="font-mono text-black">role</code>)
+              <label className="block text-xs font-bold text-gray-700">
+                Pembagian Peran
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {(
                   [
-                    { id: "store_admin", label: "Admin Toko", desc: "Mengelola stok & harga cabang", icon: Store, color: "blue" },
-                    { id: "admin", label: "Super Admin", desc: "Kontrol penuh sistem SPK", icon: ShieldCheck, color: "purple" },
-                    { id: "user", label: "UserData Biasa", desc: "Konsumen pencari laptop", icon: UserIcon, color: "gray" },
+                    { id: "admin", label: "Admin Toko", desc: "Mengelola stok & harga cabang", icon: Store, color: "blue" },
+                    { id: "superadmin", label: "Super Admin", desc: "Kontrol penuh sistem SPK", icon: ShieldCheck, color: "purple" },
+                    { id: "user", label: "User Biasa", desc: "Konsumen pencari laptop", icon: UserIcon, color: "gray" },
                   ] as const
                 ).map((roleOpt) => {
                   const IconComponent = roleOpt.icon;
@@ -356,16 +291,16 @@ export default function UserIndex() {
                     <button
                       key={roleOpt.id}
                       type="button"
-                      disabled={isSuperAdminMain && roleOpt.id !== "admin"}
+                      disabled={isSuperAdminMain && roleOpt.id !== "superadmin"}
                       onClick={() => setEditRole(roleOpt.id as any)}
                       className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between ${isSelected
-                          ? roleOpt.color === "purple"
-                            ? "bg-purple-50 dark:bg-purple-950/50 border-purple-500 text-purple-900 dark:text-purple-200 ring-2 ring-purple-500/20"
-                            : roleOpt.color === "blue"
-                              ? "bg-blue-50 dark:bg-blue-950/50 border-blue-500 text-blue-900 dark:text-blue-200 ring-2 ring-blue-500/20"
-                              : "bg-gray-100 dark:bg-gray-800 border-gray-400 text-gray-900 dark:text-white ring-2 ring-gray-400/20"
-                          : "bg-gray-50 dark:bg-[#181519] border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-gray-300"
-                        } ${isSuperAdminMain && roleOpt.id !== "admin" ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
+                        ? roleOpt.color === "purple"
+                          ? "bg-purple-50 border-purple-500 text-purple-900 ring-2 ring-purple-500/20"
+                          : roleOpt.color === "blue"
+                            ? "bg-blue-50 border-blue-500 text-blue-900 ring-2 ring-blue-500/20"
+                            : "bg-gray-100 border-gray-400 text-gray-900 ring-2 ring-gray-400/20"
+                        : "bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300"
+                        } ${isSuperAdminMain && roleOpt.id !== "superadmin" ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
                     >
                       <div className="flex items-center gap-2 font-bold text-xs">
                         <IconComponent className="w-4 h-4 shrink-0" />
@@ -380,21 +315,17 @@ export default function UserIndex() {
               </div>
             </div>
 
-            {/* 5. Status Akun (is_active - Soft Delete) */}
-            <div className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-200/80 dark:border-gray-800 flex items-center justify-between gap-4">
+            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200/80 flex items-center justify-between gap-4">
               <div>
-                <label className="text-xs font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
-                  <span>Status Akun (<code className="font-mono text-[11px]">is_active</code>)</span>
+                <label className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
+                  <span>Status Akun</span>
                 </label>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
-                  Matikan saklar ini untuk melakukan Soft Delete (nonaktifkan login tanpa menghapus riwayat).
-                </p>
               </div>
               <button
                 type="button"
                 disabled={editingUser.id === 1}
                 onClick={() => setEditIsActive(!editIsActive)}
-                className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${editIsActive ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-700"
+                className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${editIsActive ? "bg-emerald-500" : "bg-gray-300"
                   } ${editingUser.id === 1 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
               >
                 <span
@@ -404,18 +335,7 @@ export default function UserIndex() {
               </button>
             </div>
 
-            {/* Catatan Hak Akses Toko */}
-            {editRole === "store_admin" && (
-              <div className="p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800/60 flex items-start gap-2.5 text-xs text-blue-900 dark:text-blue-200">
-                <Store className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                <div>
-                  <strong>Kelola Hak Akses Toko:</strong> Untuk mengubah atau melihat Toko mana yang dikelola oleh <em>{editingUser.name}</em>, silakan tuju menu <Link to="/admin/user-stores" className="underline font-bold">Hak Akses Toko (user_stores)</Link>.
-                </div>
-              </div>
-            )}
-
-            {/* Action Buttons */}
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200 dark:border-gray-800">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200">
               <Button
                 type="button"
                 variant="secondary"
@@ -425,36 +345,29 @@ export default function UserIndex() {
               />
               <Button
                 type="submit"
-                variant="info"
-                icon={<Save className="w-4 h-4" />}
-                label="Simpan Perubahan Role"
-                className="text-xs! py-2! px-5! rounded-xl font-bold shadow-md cursor-pointer"
+                disabled={isSavingEdit}
+                label={isSavingEdit ? "Menyimpan..." : "Simpan Perubahan Role"}
+                className="text-xs! py-2! px-5! rounded-xl font-bold shadow-md cursor-pointer disabled:opacity-50"
               />
+
             </div>
           </form>
         )}
       </Modal>
 
-      {/* MODAL 3: KONFIRMASI NONAKTIFKAN / AKTIFKAN AKUN (SOFT DELETE) */}
       <ModalConfirm
-        isOpen={Boolean(statusTarget)}
-        onClose={() => setStatusTarget(null)}
-        onConfirm={confirmToggleStatus}
-        title={statusTarget?.is_active ? "Nonaktifkan Akun Pengguna?" : "Aktifkan Kembali Akun?"}
+        isOpen={Boolean(deleteTarget)}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDeleteUser}
+        title="Hapus Permanen Akun Pengguna?"
         message={
-          statusTarget?.is_active ? (
-            <span>
-              Apakah kamu yakin ingin menonaktifkan akun <strong className="font-bold text-gray-900 dark:text-white">{statusTarget.name}</strong>? Akun ini tidak akan bisa login ke dalam sistem, namun data riwayat SPK mereka tetap aman (Soft Delete).
-            </span>
-          ) : (
-            <span>
-              Apakah kamu yakin ingin mengaktifkan kembali akses login untuk akun <strong className="font-bold text-gray-900 dark:text-white">{statusTarget?.name}</strong>?
-            </span>
-          )
+          <span>
+            Apakah Anda yakin ingin menghapus permanen akun <strong className="font-bold text-gray-900">{deleteTarget?.name}</strong> ({deleteTarget?.email}) dari database? Seluruh data akun ini akan dihapus permanen dan tidak dapat dikembalikan.
+          </span>
         }
-        confirmLabel={statusTarget?.is_active ? "Ya, Nonaktifkan Akun" : "Ya, Aktifkan Akun"}
+        confirmLabel={isDeleting ? "Menghapus..." : "Ya, Hapus Permanen"}
         cancelLabel="Batal"
-        variant={statusTarget?.is_active ? "danger" : "info"}
+        variant="danger"
       />
     </div>
   );

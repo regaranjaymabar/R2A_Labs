@@ -7,13 +7,14 @@ import { useGet } from "../../../../hooks/useGet";
 import { useUpdate } from "../../../../hooks/useUpdate";
 import { productSchema, type ProductFormData } from "./useAddProduct";
 import type { Product } from "../../../../types/product";
+import { getAutoMappedSubCriteriaIds } from "../../../../utils/spkAutoMapper";
 
 export function useEditProduct() {
   const { id } = useParams<{ id: string }>();
 
-  // 1. Inisialisasi React Hook Form + Zod Resolver
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     watch,
@@ -25,7 +26,6 @@ export function useEditProduct() {
 
   const isActive = watch("is_active");
 
-  // 2. Fetch Data Eksisting menggunakan Generic Hook useGet + productService: GET /products/:id
   const {
     data: productData,
     isLoading: isLoadingData,
@@ -49,43 +49,59 @@ export function useEditProduct() {
     },
   });
 
-  // 3. Populate form begitu data berhasil dimuat
+
   useEffect(() => {
     if (productData) {
+      const rawYear = String(productData.releaseYear || productData.release_year || new Date().getFullYear());
+      const formattedDate =
+        rawYear.length === 4 ? `${rawYear}-01-01` : rawYear.slice(0, 10);
+
+      const rawBattery = productData.battery || "";
+      const parsedBattery = String(rawBattery).match(/[\d.]+/)?.[0] || "";
+
+      const rawWeight = productData.weight || 0;
+      const parsedWeight = Number(String(rawWeight).match(/[\d.]+/)?.[0] || 0);
+
       reset({
-        brand_id: productData.brand_id,
-        model_name: productData.model_name,
+        brandId: Number(productData.brandId || productData.brand_id || 1),
+        modelName: productData.modelName || productData.model_name || "",
         processor: productData.processor || "",
         ram: productData.ram || "",
         storage: productData.storage || "",
-        screen_size: Number(productData.screen_size || 0),
-        battery: Number(productData.battery || 0),
-        weight: Number(productData.weight || 0),
-        release_year: Number(productData.release_year || new Date().getFullYear()),
+        screenSize: Number(productData.screenSize || productData.screen_size || 0),
+        battery: parsedBattery,
+        weight: parsedWeight,
+        releaseYear: formattedDate,
+        subCriteriaIds: [],
         is_active: Boolean(productData.is_active),
       });
     }
   }, [productData, reset]);
 
-  // 4. Mutasi Update ke Backend menggunakan Generic Hook useUpdate + productService: PUT /products/:id
   const updateMutation = useUpdate<ProductFormData>({
     mutationFn: (payload) => productService.update(id!, payload),
     queryKey: ["products"],
     navigateTo: "/admin/products",
-    successMessage: (variables) => `Produk "${variables.model_name}" berhasil diperbarui!`,
+    successMessage: (variables) => `Produk "${variables.modelName}" berhasil diperbarui!`,
     errorMessage: (variables, err) =>
-      `Gagal memperbarui produk "${variables.model_name}": ${
+      `Gagal memperbarui produk "${variables.modelName}": ${
         err?.response?.data?.message || err?.message || "Error"
       }`,
   });
 
-  const onSubmit = (data: ProductFormData) => {
-    updateMutation.mutate(data);
+  const onSubmit = async (data: ProductFormData) => {
+    const subCriteriaIds = await getAutoMappedSubCriteriaIds(data);
+    updateMutation.mutate({
+      ...data,
+      subCriteriaIds,
+    });
   };
 
   return {
     id,
+    productData,
     register,
+    control,
     handleSubmit: handleSubmit(onSubmit),
     setValue,
     errors,

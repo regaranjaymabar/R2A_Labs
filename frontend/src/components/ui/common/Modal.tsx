@@ -79,12 +79,12 @@ export function Modal({
       onClick={closeOnOverlayClick ? onClose : undefined}
     >
       <div
-        className={`bg-white dark:bg-[#151216] border border-gray-200 dark:border-gray-800 rounded-3xl w-full p-6 shadow-2xl space-y-6 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto flex flex-col ${maxWidthClasses[maxWidth]} ${className}`}
+        className={`bg-white border border-gray-200 rounded-3xl w-full p-6 shadow-2xl space-y-6 animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto flex flex-col ${maxWidthClasses[maxWidth]} ${className}`}
         onClick={(e) => e.stopPropagation()} // Mencegah klik di dalam modal ikut menutup overlay
       >
         {/* Header Modal */}
         {(title || subtitle || badge) && (
-          <div className="flex items-start justify-between border-b border-gray-200 dark:border-gray-800 pb-4 shrink-0 gap-4">
+          <div className="flex items-start justify-between border-b border-gray-200 pb-4 shrink-0 gap-4">
             <div className="space-y-1 min-w-0">
               {badge && (
                 <div className="text-xs font-bold tracking-wider uppercase font-mono block">
@@ -92,12 +92,12 @@ export function Modal({
                 </div>
               )}
               {title && (
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white truncate">
+                <h3 className="text-xl font-bold text-gray-900 truncate">
                   {title}
                 </h3>
               )}
               {subtitle && (
-                <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">
+                <div className="text-xs text-gray-500 font-mono">
                   {subtitle}
                 </div>
               )}
@@ -106,7 +106,7 @@ export function Modal({
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer shrink-0"
+              className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer shrink-0"
               title="Tutup Modal (ESC)"
             >
               <X className="w-5 h-5" />
@@ -119,7 +119,7 @@ export function Modal({
 
         {/* Footer Modal (Tombol Aksi) */}
         {footer && (
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200 dark:border-gray-800 shrink-0">
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200 shrink-0">
             {footer}
           </div>
         )}

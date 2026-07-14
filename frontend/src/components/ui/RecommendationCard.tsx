@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 
 type RecommendationCardProps = {
-  id:number;
+  id: number;
   name: string;
-  image: string;
-  price: string;
   cpu: string;
   ram: string;
   storage: string;
+  price?: number;
+  image?: string;
 };
 
 export default function RecommendationCard({
@@ -19,6 +19,11 @@ export default function RecommendationCard({
   ram,
   storage,
 }: RecommendationCardProps) {
+  const formatPrice = (value?: number) => {
+    if (!value) return "N/A";
+    return "Rp " + value.toLocaleString("id-ID");
+  };
+
   return (
     <div
       className="
@@ -34,11 +39,9 @@ export default function RecommendationCard({
       hover:shadow-xl
     "
     >
-      {/* Image */}
-
       <div className="h-40 flex items-center justify-center">
         <img
-          src={image}
+          src={image || "https://placehold.co/400x300?text=Laptop"}
           alt={name}
           className="
             max-h-36
@@ -49,13 +52,7 @@ export default function RecommendationCard({
         />
       </div>
 
-      {/* Name */}
-
-      <h3 className="font-semibold mt-3 line-clamp-2">
-        {name}
-      </h3>
-
-      {/* Specs */}
+      <h3 className="font-semibold mt-3 line-clamp-2">{name}</h3>
 
       <div className="mt-3 space-y-1 text-xs text-zinc-500">
         <p>{cpu}</p>
@@ -63,31 +60,22 @@ export default function RecommendationCard({
         <p>{storage}</p>
       </div>
 
-      {/* Footer */}
-
       <div className="mt-5 flex items-center justify-between">
-        <span className="font-bold text-lg">
-          {price}
-        </span>
+        <span className="font-bold text-lg">{formatPrice(price)}</span>
 
         <Link
           to={`/product/${id}`}
           className="
-          flex
-          items-center
-          justify-center
-          w-11
-          h-11
-          rounded-full
-          bg-black
-          text-white
-          hover:scale-110
-          transition-all
-          duration-300
-        "
-      >
-        →
-      </Link>
+            flex items-center justify-center
+            w-11 h-11
+            rounded-full
+            bg-black text-white
+            hover:scale-110
+            transition-all duration-300
+          "
+        >
+          →
+        </Link>
       </div>
     </div>
   );

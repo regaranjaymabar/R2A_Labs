@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { id } from "zod/v4/locales";
 
 export default function FeaturedLaptop() {
   return (
@@ -12,9 +11,7 @@ export default function FeaturedLaptop() {
       p-10
       overflow-hidden"
     >
-
       <div className="grid lg:grid-cols-2 gap-12 items-center">
-
         <div>
           <img
             src="https://cdsassets.apple.com/live/7WUAS350/images/tech-specs/mbp16-2024.png"
@@ -47,27 +44,22 @@ export default function FeaturedLaptop() {
           </p>
 
           <div className="grid grid-cols-2 gap-4 mt-8">
-
             <div className="glass-info">
               <p>Chip</p>
               <h4>M3 Pro</h4>
             </div>
-
             <div className="glass-info">
               <p>RAM</p>
               <h4>18GB</h4>
             </div>
-
             <div className="glass-info">
               <p>Storage</p>
               <h4>512GB SSD</h4>
             </div>
-
             <div className="glass-info">
               <p>Display</p>
               <h4>Liquid Retina</h4>
             </div>
-
           </div>
 
           <h3 className="text-4xl font-bold mt-10">
@@ -75,7 +67,7 @@ export default function FeaturedLaptop() {
           </h3>
 
           <Link
-            to={`/product/${id}`}
+            to="/product/1"
             className="
             mt-6
             flex
@@ -95,7 +87,6 @@ export default function FeaturedLaptop() {
             Lihat Detail →
           </Link>
         </div>
-
       </div>
     </div>
   );

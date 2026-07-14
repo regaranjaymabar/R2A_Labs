@@ -9,3 +9,9 @@ export type UserStoreAccess = {
   is_active: boolean;
   assigned_at: string;
 };
+
+export type UserStoreFormData = {
+  userId: number;
+  storeId: number;
+  [key: string]: any;
+};

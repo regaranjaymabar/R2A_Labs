@@ -4,7 +4,6 @@ import { z } from "zod";
 import { userStoreService } from "../../../../services/userStoreService";
 import { useCreate } from "../../../../hooks/useCreate";
 
-// 1. Skema Validasi Zod untuk tabel user_stores di database
 export const userStoreSchema = z.object({
   user_id: z.coerce.number().min(1, "Pegawai / Admin Toko wajib dipilih!"),
   store_id: z.coerce.number().min(1, "Cabang toko wajib dipilih!"),
@@ -15,7 +14,6 @@ export const UserStoreSchema = userStoreSchema;
 export type UserStoreFormData = z.infer<typeof userStoreSchema>;
 
 export function useAddUserStore() {
-  // Inisialisasi React Hook Form + Zod Resolver
   const {
     register,
     handleSubmit,
@@ -27,7 +25,7 @@ export function useAddUserStore() {
     defaultValues: {
       user_id: 0,
       store_id: 0,
-      is_active: true, // Default diatur ke Aktif (true)
+      is_active: true, 
     },
   });
 
@@ -35,7 +33,6 @@ export function useAddUserStore() {
   const selectedUserId = watch("user_id");
   const selectedStoreId = watch("store_id");
 
-  // Mutasi dengan Generic Hook useCreate + UserStore Service
   const createMutation = useCreate<UserStoreFormData>({
     mutationFn: (payload) => userStoreService.create(payload),
     queryKey: ["userstores"],

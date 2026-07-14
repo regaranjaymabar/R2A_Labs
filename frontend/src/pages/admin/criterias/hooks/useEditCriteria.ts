@@ -11,7 +11,6 @@ import { useUpdate } from "../../../../hooks/useUpdate";
 export function useEditCriteria() {
   const { id } = useParams<{ id: string }>();
 
-  // 1. Inisialisasi React Hook Form + Zod Resolver
   const {
     register,
     handleSubmit,
@@ -30,7 +29,6 @@ export function useEditCriteria() {
 
   const selectedType = watch("type");
 
-  // 2. Fetch Data Eksisting menggunakan Generic Hook useGet + criteriaService: GET /criterias/:id
   const {
     data: criteriaData,
     isLoading: isLoadingData,
@@ -47,7 +45,6 @@ export function useEditCriteria() {
     },
   });
 
-  // 3. Populate form begitu data berhasil dimuat
   useEffect(() => {
     if (criteriaData) {
       reset({
@@ -58,7 +55,6 @@ export function useEditCriteria() {
     }
   }, [criteriaData, reset]);
 
-  // 4. Mutasi Update ke Backend menggunakan Generic Hook useUpdate + criteriaService: PUT /criterias/:id
   const updateMutation = useUpdate<CriteriaFormData>({
     mutationFn: (payload) => criteriaService.update(id!, payload),
     queryKey: ["criterias"],

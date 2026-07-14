@@ -6,7 +6,6 @@ import { useCreate } from "../../../../hooks/useCreate";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-// Skema Validasi Zod untuk pembobotan kriteria produk (product_criteria)
 export const productWeightSchema = z.object({
   product_id: z.coerce.number().min(1, "Pilih produk laptop terlebih dahulu!"),
   criteria_id: z.coerce.number().min(1, "Pilih kriteria penilaian terlebih dahulu!"),
@@ -48,7 +47,10 @@ export function useAddProductWeight() {
 
   const batchMutation = useMutation({
     mutationFn: async (payloads: ProductWeightFormData[]) => {
-      return Promise.all(payloads.map((p) => productWeightService.create(p)));
+      if (payloads.length === 0) return;
+      const productId = payloads[0].product_id;
+      const subCriteriaIds = payloads.map((p) => p.sub_criteria_id);
+      return productWeightService.createBatch(productId, subCriteriaIds);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["productweights"] });

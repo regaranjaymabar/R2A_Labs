@@ -4,7 +4,7 @@ import { z } from "zod";
 import { productStoreService } from "../../../../services/productStoreService";
 import { useCreate } from "../../../../hooks/useCreate";
 
-// 1. Skema Validasi Zod untuk tabel brands di database
+// Validasi Zod untuk brands
 export const productStoreSchema = z.object({
    product_id: z.coerce.number().min(1, "Pilih produk laptop terlebih dahulu!"),
   store_id: z.coerce.number().min(1, "Pilih toko penjual terlebih dahulu!"),
@@ -16,9 +16,9 @@ export const productStoreSchema = z.object({
 export type ProductStoreFormData = z.infer<typeof productStoreSchema>;
 
 export function useAddProductStore() {
-  // Inisialisasi React Hook Form + Zod Resolver
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     watch,
@@ -36,8 +36,8 @@ export function useAddProductStore() {
 
   const isAvailable = watch("is_available");
 
-  // Mutasi dengan Generic Hook useCreate + Brand Service (Sangat Ringkas & Reusable)
-  const createMutation = useCreate<ProductStoreFormData>({
+  // mutasi dengan Generic Hook useCreate
+  const createMutation = useCreate<any>({
     mutationFn: (payload) => productStoreService.create(payload),
     queryKey: ["productstores"],
     navigateTo: "/admin/productstores",
@@ -54,6 +54,7 @@ export function useAddProductStore() {
 
   return {
     register,
+    control,
     handleSubmit: handleSubmit(onSubmit),
     setValue,
     watch,

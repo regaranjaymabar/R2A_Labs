@@ -1,15 +1,17 @@
 import { Link } from "react-router-dom";
-import {
-  ArrowLeft,
-  UserPlus,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "../../../components/ui/common/Button";
 import { InputText } from "../../../components/ui/common/InputText";
+import { InputSearchSelect } from "../../../components/ui/common/InputSearchSelect";
+import { storeService } from "../../../services/storeService";
 import { useAddUser } from "./hooks/useAddUser";
+import { InputPassword } from "../../../components/ui/common/InputPassword";
 
 export default function AddUser() {
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     errors,
@@ -18,90 +20,97 @@ export default function AddUser() {
     selectedRole,
   } = useAddUser();
 
+  const { data: stores = [] } = useQuery({
+    queryKey: ["stores"],
+    queryFn: () => storeService.getAll(),
+  });
+
+  const storeOptions = stores.map((s) => ({
+    value: s.id,
+    label: `${s.name} - ${s.city || s.address || "Cabang"}`,
+  }));
+
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
-      {/* 1. HEADER HALAMAN */}
-      <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 pb-5">
+      <div className="flex items-center justify-between border-b border-gray-200 pb-5">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
-              <span>Registrasi Akun Pengguna / Pegawai</span>
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2.5">
+              <span>Registrasi Akun Pengguna</span>
             </h1>
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Daftarkan akun baru ke dalam tabel <code className="font-mono text-xs">users</code>. Tentukan hak akses dan peran operasional secara presisi.
-          </p>
         </div>
 
         <Link
           to="/admin/users"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold text-xs transition-all shadow-2xs active:scale-95"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs transition-all shadow-2xs active:scale-95"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Kembali ke Daftar Pengguna</span>
         </Link>
       </div>
 
-      {/* 2. KARTU FORM UTAMA */}
-      <div className="bg-white dark:bg-[#151216] rounded-3xl border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden">
-        {/* Decorative Top Accent */}
+      <div className="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden">
         <div className="h-2 bg-linear-to-r from-black to-black"></div>
 
         <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-8">
-          {/* SECTION 1: IDENTITAS & KREDENSIAL AKUN */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-800 text-sm font-bold text-black dark:text-purple-400">
-              <span>Identitas</span>
+            <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-black">
+              <span>Identitas & Penempatan Toko</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Nama Lengkap */}
               <div className="md:col-span-1">
                 <InputText
-                  label="Nama Lengkap (name) *"
+                  label="Nama Lengkap *"
                   nama="name"
-                  placeholder="Contoh: Budi Santoso"
                   register={register}
                   error={errors.name?.message}
                 />
               </div>
 
-              {/* Alamat Email */}
               <div className="md:col-span-1">
                 <InputText
-                  label="Alamat Email (email) *"
+                  label="Alamat Email *"
                   nama="email"
                   type="email"
-                  placeholder="Contoh: budi.store@r2a-labs.com"
                   register={register}
                   error={errors.email?.message}
                 />
               </div>
 
-              {/* Password Awal */}
-              <div className="md:col-span-2">
-                <InputText
-                  label="Password Awal (password) *"
+              <div className="md:col-span-1">
+                <InputPassword
+                  label="Password *"
                   nama="password"
-                  placeholder="Contoh: Store#2026 (Minimal 6 karakter)"
                   register={register}
                   error={errors.password?.message}
+                />
+              </div>
+
+              <div className="md:col-span-1">
+                <InputSearchSelect
+                  label="Penempatan Cabang Toko *"
+                  name="storeId"
+                  control={control}
+                  options={storeOptions}
+                  error={errors.storeId?.message}
+                  placeholder="Cari atau pilih cabang toko..."
                 />
               </div>
             </div>
           </div>
 
-          {/* SECTION 2: PEMBAGIAN PERAN (ROLE MANAGEMENT) */}
-          <div className="space-y-4 pt-2 border-t border-gray-100 dark:border-gray-800">
-            <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-800 text-sm font-bold text-black dark:text-purple-400">
-              <span>Pembagian Peran</span>
+          <div className="space-y-4 pt-2 border-t border-gray-100">
+            <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-black">
+              <span>Pembagian Peran (Role)</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {(
                 [
-                  { id: "store_admin", label: "Admin Toko", desc: "Mengelola stok & harga cabang", color: "blue" },
-                  { id: "admin", label: "Super Admin", desc: "Kontrol penuh sistem SPK", color: "purple" },
+                  { id: "admin", label: "Admin Toko / Staff", desc: "Mengelola stok & harga cabang", color: "blue" },
+                  { id: "superadmin", label: "Super Admin", desc: "Kontrol penuh sistem SPK", color: "purple" },
                   { id: "user", label: "User Biasa", desc: "Konsumen pencari laptop", color: "gray" },
                 ] as const
               ).map((roleOpt) => {
@@ -114,11 +123,11 @@ export default function AddUser() {
                     className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                       isSelected
                         ? roleOpt.color === "purple"
-                          ? "bg-purple-50 dark:bg-purple-950/50 border-purple-500 text-purple-900 dark:text-purple-200 ring-2 ring-purple-500/20 shadow-md"
+                          ? "bg-purple-50 border-purple-500 text-purple-900 ring-2 ring-purple-500/20 shadow-md"
                           : roleOpt.color === "blue"
-                          ? "bg-blue-50 dark:bg-blue-950/50 border-blue-500 text-blue-900 dark:text-blue-200 ring-2 ring-blue-500/20 shadow-md"
-                          : "bg-gray-100 dark:bg-gray-800 border-gray-400 text-gray-900 dark:text-white ring-2 ring-gray-400/20 shadow-md"
-                        : "bg-gray-50 dark:bg-[#181519] border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-gray-300 hover:opacity-100 opacity-70"
+                          ? "bg-blue-50 border-blue-500 text-blue-900 ring-2 ring-blue-500/20 shadow-md"
+                          : "bg-gray-100 border-gray-400 text-gray-900 ring-2 ring-gray-400/20 shadow-md"
+                        : "bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300 hover:opacity-100 opacity-70"
                     }`}
                   >
                     <div className="flex items-center gap-2.5 font-bold text-sm">
@@ -133,15 +142,14 @@ export default function AddUser() {
             </div>
           </div>
 
-          {/* SECTION 3: STATUS AKSES AKUN */}
-          <div className="space-y-4 pt-2 border-t border-gray-100 dark:border-gray-800">
-            <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-800 text-sm font-bold text-black dark:text-purple-400">
+          <div className="space-y-4 pt-2 border-t border-gray-100">
+            <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-black">
               <span>Status Akses Akun</span>
             </div>
 
-            <div className="p-5 bg-gray-50 dark:bg-gray-900/50 rounded-2xl border border-gray-200/80 dark:border-gray-800 flex items-center justify-between gap-4">
+            <div className="p-5 bg-gray-50 rounded-2xl border border-gray-200/80 flex items-center justify-between gap-4">
               <div>
-                <label className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-1.5">
+                <label className="text-sm font-bold text-gray-900 flex items-center gap-1.5">
                   <span>Status Akun</span>
                 </label>
               </div>
@@ -149,7 +157,7 @@ export default function AddUser() {
                 type="button"
                 onClick={() => setValue("is_active", !isActive, { shouldValidate: true })}
                 className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  isActive ? "bg-emerald-500" : "bg-gray-300 dark:bg-gray-700"
+                  isActive ? "bg-emerald-500" : "bg-gray-300"
                 }`}
               >
                 <span
@@ -161,11 +169,10 @@ export default function AddUser() {
             </div>
           </div>
 
-          {/* ACTION BUTTONS */}
-          <div className="flex items-center justify-end gap-4 pt-4 border-t border-gray-200 dark:border-gray-800">
+          <div className="flex items-center justify-end gap-4 pt-4 border-t border-gray-200">
             <Link
               to="/admin/users"
-              className="px-6 py-3 rounded-xl border border-gray-300 dark:border-gray-700 font-bold text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-center cursor-pointer"
+              className="px-6 py-3 rounded-xl border border-gray-300 font-bold text-sm text-gray-700 hover:bg-gray-100 transition-all text-center cursor-pointer"
             >
               Batal
             </Link>
@@ -173,7 +180,6 @@ export default function AddUser() {
               type="submit"
               variant="primary"
               disabled={isSubmitting}
-              icon={<UserPlus className="w-4 h-4" />}
               label={isSubmitting ? "Menyimpan..." : "Daftarkan Pengguna"}
               className="py-3! px-6! rounded-xl! font-bold! shadow-lg cursor-pointer"
             />

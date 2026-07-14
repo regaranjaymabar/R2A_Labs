@@ -51,7 +51,7 @@ export const InputSelect = <T extends FieldValues = FieldValues>({
     return (
         <div className="flex flex-col gap-1">
             {label && (
-                <label htmlFor={elementId} className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label htmlFor={elementId} className="text-sm font-medium text-gray-700">
                     {label}
                 </label>
             )}
@@ -61,9 +61,9 @@ export const InputSelect = <T extends FieldValues = FieldValues>({
                 {...(value !== undefined ? { value } : {})}
                 {...(registerProps?.onChange || onChange ? { onChange: handleChange } : {})}
                 disabled={disabled}
-                className={`w-full border border-gray-300 dark:border-gray-700 rounded-xl px-3.5 py-2.5 outline-none transition-all font-semibold text-sm cursor-pointer
-                ${error ? 'border-red-500 focus:ring-2 focus:ring-red-500 dark:border-red-500' : 'focus:border-black dark:focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20'}
-                ${disabled ? 'bg-gray-100 dark:bg-gray-800 text-gray-500 cursor-not-allowed' : 'bg-white dark:bg-[#181519] text-gray-900 dark:text-white'} ${className || ''}`}
+                className={`w-full border border-gray-300 rounded-xl px-3.5 py-2.5 outline-none transition-all font-semibold text-sm cursor-pointer
+                ${error ? 'border-red-500 focus:ring-2 focus:ring-red-500' : 'focus:border-black focus:ring-2 focus:ring-purple-500/20'}
+                ${disabled ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : 'bg-white text-gray-900'} ${className || ''}`}
             >
                 {placeholder && (
                     <option value={placeholderValue}>{placeholder}</option>
@@ -75,7 +75,7 @@ export const InputSelect = <T extends FieldValues = FieldValues>({
                 ))}
                 {children}
             </select>
-            {helperText && !error && <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">{helperText}</div>}
+            {helperText && !error && <div className="mt-1 text-xs text-gray-500">{helperText}</div>}
             {error && <p className="text-red-500 text-xs font-medium mt-1">{error}</p>}
         </div>
     );

@@ -1,35 +1,35 @@
 import { api } from "../lib/axios";
-import { type BrandFormData } from "../pages/admin/brands/hooks/useAddBrand";
-import type { Brand } from "../types/brand";
+import type { Brand, BrandFormData } from "../types/brand";
 
 export const brandService = {
-  // Read All Brands: GET /brands
+
+  // Read All Brands: GET /api/superadmin/brands
   getAll: async (): Promise<Brand[]> => {
-    const response = await api.get<Brand[]>("/brands");
-    return response.data;
+    const response = await api.get("/api/superadmin/brands");
+    return response.data.data || response.data;
   },
 
-  // Read Single Brand: GET /brands/:id
+  
   getById: async (id: number | string): Promise<Brand> => {
-    const response = await api.get<Brand>(`/brands/${id}`);
-    return response.data;
+    const response = await api.get(`/api/superadmin/brands/${id}`);
+    return response.data.data || response.data;
   },
 
-  // Create New Brand: POST /brands
+  
   create: async (payload: BrandFormData): Promise<any> => {
-    const response = await api.post("/brands", payload);
-    return response.data;
+    const response = await api.post("/api/superadmin/brands", payload);
+    return response.data.data || response.data;
   },
 
-  // Update Brand: PUT /brands/:id
+ 
   update: async (id: number | string, payload: BrandFormData): Promise<any> => {
-    const response = await api.put(`/brands/${id}`, payload);
-    return response.data;
+    const response = await api.put(`/api/superadmin/brands/${id}`, payload);
+    return response.data.data || response.data;
   },
 
-  // Delete Brand: DELETE /brands/:id
+
   delete: async (id: number | string): Promise<any> => {
-    const response = await api.delete(`/brands/${id}`);
+    const response = await api.delete(`/api/superadmin/brands/${id}`);
     return response.data;
   },
 };

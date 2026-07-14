@@ -1,37 +1,37 @@
-
 import { api } from "../lib/axios";
-import type { StoreFormData } from "../pages/admin/stores/hooks/useAddStore";
-import type { Store } from "../types/store";
-
-
-
+import type { Store, StoreFormData } from "../types/store";
+import type { ApiResponse } from "../types/api";
 
 export const storeService = {
-
     getAll: async (): Promise<Store[]> => {
-        const response = await api.get<Store[]>("/stores");
-        return response.data;
+        const response = await api.get<ApiResponse<Store[]>>("/api/superadmin/stores");
+        return response.data.data || [];
     },
 
     getById: async (id: number | string): Promise<Store> => {
-        const response = await api.get<Store>(`/stores/${id}`);
-        return response.data;
-
+        const response = await api.get<ApiResponse<Store>>(`/api/superadmin/stores/${id}`);
+        return response.data.data;
     },
 
-    create: async (payload: StoreFormData): Promise<any> => {
-        const response = await api.post("/stores", payload);
-        return response.data
+    create: async (payload: StoreFormData): Promise<Store> => {
+        const formattedPayload = {
+            ...payload,
+            isActive: payload.is_active ? 1 : 0,
+        };
+        const response = await api.post<ApiResponse<Store>>("/api/superadmin/stores", formattedPayload);
+        return response.data.data;
     },
 
-    update: async (id: number | string, payload: StoreFormData): Promise<any> => {
-        const response = await api.put(`/stores/${id}`, payload);
-        return response.data;
+    update: async (id: number | string, payload: StoreFormData): Promise<Store> => {
+        const formattedPayload = {
+            ...payload,
+            isActive: payload.is_active ? 1 : 0,
+        };
+        const response = await api.put<ApiResponse<Store>>(`/api/superadmin/stores/${id}`, formattedPayload);
+        return response.data.data;
     },
 
-    delete: async (id: number | string): Promise<any> => {
-        const response = await api.delete(`/stores/${id}`);
-        return response.data;
+    delete: async (id: number | string): Promise<void> => {
+        await api.delete<ApiResponse<void>>(`/api/superadmin/stores/${id}`);
     },
-
-} 
+};

@@ -2,30 +2,47 @@ import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { userService } from "../../../../services/userService";
-import { userSchema, type UserFormData } from "./useAddUser";
-import { type UserData } from "../UserIndex";
+import { type UserFormData } from "./useAddUser";
+import { type UserData } from "../../../../types/user";
 import { useGet } from "../../../../hooks/useGet";
 import { useUpdate } from "../../../../hooks/useUpdate";
+
+const editUserSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Nama lengkap wajib diisi!")
+    .min(3, "Nama minimal terdiri dari 3 karakter"),
+  email: z
+    .string()
+    .min(1, "Email wajib diisi!")
+    .email("Format email tidak valid!"),
+  password: z.string().optional().or(z.literal("")),
+  role: z.enum(["superadmin", "admin", "store_admin", "user"]),
+  storeId: z.coerce.number().min(1, "Cabang toko wajib dipilih!"),
+  is_active: z.boolean(),
+});
 
 export function useEditUser() {
   const { id } = useParams<{ id: string }>();
 
-  // 1. Inisialisasi React Hook Form + Zod Resolver
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     watch,
     reset,
     formState: { errors },
   } = useForm<UserFormData>({
-    resolver: zodResolver(userSchema) as any,
+    resolver: zodResolver(editUserSchema) as any,
     defaultValues: {
       name: "",
       email: "",
       password: "",
-      role: "store_admin",
+      role: "admin",
+      storeId: 1,
       is_active: true,
     },
   });
@@ -33,7 +50,6 @@ export function useEditUser() {
   const isActive = watch("is_active");
   const selectedRole = watch("role");
 
-  // 2. Fetch Data Eksisting menggunakan Generic Hook useGet + userService: GET /users/:id
   const {
     data: userData,
     isLoading: isLoadingData,
@@ -46,28 +62,28 @@ export function useEditUser() {
       id: Number(id),
       name: "Siti Rahma (Dummy)",
       email: "siti.store@r2a-labs.com",
-      role: "store_admin",
+      role: "admin",
+      storeId: 1,
       is_active: true,
       created_at: "2026-03-01 09:15:00",
     },
   });
 
-  // 3. Populate form begitu data berhasil dimuat
   useEffect(() => {
     if (userData) {
       reset({
         name: userData.name,
         email: userData.email,
-        password: "", // Jangan tampilkan password eksisting
-        role: userData.role || "user",
-        is_active: Boolean(userData.is_active),
+        password: "", 
+        role: (userData.role as any) || "admin",
+        storeId: userData.storeId || userData.store?.id || 1,
+        is_active: Boolean(userData.isActive ?? userData.is_active ?? true),
       });
     }
   }, [userData, reset]);
 
-  // 4. Mutasi Update ke Backend menggunakan Generic Hook useUpdate + userService: PUT /users/:id
   const updateMutation = useUpdate<UserFormData>({
-    mutationFn: (payload) => userService.update(id!, payload),
+    mutationFn: (payload) => userService.update(id!, payload as any),
     queryKey: ["users"],
     navigateTo: "/admin/users",
     successMessage: (variables) => `Pengguna "${variables.name}" berhasil diperbarui!`,
@@ -78,11 +94,16 @@ export function useEditUser() {
   });
 
   const onSubmit = (data: UserFormData) => {
-    updateMutation.mutate(data);
+    const payload: any = { ...data };
+    if (!payload.password || payload.password.trim() === "") {
+      delete payload.password;
+    }
+    updateMutation.mutate(payload);
   };
 
   return {
     register,
+    control,
     handleSubmit: handleSubmit(onSubmit),
     setValue,
     watch,

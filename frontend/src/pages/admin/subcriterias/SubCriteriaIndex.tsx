@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Plus,
   Filter,
+  AlertCircle,
 } from "lucide-react";
 import { TabelSubCriteriaIndex } from "./components/TabelSubCriteriaIndex";
 import { useQuery } from "@tanstack/react-query";
@@ -13,252 +14,68 @@ import EditSubCriteria from "./EditSubCriteria";
 
 import type { SubCriteria } from "../../../types/subCriteria";
 
-// Re-export type SubCriteria agar import di komponen lain tetap aman dan terpusat
 export type { SubCriteria };
 
-// 2. Data Dummy Awal (Persis sesuai data di screenshot phpMyAdmin kamu)
 export const initialSubCriterias: SubCriteria[] = [
-  // criteria_id: 1 -> C1: Harga (Cost)
-  {
-    id: 1,
-    criteria_id: 1,
-    description: "<= Rp 6.000.000",
-    value_numeric: 5.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C1",
-    criteria_name: "Harga",
-    criteria_type: "cost",
-  },
-  {
-    id: 2,
-    criteria_id: 1,
-    description: "Rp 6.000.001 - Rp 8.000.000",
-    value_numeric: 4.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C1",
-    criteria_name: "Harga",
-    criteria_type: "cost",
-  },
-  {
-    id: 3,
-    criteria_id: 1,
-    description: "Rp 8.000.001 - Rp 10.000.000",
-    value_numeric: 3.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C1",
-    criteria_name: "Harga",
-    criteria_type: "cost",
-  },
-  {
-    id: 4,
-    criteria_id: 1,
-    description: "Rp 10.000.001 - Rp 12.000.000",
-    value_numeric: 2.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C1",
-    criteria_name: "Harga",
-    criteria_type: "cost",
-  },
-  {
-    id: 5,
-    criteria_id: 1,
-    description: "> Rp 12.000.000",
-    value_numeric: 1.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C1",
-    criteria_name: "Harga",
-    criteria_type: "cost",
-  },
-  // criteria_id: 2 -> C2: RAM (Benefit)
-  {
-    id: 6,
-    criteria_id: 2,
-    description: "4 GB",
-    value_numeric: 1.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C2",
-    criteria_name: "RAM",
-    criteria_type: "benefit",
-  },
-  {
-    id: 7,
-    criteria_id: 2,
-    description: "8 GB",
-    value_numeric: 2.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C2",
-    criteria_name: "RAM",
-    criteria_type: "benefit",
-  },
-  {
-    id: 8,
-    criteria_id: 2,
-    description: "12 GB",
-    value_numeric: 3.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C2",
-    criteria_name: "RAM",
-    criteria_type: "benefit",
-  },
-  {
-    id: 9,
-    criteria_id: 2,
-    description: "16 GB",
-    value_numeric: 4.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C2",
-    criteria_name: "RAM",
-    criteria_type: "benefit",
-  },
-  {
-    id: 10,
-    criteria_id: 2,
-    description: "24 GB atau lebih",
-    value_numeric: 5.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C2",
-    criteria_name: "RAM",
-    criteria_type: "benefit",
-  },
-  // criteria_id: 3 -> C3: Storage (Benefit)
-  {
-    id: 11,
-    criteria_id: 3,
-    description: "128 GB SSD",
-    value_numeric: 1.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C3",
-    criteria_name: "Storage",
-    criteria_type: "benefit",
-  },
-  {
-    id: 12,
-    criteria_id: 3,
-    description: "256 GB SSD",
-    value_numeric: 2.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C3",
-    criteria_name: "Storage",
-    criteria_type: "benefit",
-  },
-  {
-    id: 13,
-    criteria_id: 3,
-    description: "512 GB SSD",
-    value_numeric: 3.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C3",
-    criteria_name: "Storage",
-    criteria_type: "benefit",
-  },
-  {
-    id: 14,
-    criteria_id: 3,
-    description: "1 TB SSD",
-    value_numeric: 4.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C3",
-    criteria_name: "Storage",
-    criteria_type: "benefit",
-  },
-  {
-    id: 15,
-    criteria_id: 3,
-    description: "2 TB SSD atau lebih",
-    value_numeric: 5.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C3",
-    criteria_name: "Storage",
-    criteria_type: "benefit",
-  },
-  // criteria_id: 4 -> C4: Battery (Benefit)
-  {
-    id: 16,
-    criteria_id: 4,
-    description: "<= 3500 mAh",
-    value_numeric: 1.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C4",
-    criteria_name: "Battery",
-    criteria_type: "benefit",
-  },
-  {
-    id: 17,
-    criteria_id: 4,
-    description: "3501 - 4500 mAh",
-    value_numeric: 2.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C4",
-    criteria_name: "Battery",
-    criteria_type: "benefit",
-  },
-  {
-    id: 18,
-    criteria_id: 4,
-    description: "4501 - 5500 mAh",
-    value_numeric: 3.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C4",
-    criteria_name: "Battery",
-    criteria_type: "benefit",
-  },
-  {
-    id: 19,
-    criteria_id: 4,
-    description: "5501 - 6500 mAh",
-    value_numeric: 4.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C4",
-    criteria_name: "Battery",
-    criteria_type: "benefit",
-  },
-  {
-    id: 20,
-    criteria_id: 4,
-    description: "> 6500 mAh",
-    value_numeric: 5.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C4",
-    criteria_name: "Battery",
-    criteria_type: "benefit",
-  },
-  // criteria_id: 5 -> C5: Berat (Cost)
-  {
-    id: 21,
-    criteria_id: 5,
-    description: "<= 1.20 Kg",
-    value_numeric: 5.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C5",
-    criteria_name: "Berat",
-    criteria_type: "cost",
-  },
-  {
-    id: 22,
-    criteria_id: 5,
-    description: "1.21 - 1.50 Kg",
-    value_numeric: 4.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C5",
-    criteria_name: "Berat",
-    criteria_type: "cost",
-  },
-  {
-    id: 23,
-    criteria_id: 5,
-    description: "1.51 - 1.80 Kg",
-    value_numeric: 3.0,
-    created_at: "2026-06-30 07:10:47",
-    criteria_code: "C5",
-    criteria_name: "Berat",
-    criteria_type: "cost",
-  },
+  // C1: Harga (cost)
+  { id: 1, description: "< Rp 6.000.000", criteria_id: 1, criteriaId: 1, value_numeric: 5, valueNumeric: 5, criteria_code: "C1", criteria_name: "Harga", criteria_type: "cost" },
+  { id: 2, description: "Rp 6.000.000 - Rp 9.999.999", criteria_id: 1, criteriaId: 1, value_numeric: 4, valueNumeric: 4, criteria_code: "C1", criteria_name: "Harga", criteria_type: "cost" },
+  { id: 3, description: "Rp 10.000.000 - Rp 14.999.999", criteria_id: 1, criteriaId: 1, value_numeric: 3, valueNumeric: 3, criteria_code: "C1", criteria_name: "Harga", criteria_type: "cost" },
+  { id: 4, description: "Rp 15.000.000 - Rp 19.999.999", criteria_id: 1, criteriaId: 1, value_numeric: 2, valueNumeric: 2, criteria_code: "C1", criteria_name: "Harga", criteria_type: "cost" },
+  { id: 5, description: ">= Rp 20.000.000", criteria_id: 1, criteriaId: 1, value_numeric: 1, valueNumeric: 1, criteria_code: "C1", criteria_name: "Harga", criteria_type: "cost" },
+
+  // C2: RAM (benefit)
+  { id: 6, description: "<= 8 GB", criteria_id: 2, criteriaId: 2, value_numeric: 1, valueNumeric: 1, criteria_code: "C2", criteria_name: "RAM", criteria_type: "benefit" },
+  { id: 7, description: "12 GB", criteria_id: 2, criteriaId: 2, value_numeric: 2, valueNumeric: 2, criteria_code: "C2", criteria_name: "RAM", criteria_type: "benefit" },
+  { id: 8, description: "16 GB", criteria_id: 2, criteriaId: 2, value_numeric: 3, valueNumeric: 3, criteria_code: "C2", criteria_name: "RAM", criteria_type: "benefit" },
+  { id: 9, description: "24 GB", criteria_id: 2, criteriaId: 2, value_numeric: 4, valueNumeric: 4, criteria_code: "C2", criteria_name: "RAM", criteria_type: "benefit" },
+  { id: 10, description: ">= 32 GB", criteria_id: 2, criteriaId: 2, value_numeric: 5, valueNumeric: 5, criteria_code: "C2", criteria_name: "RAM", criteria_type: "benefit" },
+
+  // C3: Storage (benefit)
+  { id: 11, description: "<= 256 GB SSD", criteria_id: 3, criteriaId: 3, value_numeric: 1, valueNumeric: 1, criteria_code: "C3", criteria_name: "Storage", criteria_type: "benefit" },
+  { id: 12, description: "512 GB SSD", criteria_id: 3, criteriaId: 3, value_numeric: 2, valueNumeric: 2, criteria_code: "C3", criteria_name: "Storage", criteria_type: "benefit" },
+  { id: 13, description: "1 TB SSD", criteria_id: 3, criteriaId: 3, value_numeric: 3, valueNumeric: 3, criteria_code: "C3", criteria_name: "Storage", criteria_type: "benefit" },
+  { id: 14, description: "2 TB SSD", criteria_id: 3, criteriaId: 3, value_numeric: 4, valueNumeric: 4, criteria_code: "C3", criteria_name: "Storage", criteria_type: "benefit" },
+
+  // C4: Battery (benefit)
+  { id: 16, description: "< 45 Wh", criteria_id: 4, criteriaId: 4, value_numeric: 1, valueNumeric: 1, criteria_code: "C4", criteria_name: "Battery", criteria_type: "benefit" },
+  { id: 17, description: "45 - 59 Wh", criteria_id: 4, criteriaId: 4, value_numeric: 2, valueNumeric: 2, criteria_code: "C4", criteria_name: "Battery", criteria_type: "benefit" },
+  { id: 18, description: "60 - 74 Wh", criteria_id: 4, criteriaId: 4, value_numeric: 3, valueNumeric: 3, criteria_code: "C4", criteria_name: "Battery", criteria_type: "benefit" },
+  { id: 19, description: "75 - 89 Wh", criteria_id: 4, criteriaId: 4, value_numeric: 4, valueNumeric: 4, criteria_code: "C4", criteria_name: "Battery", criteria_type: "benefit" },
+  { id: 20, description: ">= 90 Wh", criteria_id: 4, criteriaId: 4, value_numeric: 5, valueNumeric: 5, criteria_code: "C4", criteria_name: "Battery", criteria_type: "benefit" },
+
+  // C5: Berat (cost)
+  { id: 21, description: "> 2.5 kg", criteria_id: 5, criteriaId: 5, value_numeric: 1, valueNumeric: 1, criteria_code: "C5", criteria_name: "Berat", criteria_type: "cost" },
+  { id: 22, description: "2.0 - 2.5 kg", criteria_id: 5, criteriaId: 5, value_numeric: 2, valueNumeric: 2, criteria_code: "C5", criteria_name: "Berat", criteria_type: "cost" },
+  { id: 23, description: "1.5 - 1.99 kg", criteria_id: 5, criteriaId: 5, value_numeric: 3, valueNumeric: 3, criteria_code: "C5", criteria_name: "Berat", criteria_type: "cost" },
+  { id: 24, description: "1.2 - 1.49 kg", criteria_id: 5, criteriaId: 5, value_numeric: 4, valueNumeric: 4, criteria_code: "C5", criteria_name: "Berat", criteria_type: "cost" },
+  { id: 25, description: "< 1.2 kg", criteria_id: 5, criteriaId: 5, value_numeric: 5, valueNumeric: 5, criteria_code: "C5", criteria_name: "Berat", criteria_type: "cost" },
+
+  // C6: Processor (benefit)
+  { id: 26, description: "Celeron / N-Series", criteria_id: 6, criteriaId: 6, value_numeric: 1, valueNumeric: 1, criteria_code: "C6", criteria_name: "Processor", criteria_type: "benefit" },
+  { id: 27, description: "Core i3 / Ryzen 3", criteria_id: 6, criteriaId: 6, value_numeric: 2, valueNumeric: 2, criteria_code: "C6", criteria_name: "Processor", criteria_type: "benefit" },
+  { id: 28, description: "Core i5 / Ryzen 5", criteria_id: 6, criteriaId: 6, value_numeric: 3, valueNumeric: 3, criteria_code: "C6", criteria_name: "Processor", criteria_type: "benefit" },
+  { id: 29, description: "Core i7 / Ryzen 7 / Apple M1-M2", criteria_id: 6, criteriaId: 6, value_numeric: 4, valueNumeric: 4, criteria_code: "C6", criteria_name: "Processor", criteria_type: "benefit" },
+  { id: 30, description: "Core i9 / Ryzen 9 / Apple M3 Pro-Max / Ultra", criteria_id: 6, criteriaId: 6, value_numeric: 5, valueNumeric: 5, criteria_code: "C6", criteria_name: "Processor", criteria_type: "benefit" },
+
+  // C7: Ukuran Layar (benefit)
+  { id: 31, description: "< 13 Inch", criteria_id: 7, criteriaId: 7, value_numeric: 1, valueNumeric: 1, criteria_code: "C7", criteria_name: "Ukuran Layar", criteria_type: "benefit" },
+  { id: 32, description: "13 - 13.99 Inch", criteria_id: 7, criteriaId: 7, value_numeric: 2, valueNumeric: 2, criteria_code: "C7", criteria_name: "Ukuran Layar", criteria_type: "benefit" },
+  { id: 33, description: "14 - 14.99 Inch", criteria_id: 7, criteriaId: 7, value_numeric: 3, valueNumeric: 3, criteria_code: "C7", criteria_name: "Ukuran Layar", criteria_type: "benefit" },
+  { id: 34, description: "15 - 16 Inch", criteria_id: 7, criteriaId: 7, value_numeric: 4, valueNumeric: 4, criteria_code: "C7", criteria_name: "Ukuran Layar", criteria_type: "benefit" },
+  { id: 35, description: "> 16 Inch", criteria_id: 7, criteriaId: 7, value_numeric: 5, valueNumeric: 5, criteria_code: "C7", criteria_name: "Ukuran Layar", criteria_type: "benefit" },
+
+  // C8: Tahun Rilis (benefit)
+  { id: 36, description: "2020", criteria_id: 8, criteriaId: 8, value_numeric: 1, valueNumeric: 1, criteria_code: "C8", criteria_name: "Tahun Rilis", criteria_type: "benefit" },
+  { id: 37, description: "2021", criteria_id: 8, criteriaId: 8, value_numeric: 2, valueNumeric: 2, criteria_code: "C8", criteria_name: "Tahun Rilis", criteria_type: "benefit" },
+  { id: 38, description: "2022", criteria_id: 8, criteriaId: 8, value_numeric: 3, valueNumeric: 3, criteria_code: "C8", criteria_name: "Tahun Rilis", criteria_type: "benefit" },
+  { id: 39, description: "2023", criteria_id: 8, criteriaId: 8, value_numeric: 4, valueNumeric: 4, criteria_code: "C8", criteria_name: "Tahun Rilis", criteria_type: "benefit" },
+  { id: 40, description: "2024 - 2025", criteria_id: 8, criteriaId: 8, value_numeric: 5, valueNumeric: 5, criteria_code: "C8", criteria_name: "Tahun Rilis", criteria_type: "benefit" },
 ];
 
 
 export default function SubCriteriaIndex() {
 
-  // Fetch Data Sub-Kriteria dari backend menggunakan React Query + subCriteriaService
   const {
     data: subCriteriasData,
     isLoading,
@@ -280,14 +97,12 @@ export default function SubCriteriaIndex() {
   });
 
   const data = subCriteriasData || initialSubCriterias;
+  const isDummyData = !isLoading && (subCriteriasData === initialSubCriterias || !subCriteriasData);
 
-  // Filter berdasarkan Kriteria Utama
   const [selectedCriteriaFilter, setSelectedCriteriaFilter] = useState<string>("ALL");
 
-  // State Modal Edit Sub-Kriteria
   const [editingItem, setEditingItem] = useState<SubCriteria | null>(null);
 
-  // 1. Filter Data Berdasarkan Dropdown Kriteria
   const filteredData = useMemo(() => {
     if (selectedCriteriaFilter === "ALL") {
       return data;
@@ -295,7 +110,6 @@ export default function SubCriteriaIndex() {
     return data.filter((item) => (item.criteria_code || `ID:${item.criteria_id}`) === selectedCriteriaFilter);
   }, [data, selectedCriteriaFilter]);
 
-  // Daftar kode & nama kriteria unik untuk dropdown filter
   const uniqueCriterias = useMemo(() => {
     const list: { code: string; name: string }[] = [];
     const seen = new Set<string>();
@@ -309,12 +123,10 @@ export default function SubCriteriaIndex() {
     return list;
   }, [data]);
 
-  // Buka Modal Update
   const handleOpenEdit = (item: SubCriteria) => {
     setEditingItem(item);
   };
 
-  // Custom Hook Hapus Data (Delete dengan Modal Confirm)
   const {
     handleDelete,
     confirmDelete,
@@ -328,7 +140,6 @@ export default function SubCriteriaIndex() {
 
   return (
     <div className="space-y-6 pb-12">
-      {/* Header Halaman */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
         <div>
           <div className="flex items-center gap-2">
@@ -351,10 +162,20 @@ export default function SubCriteriaIndex() {
         </div>
       </div>
 
-      {/* Banner Penjelasan Alur Konversi SPK */}
+      {isDummyData && (
+        <div className="bg-amber-50 dark:bg-amber-950/25 border border-amber-200 dark:border-amber-900/60 p-4 rounded-2xl flex items-start gap-3 text-amber-900 dark:text-amber-300">
+          <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+          <div>
+            <h4 className="font-semibold text-sm">Mode Demo / Offline</h4>
+            <p className="text-xs mt-0.5 text-amber-700 dark:text-amber-400">
+              Gagal terhubung ke API backend. Data sub-kriteria yang ditampilkan di bawah ini adalah <strong>data dummy lokal</strong> untuk keperluan demonstrasi UI.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/60 p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs text-blue-900 dark:text-blue-300">
         
-        {/* Dropdown Filter Kriteria */}
         <div className="flex items-center gap-2 bg-white dark:bg-[#181519] px-3.5 py-2 rounded-xl border border-blue-200 dark:border-blue-800 shadow-2xs shrink-0">
           <Filter className="w-4 h-4 text-blue-600" />
           <span className="font-semibold text-gray-700 dark:text-gray-300">Filter Kriteria:</span>
@@ -363,7 +184,7 @@ export default function SubCriteriaIndex() {
             onChange={(e) => setSelectedCriteriaFilter(e.target.value)}
             className="bg-transparent font-bold text-blue-600 dark:text-blue-400 focus:outline-none cursor-pointer"
           >
-            <option value="ALL">🌐 Semua Kriteria ({data.length})</option>
+            <option value="ALL">Semua Kriteria ({data.length})</option>
             {uniqueCriterias.map((crit) => (
               <option key={crit.code} value={crit.code}>
                 [{crit.code}] {crit.name}
@@ -373,7 +194,6 @@ export default function SubCriteriaIndex() {
         </div>
       </div>
 
-      {/* Tabel Sub-Kriteria (Modular) */}
       <TabelSubCriteriaIndex
         data={filteredData}
         isLoading={isLoading}
@@ -382,14 +202,12 @@ export default function SubCriteriaIndex() {
         deletingId={deletingId}
       />
 
-      {/* MODAL UPDATE CONVERSION RULE */}
       <EditSubCriteria
         isOpen={Boolean(editingItem)}
         onClose={() => setEditingItem(null)}
         item={editingItem}
       />
 
-      {/* MODAL CONFIRM DELETE */}
       <ModalConfirm
         isOpen={Boolean(deleteTarget)}
         onClose={cancelDelete}

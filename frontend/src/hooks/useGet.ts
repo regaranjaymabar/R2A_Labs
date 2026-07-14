@@ -12,6 +12,8 @@ export function useGet<TData = any, TError = AxiosError<{ message?: string }>>({
   queryKey,
   queryFn,
   offlineFallbackData,
+  staleTime = 5 * 60 * 1000, // Cache aktif selama 5 menit
+  gcTime = 30 * 60 * 1000, // Disimpan di memori cache selama 30 menit
   ...queryOptions
 }: GetOptions<TData, TError>) {
   return useQuery<TData, TError>({
@@ -27,6 +29,8 @@ export function useGet<TData = any, TError = AxiosError<{ message?: string }>>({
         throw err;
       }
     },
+    staleTime,
+    gcTime,
     ...queryOptions,
   });
 }
