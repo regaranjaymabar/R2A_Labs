@@ -31,7 +31,7 @@ export function TabelProductIndex({
             columnHelper.accessor("id", {
                 header: () => <span className="font-semibold">ID / No</span>,
                 cell: (info) => (
-                    <span className="text-gray-500 dark:text-gray-400 font-mono font-medium">
+                    <span className="text-gray-500 font-mono font-medium">
                         #{info.getValue()}
                     </span>
                 ),
@@ -57,7 +57,7 @@ export function TabelProductIndex({
                                         {modelName}
                                     </div>
                                     {brandName && (
-                                        <span className="inline-block mt-0.5 px-2 py-0.5 rounded text-[11px] font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                                        <span className="inline-block mt-0.5 px-2 py-0.5 rounded text-[11px] font-semibold bg-gray-100 text-gray-600 ">
                                             Brand : <strong className="font-bold text-gray-900 ">{brandName}</strong>
                                         </span>
                                     )}
@@ -77,7 +77,7 @@ export function TabelProductIndex({
                         const screenSize = product.screenSize || product.screen_size;
                         return (
                             <div className="space-y-1.5 max-w-md py-0.5">
-                                <div className="text-sm font-bold text-gray-900 dark:text-white truncate" title={product.processor}>
+                                <div className="text-sm font-bold text-gray-900 truncate" title={product.processor}>
                                     {product.processor || "-"}
                                 </div>
                                 <div className="flex items-center gap-1.5 flex-wrap text-[11px]">
@@ -126,7 +126,7 @@ export function TabelProductIndex({
                     cell: (info) => {
                         const displayYear = info.getValue() || "-";
                         return (
-                            <div className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300 font-medium">
+                            <div className="flex items-center gap-1.5 text-gray-700 font-medium">
                                 <span>{displayYear}</span>
                             </div>
                         );
@@ -144,11 +144,11 @@ export function TabelProductIndex({
                     cell: (info) => {
                         const isActive = info.getValue() === "Aktif";
                         return isActive ? (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60 shadow-2xs">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
                                 Aktif
                             </span>
                         ) : (
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-800/60 shadow-2xs">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200 shadow-2xs">
                                 Non-Aktif
                             </span>
                         );

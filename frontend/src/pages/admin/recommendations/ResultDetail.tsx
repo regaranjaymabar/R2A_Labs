@@ -416,9 +416,9 @@ export default function ResultDetail() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-20 space-y-5 text-center">
-        <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/60 p-6 rounded-3xl max-w-md mx-auto text-red-900 dark:text-red-300">
+        <div className="bg-red-50 border border-red-200 p-6 rounded-3xl max-w-md mx-auto text-red-900">
           <p className="font-bold text-base mb-2">Gagal Menghubungi Server Backend</p>
-          <p className="text-xs leading-relaxed text-red-700 dark:text-red-400">
+          <p className="text-xs leading-relaxed text-red-700">
             Terjadi masalah saat mengambil data analisis perhitungan. Silakan pastikan server backend Anda sudah diaktifkan dan dapat dihubungi.
           </p>
         </div>

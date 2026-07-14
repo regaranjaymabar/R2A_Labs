@@ -124,15 +124,15 @@ export function NormalisationMatrixTable({
             }
             {activeMethod === "WP" && (
               <>
-                <th className="py-3 px-3 text-center text-purple-700 bg-purple-50/50 dark:bg-purple-950/20 font-bold">Vektor S</th>
-                <th className="py-3 px-3 text-center text-emerald-700 bg-emerald-50/50 dark:bg-emerald-950/20 font-bold">Vektor V</th>
+                <th className="py-3 px-3 text-center text-purple-700 bg-purple-50/50 font-bold">Vektor S</th>
+                <th className="py-3 px-3 text-center text-emerald-700 bg-emerald-50/50 font-bold">Vektor V</th>
               </>
             )}
             {activeMethod === "TOPSIS" && topsisSubTab === "D" && (
               <>
-                <th className="py-3 px-3 text-center text-amber-700 bg-amber-50/50 dark:bg-amber-950/20 font-bold">D+ (Ideal+)</th>
-                <th className="py-3 px-3 text-center text-blue-700 bg-blue-50/50 dark:bg-blue-950/20 font-bold">D- (Ideal-)</th>
-                <th className="py-3 px-3 text-center text-emerald-700 bg-emerald-50/50 dark:bg-emerald-950/20 font-bold">Kedekatan (V)</th>
+                <th className="py-3 px-3 text-center text-amber-700 bg-amber-50/50 font-bold">D+ (Ideal+)</th>
+                <th className="py-3 px-3 text-center text-blue-700 bg-blue-50/50 font-bold">D- (Ideal-)</th>
+                <th className="py-3 px-3 text-center text-emerald-700 bg-emerald-50/50 font-bold">Kedekatan (V)</th>
               </>
             )}
           </tr>

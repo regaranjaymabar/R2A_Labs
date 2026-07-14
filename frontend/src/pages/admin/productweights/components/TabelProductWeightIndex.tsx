@@ -100,7 +100,7 @@ export function TabelProductWeightIndex({
     if (!crit) {
       return (
         <div className="flex items-center justify-center p-1 min-w-[140px]">
-          <span className="text-[11px] text-gray-400 dark:text-gray-500 italic bg-gray-50 dark:bg-[#181519] px-3 py-2.5 rounded-xl border border-dashed border-gray-200 dark:border-gray-800 block text-center w-full">
+          <span className="text-[11px] text-gray-400 italic bg-gray-50 px-3 py-2.5 rounded-xl border border-dashed border-gray-200 block text-center w-full">
             Belum diatur
           </span>
         </div>
@@ -117,13 +117,13 @@ export function TabelProductWeightIndex({
           title={`Klik untuk mengubah spesifikasi [${defaultName}]`}
         >
           <div className="flex flex-col gap-1 mb-2">
-            <span className="text-[10px] uppercase font-extrabold text-gray-400 dark:text-gray-500 tracking-wider">
+            <span className="text-[10px] uppercase font-extrabold text-gray-400 tracking-wider">
               Spek Asli:
             </span>
-            <span className="text-[11px] font-extrabold text-gray-900 dark:text-white line-clamp-1 mb-1">
+            <span className="text-[11px] font-extrabold text-gray-900 line-clamp-1 mb-1">
               {rawVal}
             </span>
-            <span className="text-[10px] uppercase font-extrabold text-gray-400 dark:text-gray-500 tracking-wider">
+            <span className="text-[10px] uppercase font-extrabold text-gray-400 tracking-wider">
               Bobot SPK:
             </span>
             <span className={`text-xs font-bold leading-tight line-clamp-2 ${theme.text}`}>
@@ -131,7 +131,7 @@ export function TabelProductWeightIndex({
             </span>
           </div>
 
-          <div className="flex items-center justify-between gap-1 pt-1.5 border-t border-black/5 dark:border-white/5">
+          <div className="flex items-center justify-between gap-1 pt-1.5 border-t border-black/5">
             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-mono font-extrabold ${theme.badge} ${theme.badgeText} shadow-2xs`}>
               {Number(crit.value_numeric ?? crit.value_numeric ?? 0).toFixed(2)}
             </span>
@@ -168,8 +168,8 @@ export function TabelProductWeightIndex({
       columnHelper.accessor("product_name", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Laptop" />,
         meta: {
-          headerClassName: "sticky left-0 z-20 bg-gray-50 dark:bg-[#181519] border-r border-gray-200 dark:border-gray-800 shadow-[3px_0_10px_-2px_rgba(0,0,0,0.1)]",
-          cellClassName: "sticky left-0 z-10 bg-white dark:bg-[#151216] border-r border-gray-200 dark:border-gray-800 shadow-[3px_0_10px_-2px_rgba(0,0,0,0.1)] group-hover:bg-gray-50/95 dark:group-hover:bg-gray-800/80",
+          headerClassName: "sticky left-0 z-20 bg-gray-50 border-r border-gray-200 shadow-[3px_0_10px_-2px_rgba(0,0,0,0.1)]",
+          cellClassName: "sticky left-0 z-10 bg-white border-r border-gray-200 shadow-[3px_0_10px_-2px_rgba(0,0,0,0.1)] group-hover:bg-gray-50/95",
         },
         cell: (info) => {
           const group = info.row.original;
@@ -177,18 +177,18 @@ export function TabelProductWeightIndex({
           
           return (
             <div className="flex flex-col py-1.5 min-w-[210px] max-w-[280px] leading-snug">
-              <span className="font-extrabold text-gray-900 dark:text-white text-base block tracking-tight truncate hover:text-gray-600 dark:hover:text-gray-300 transition-colors" title={info.getValue()}>
+              <span className="font-extrabold text-gray-900 text-base block tracking-tight truncate hover:text-gray-600 transition-colors" title={info.getValue()}>
                 {info.getValue()}
               </span>
               {prod && (
-                <div className="mt-1.5 flex flex-wrap gap-1 text-[10px] font-medium text-gray-500 dark:text-gray-400">
-                  <span className="bg-gray-100 dark:bg-gray-800/80 px-1.5 py-0.5 rounded-md truncate max-w-[120px]" title={prod.processor}>
+                <div className="mt-1.5 flex flex-wrap gap-1 text-[10px] font-medium text-gray-500">
+                  <span className="bg-gray-100 px-1.5 py-0.5 rounded-md truncate max-w-[120px]" title={prod.processor}>
                     {prod.processor || "-"}
                   </span>
-                  <span className="bg-gray-100 dark:bg-gray-800/80 px-1.5 py-0.5 rounded-md">
+                  <span className="bg-gray-100 px-1.5 py-0.5 rounded-md">
                     {prod.ram || "-"}
                   </span>
-                  <span className="bg-gray-100 dark:bg-gray-800/80 px-1.5 py-0.5 rounded-md">
+                  <span className="bg-gray-100 px-1.5 py-0.5 rounded-md">
                     {prod.storage || "-"}
                   </span>
                 </div>
@@ -205,22 +205,22 @@ export function TabelProductWeightIndex({
           id: `crit_${crit.code.toLowerCase()}`,
           header: () => (
             <div className="text-center">
-              <span className="text-[10px] font-mono font-extrabold text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 rounded block w-fit mx-auto mb-0.5">
+              <span className="text-[10px] font-mono font-extrabold text-gray-900 bg-gray-200 px-1.5 py-0.5 rounded block w-fit mx-auto mb-0.5">
                 {crit.code}
               </span>
-              <span className="font-bold text-gray-800 dark:text-gray-200 text-xs">
+              <span className="font-bold text-gray-800 text-xs">
                 {crit.name}
               </span>
             </div>
           ),
           cell: ({ row }) =>
             renderCriteriaCell(row.original, crit.code, crit.name, {
-              bg: "bg-gray-50/80 dark:bg-[#181519]",
-              hoverBg: "hover:bg-gray-100 dark:hover:bg-[#221f24]",
-              border: "border-gray-200/80 dark:border-gray-800",
-              text: "text-gray-900 dark:text-gray-100",
-              badge: "bg-gray-900 dark:bg-white",
-              badgeText: "text-white dark:text-gray-900",
+              bg: "bg-gray-50/80",
+              hoverBg: "hover:bg-gray-100",
+              border: "border-gray-200/80",
+              text: "text-gray-900",
+              badge: "bg-gray-900",
+              badgeText: "text-white",
             }),
         })
       );
