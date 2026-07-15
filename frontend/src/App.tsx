@@ -37,6 +37,7 @@ import ProductDetail from "./pages/ProductDetail";
 import Marketplace from "./pages/Marketplace";
 import ReqHistory from "./pages/admin/recommendations/ReqHistory";
 import ResultDetail from "./pages/admin/recommendations/ResultDetail";
+import Profile from "./pages/Profile";
 
 import { Toaster } from "react-hot-toast";
 
@@ -95,6 +96,12 @@ function App() {
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
             <Route path='/admin/login' element={<AdminLogin />} />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={["customer", "user"]} redirectTo="/login" />}>
+            <Route element={<MainLayout />}>
+              <Route path="/profile" element={<Profile />} />
+            </Route>
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={["superadmin", "super_admin", "admin", "store_admin"]} redirectTo="/admin/login" />}>

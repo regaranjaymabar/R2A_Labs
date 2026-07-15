@@ -1,5 +1,7 @@
-import { Search, CircleUserRound } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Search, CircleUserRound, LogOut, LayoutDashboard, ChevronDown, User as UserIcon } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
+import toast from "react-hot-toast";
 
 type HeaderProps = {
   search: string;
@@ -12,6 +14,17 @@ export default function Header({
   setSearch,
   visible = true, // Default: muncul
 }: HeaderProps) {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Berhasil keluar dari akun");
+    navigate("/");
+  };
+
   return (
     <header
       className={`
@@ -95,20 +108,90 @@ export default function Header({
               />
             </div>
 
-            {/* Login */}
-            <Link
-              to="/login"
-              className="
-                flex items-center justify-center
-                w-11 h-11
-                rounded-full
-                bg-black text-white
-                hover:scale-105 transition
-                shadow-md
-              "
-            >
-              <CircleUserRound size={22} />
-            </Link>
+            {/* Login / Profile Menu */}
+            {isAuthenticated && user ? (
+              <div className="relative group">
+                <button
+                  className="
+                    flex items-center gap-2
+                    p-1.5 pr-3
+                    rounded-full
+                    bg-black text-white
+                    hover:scale-105 transition
+                    shadow-md cursor-pointer
+                    text-xs font-bold
+                  "
+                >
+                  <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-white text-[11px] font-extrabold uppercase border border-white/20">
+                    {user.name ? user.name.slice(0, 2) : "US"}
+                  </div>
+                  <span className="hidden sm:inline max-w-[100px] truncate">{user.name || "User"}</span>
+                  <ChevronDown size={14} className="opacity-70 group-hover:rotate-180 transition-transform duration-300" />
+                </button>
+
+                {/* Dropdown Menu */}
+                <div
+                  className="
+                    absolute right-0 mt-2 w-48
+                    bg-white text-zinc-800
+                    rounded-2xl border border-zinc-100 shadow-xl
+                    py-2 px-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto
+                    transition-all duration-300 transform origin-top-right scale-95 group-hover:scale-100
+                    z-50
+                  "
+                >
+                  <div className="px-3 py-2 border-b border-zinc-100 mb-1">
+                    <p className="text-xs font-bold text-zinc-900 truncate">{user.name}</p>
+                    <p className="text-[10px] text-zinc-500 truncate">{user.email}</p>
+                    <span className="inline-block mt-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-zinc-100 text-zinc-600 uppercase">
+                      {user.role}
+                    </span>
+                  </div>
+
+                  {(user.role === "superadmin" || user.role === "super_admin" || user.role === "admin" || user.role === "store_admin") && (
+                    <Link
+                      to="/admin/dashboard"
+                      className="flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-zinc-50 transition-colors"
+                    >
+                      <LayoutDashboard size={14} />
+                      <span>Portal Admin</span>
+                    </Link>
+                  )}
+
+                  {(user.role === "customer" || user.role === "user") && (
+                    <Link
+                      to="/profile"
+                      className="flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-zinc-50 transition-colors"
+                    >
+                      <UserIcon size={14} />
+                      <span>Profil Saya</span>
+                    </Link>
+                  )}
+
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-bold text-red-600 rounded-xl hover:bg-red-50 transition-colors cursor-pointer text-left"
+                  >
+                    <LogOut size={14} />
+                    <span>Keluar</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="
+                  flex items-center justify-center
+                  w-11 h-11
+                  rounded-full
+                  bg-black text-white
+                  hover:scale-105 transition
+                  shadow-md
+                "
+              >
+                <CircleUserRound size={22} />
+              </Link>
+            )}
           </div>
         </div>
       </div>

@@ -18,6 +18,8 @@ export const productSchema = z.object({
   releaseYear: z.string().min(4, "Tahun rilis wajib diisi!"),
   subCriteriaIds: z.array(z.number()).default([]),
   is_active: z.boolean().default(true),
+  image: z.any().optional().nullable(),
+  removeImage: z.boolean().optional(),
 });
 
 export type ProductFormData = z.infer<typeof productSchema>;
@@ -65,6 +67,7 @@ export function useAddProduct() {
     control,
     handleSubmit: handleSubmit(onSubmit),
     setValue,
+    watch,
     errors,
     isSubmitting: createMutation.isPending,
     isActive,
