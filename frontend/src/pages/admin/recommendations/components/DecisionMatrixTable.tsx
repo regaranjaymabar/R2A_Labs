@@ -24,7 +24,7 @@ export function DecisionMatrixTable({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between text-xs text-gray-500">
-        <span>* Menunjukkan konversi nilai spesifikasi ke skala numerik [1 sampai 5]</span>
+        <span>* Menunjukkan konversi nilai spesifikasi ke skala numerik [1 sampai 5] (kecuali C1 Harga menggunakan rupiah asli)</span>
         <span className="font-mono text-purple-600 flex items-center gap-1 bg-purple-50 px-2.5 py-1 rounded-lg">
           <HelpCircle className="w-3.5 h-3.5" />
           Klik sel nilai untuk melihat spesifikasi mentahnya!
@@ -95,7 +95,10 @@ export function DecisionMatrixTable({
                     onClick={() =>
                       onCellClick(
                         activeCellKey,
-                        `Laptop: ${row.alternativeName}\nSpesifikasi mentah: "${rawSpec}"\nTipe Kriteria: ${crit.type.toUpperCase()} (${crit.desc})\nSkala Mapped: ${val} (Skala 1-5)`
+                        `Laptop: ${row.alternativeName}\nSpesifikasi mentah: "${rawSpec}"\nTipe Kriteria: ${crit.type.toUpperCase()} (${crit.desc})\n` +
+                        (crit.code === "C1"
+                          ? `Nilai Asli: Rp ${val.toLocaleString("id-ID")}`
+                          : `Skala Mapped: ${val} (Skala 1-5)`)
                       )
                     }
                     className={`py-3.5 px-3 text-center font-mono font-bold transition-all cursor-pointer ${
@@ -103,7 +106,7 @@ export function DecisionMatrixTable({
                     }`}
                   >
                     <span className="bg-gray-100 px-2.5 py-1 rounded-lg border border-gray-200/50 block hover:bg-purple-50">
-                      {val}
+                      {crit.code === "C1" ? `Rp ${val.toLocaleString("id-ID")}` : val}
                     </span>
                   </td>
                 );

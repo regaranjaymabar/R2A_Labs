@@ -159,12 +159,17 @@ export function NormalisationMatrixTable({
                   const x = row.rawValues[crit.code];
                   const ext = columnExtremes[crit.code];
 
+                  const formatVal = (v: number) => {
+                    if (crit.code === "C1") return `Rp ${v.toLocaleString("id-ID")}`;
+                    return String(v);
+                  };
+
                   const isCost = crit.type === "cost";
                   const formulaDesc = isCost
                     ? `Rumus Cost: R_ij = min(X_kj) / X_ij\n` +
-                      `Perhitungan: ${ext.min} / ${x} = ${val.toFixed(4)}`
+                      `Perhitungan: ${formatVal(ext.min)} / ${formatVal(x)} = ${val.toFixed(4)}`
                     : `Rumus Benefit: R_ij = X_ij / max(X_kj)\n` +
-                      `Perhitungan: ${x} / ${ext.max} = ${val.toFixed(4)}`;
+                      `Perhitungan: ${formatVal(x)} / ${formatVal(ext.max)} = ${val.toFixed(4)}`;
 
                   const activeCellKey = `${idx}-${crit.code}`;
                   const isCellSelected = activeFormulaDetails?.cellKey === activeCellKey;
@@ -205,16 +210,19 @@ export function NormalisationMatrixTable({
                   {criterias.map((crit) => {
                     const normVal = row.norms[crit.code];
                     const w = weightsMap[crit.code] ?? 0;
-                    const totalW = criterias.reduce((sum, c) => sum + (weightsMap[c.code] ?? 0), 0);
-                    const normW = totalW > 0 ? w / totalW : 0;
                     const isCost = crit.type === "cost";
-                    const exponent = isCost ? -normW : normW;
+                    const exponent = isCost ? -w : w;
+
+                    const formatRawX = (v: number) => {
+                      if (crit.code === "C1") return `Rp ${v.toLocaleString("id-ID")}`;
+                      return String(v);
+                    };
 
                     const formulaDesc =
-                      `Pangkat Bobot Ternormalisasi w_j = W_j / sum(W_j)\n` +
-                      `w_${crit.code} = ${w} / ${totalW.toFixed(4)} = ${normW.toFixed(4)} ${isCost ? "(Cost -> negatif)" : "(Benefit -> positif)"}\n\n` +
+                      `Pangkat Bobot w_j = W_j\n` +
+                      `w_${crit.code} = ${w} ${isCost ? "(Cost -> negatif)" : "(Benefit -> positif)"}\n\n` +
                       `Perhitungan Nilai Pangkat X_ij^w_j:\n` +
-                      `Nilai Skala X = ${Number(row.norms[crit.code + "_raw"] ?? 1)} pangkat ${exponent.toFixed(4)} = ${normVal.toFixed(4)}`;
+                      `Nilai Skala X = ${formatRawX(Number(row.norms[crit.code + "_raw"] ?? 1))} pangkat ${exponent} = ${normVal.toFixed(6)}`;
 
                     const activeCellKey = `${idx}-${crit.code}`;
                     const isCellSelected = activeFormulaDetails?.cellKey === activeCellKey;
@@ -292,9 +300,14 @@ export function NormalisationMatrixTable({
                     const activeCellKey = `R-${idx}-${crit.code}`;
                     const isCellSelected = activeFormulaDetails?.cellKey === activeCellKey;
 
+                    const formatRawX = (v: number) => {
+                      if (crit.code === "C1") return `Rp ${v.toLocaleString("id-ID")}`;
+                      return String(v);
+                    };
+
                     const formulaDesc =
                       `Normalisasi Vektor R_ij = X_ij / sqrt(sum(X_kj^2))\n` +
-                      `Perhitungan R: ${x} / ${squareSum.toFixed(4)} = ${rVal.toFixed(4)}`;
+                      `Perhitungan R: ${formatRawX(x)} / ${crit.code === "C1" ? `Rp ${squareSum.toLocaleString("id-ID")}` : squareSum.toFixed(4)} = ${rVal.toFixed(4)}`;
 
                     return (
                       <td
@@ -319,7 +332,7 @@ export function NormalisationMatrixTable({
                   const val = columnSquareSums[crit.code] ?? 0;
                   return (
                     <td key={crit.code} className="py-3 px-3 text-center font-mono">
-                      {val.toFixed(4)}
+                      {crit.code === "C1" ? `Rp ${val.toLocaleString("id-ID")}` : val.toFixed(4)}
                     </td>
                   );
                 })}

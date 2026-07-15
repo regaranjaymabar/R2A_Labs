@@ -32,12 +32,7 @@ const getCriteriaScaleValue = (criteriaCode: string, alt: any): number => {
   }
   switch (criteriaCode) {
     case "C1": { // Harga (cost)
-      const price = Number(alt.price);
-      if (price < 6000000) return 5;
-      if (price < 10000000) return 4;
-      if (price < 15000000) return 3;
-      if (price < 20000000) return 2;
-      return 1;
+      return Number(alt.price);
     }
     case "C2": { // RAM (benefit)
       const ram = String(alt.ram).toLowerCase();
@@ -160,6 +155,7 @@ export default function ResultDetail() {
       user_choice: data.user_choice || "-",
       rawWeights,
       results,
+      calculationDetails: data.calculationDetails || null,
     };
   }, [fetchedData, id]);
 
@@ -430,24 +426,49 @@ export default function ResultDetail() {
   const columnExtremes = useMemo(() => {
     const extremes: Record<string, { min: number; max: number }> = {};
     criterias.forEach((crit) => {
+      const codeLower = crit.code.toLowerCase();
       const values = decisionMatrix.map((row) => row.values[crit.code]);
+      
+      let minVal = values.length > 0 ? Math.min(...values) : 1;
+      let maxVal = values.length > 0 ? Math.max(...values) : 5;
+
+      if (session?.calculationDetails?.saw) {
+        const sawDetails = session.calculationDetails.saw;
+        if (sawDetails[`min_${codeLower}`] !== undefined && sawDetails[`min_${codeLower}`] !== null) {
+          minVal = Number(sawDetails[`min_${codeLower}`]);
+        }
+        if (sawDetails[`max_${codeLower}`] !== undefined && sawDetails[`max_${codeLower}`] !== null) {
+          maxVal = Number(sawDetails[`max_${codeLower}`]);
+        }
+      }
+
       extremes[crit.code] = {
-        min: values.length > 0 ? Math.min(...values) : 1,
-        max: values.length > 0 ? Math.max(...values) : 5,
+        min: minVal,
+        max: maxVal,
       };
     });
 
     return extremes;
-  }, [decisionMatrix, criterias]);
+  }, [decisionMatrix, criterias, session?.calculationDetails?.saw]);
 
   const columnSquareSums = useMemo(() => {
     const squareSums: Record<string, number> = {};
     criterias.forEach((crit) => {
+      const codeLower = crit.code.toLowerCase();
       const sum = decisionMatrix.reduce((s, row) => s + Math.pow(row.values[crit.code], 2), 0);
-      squareSums[crit.code] = Math.sqrt(sum);
+      let sqrtSum = Math.sqrt(sum);
+
+      if (session?.calculationDetails?.topsis) {
+        const topsisDetails = session.calculationDetails.topsis;
+        if (topsisDetails[`bagi_${codeLower}`] !== undefined && topsisDetails[`bagi_${codeLower}`] !== null) {
+          sqrtSum = Number(topsisDetails[`bagi_${codeLower}`]);
+        }
+      }
+
+      squareSums[crit.code] = sqrtSum;
     });
     return squareSums;
-  }, [decisionMatrix, criterias]);
+  }, [decisionMatrix, criterias, session?.calculationDetails?.topsis]);
 
   const sawNormalizedMatrix = useMemo(() => {
     return decisionMatrix.map((row) => {
@@ -475,19 +496,20 @@ export default function ResultDetail() {
   }, [decisionMatrix, columnExtremes, criterias]);
 
   const wpCalculations = useMemo(() => {
-    const totalW = criterias.reduce((sum, crit) => sum + (weightsMap[crit.code] ?? 0), 0);
-    const normalizedW: Record<string, number> = {};
-    criterias.forEach((crit) => {
-      normalizedW[crit.code] = totalW > 0 ? (weightsMap[crit.code] ?? 0) / totalW : 0;
-    });
+    const useRawWeights = true; // database v_wp view uses raw weights
 
     const alternativesS = decisionMatrix.map((row) => {
       let s = 1;
       const norms: Record<string, number> = {};
       criterias.forEach((crit) => {
         const x = row.values[crit.code];
-        const w = normalizedW[crit.code];
-        if (w > 0) {
+        // Use raw weight to match v_wp view in database
+        const w = useRawWeights ? (weightsMap[crit.code] ?? 0) : (() => {
+          const totalW = criterias.reduce((sum, c) => sum + (weightsMap[c.code] ?? 0), 0);
+          return totalW > 0 ? (weightsMap[crit.code] ?? 0) / totalW : 0;
+        })();
+
+        if (w > 0 || (useRawWeights && w !== 0)) {
           const power = crit.type === "cost" ? -w : w;
           const calculatedPower = Math.pow(x, power);
           s *= calculatedPower;
@@ -511,13 +533,15 @@ export default function ResultDetail() {
       };
     });
 
-    const sumS = alternativesS.reduce((sum, alt) => sum + alt.s, 0);
+    const sumS = session?.calculationDetails?.wp?.total_s !== undefined && session?.calculationDetails?.wp?.total_s !== null
+      ? Number(session.calculationDetails.wp.total_s)
+      : alternativesS.reduce((sum, alt) => sum + alt.s, 0);
 
     return alternativesS.map((alt) => ({
       ...alt,
       v: sumS > 0 ? alt.s / sumS : 0,
     }));
-  }, [decisionMatrix, weightsMap, criterias]);
+  }, [decisionMatrix, weightsMap, criterias, session?.calculationDetails?.wp?.total_s]);
 
   const topsisCalculations = useMemo(() => {
     const normalizedV = decisionMatrix.map((row) => {
