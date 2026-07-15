@@ -1,5 +1,4 @@
 import { HelpCircle } from "lucide-react";
-import { CRITERIAS } from "../ResultDetail";
 
 interface NormalisationMatrixTableProps {
   activeMethod: "SAW" | "WP" | "TOPSIS";
@@ -7,7 +6,8 @@ interface NormalisationMatrixTableProps {
   setTopsisSubTab: (tab: "R" | "Y" | "D") => void;
   activeFormulaDetails: { cellKey: string; description: string } | null;
   onCellClick: (cellKey: string, description: string) => void;
-  
+  criterias: Array<{ code: string; name: string; type: string; desc: string }>;
+
   // SAW props
   sawNormalizedMatrix: Array<{
     alternativeName: string;
@@ -55,6 +55,7 @@ export function NormalisationMatrixTable({
   setTopsisSubTab,
   activeFormulaDetails,
   onCellClick,
+  criterias,
   sawNormalizedMatrix,
   columnExtremes,
   wpCalculations,
@@ -115,7 +116,7 @@ export function NormalisationMatrixTable({
           <tr className="border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider">
             <th className="py-3 px-4 min-w-[200px]">Alternatif Laptop</th>
             {(activeMethod !== "TOPSIS" || topsisSubTab === "R" || topsisSubTab === "Y") &&
-              CRITERIAS.map((c) => (
+              criterias.map((c) => (
                 <th key={c.code} className="py-3 px-3 text-center" title={c.desc}>
                   <span className="block font-mono text-[10px] text-gray-900 bg-gray-200/80 px-1 rounded-sm w-fit mx-auto mb-0.5">{c.code}</span>
                   <span>{c.name}</span>
@@ -153,7 +154,7 @@ export function NormalisationMatrixTable({
                     {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
                   </span>
                 </td>
-                {CRITERIAS.map((crit) => {
+                {criterias.map((crit) => {
                   const val = row.norms[crit.code];
                   const x = row.rawValues[crit.code];
                   const ext = columnExtremes[crit.code];
@@ -201,10 +202,10 @@ export function NormalisationMatrixTable({
                       {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
                     </span>
                   </td>
-                  {CRITERIAS.map((crit) => {
+                  {criterias.map((crit) => {
                     const normVal = row.norms[crit.code];
                     const w = weightsMap[crit.code] ?? 0;
-                    const totalW = CRITERIAS.reduce((sum, c) => sum + (weightsMap[c.code] ?? 0), 0);
+                    const totalW = criterias.reduce((sum, c) => sum + (weightsMap[c.code] ?? 0), 0);
                     const normW = totalW > 0 ? w / totalW : 0;
                     const isCost = crit.type === "cost";
                     const exponent = isCost ? -normW : normW;
@@ -283,7 +284,7 @@ export function NormalisationMatrixTable({
                       {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
                     </span>
                   </td>
-                  {CRITERIAS.map((crit) => {
+                  {criterias.map((crit) => {
                     const rVal = row.rValues[crit.code];
                     const squareSum = columnSquareSums[crit.code];
                     const x = row.values[crit.code];
@@ -314,7 +315,7 @@ export function NormalisationMatrixTable({
               {/* Row Pembagi */}
               <tr className="bg-gray-100/60 border-t-2 border-gray-200 font-bold text-gray-900">
                 <td className="py-3 px-4 font-bold">Pembagi (Xⱼ)</td>
-                {CRITERIAS.map((crit) => {
+                {criterias.map((crit) => {
                   const val = columnSquareSums[crit.code] ?? 0;
                   return (
                     <td key={crit.code} className="py-3 px-3 text-center font-mono">
@@ -342,7 +343,7 @@ export function NormalisationMatrixTable({
                       {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
                     </span>
                   </td>
-                  {CRITERIAS.map((crit) => {
+                  {criterias.map((crit) => {
                     const rVal = row.rValues[crit.code];
                     const vVal = row.vValues[crit.code];
                     const w = weightsMap[crit.code] ?? 0;
@@ -374,7 +375,7 @@ export function NormalisationMatrixTable({
               {/* Row A+ */}
               <tr className="bg-purple-50/40 border-t border-gray-200 font-bold text-purple-900">
                 <td className="py-3 px-4 font-bold">Ideal Positif (A⁺)</td>
-                {CRITERIAS.map((crit) => {
+                {criterias.map((crit) => {
                   const val = topsisCalculations[0]?.idealPositive?.[crit.code] ?? 0;
                   return (
                     <td key={crit.code} className="py-3 px-3 text-center font-mono text-purple-700">
@@ -387,7 +388,7 @@ export function NormalisationMatrixTable({
               {/* Row A- */}
               <tr className="bg-amber-50/40 border-t border-gray-200 font-bold text-amber-900">
                 <td className="py-3 px-4 font-bold">Ideal Negatif (A⁻)</td>
-                {CRITERIAS.map((crit) => {
+                {criterias.map((crit) => {
                   const val = topsisCalculations[0]?.idealNegative?.[crit.code] ?? 0;
                   return (
                     <td key={crit.code} className="py-3 px-3 text-center font-mono text-amber-700">

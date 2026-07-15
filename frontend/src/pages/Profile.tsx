@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { customerProfileService, type CustomerProfileData } from "../services/customerProfileService";
 import { useAuthStore } from "../store/useAuthStore";
-import { Loader2, Save, Navigation, Info, User, Mail, Lock } from "lucide-react";
+import { Loader2, Save, Navigation, Info, User, Mail } from "lucide-react";
 import { InputText } from "../components/ui/common/InputText";
 import { InputPassword } from "../components/ui/common/InputPassword";
 import Button from "../components/ui/common/Button";
@@ -137,8 +137,8 @@ export default function Profile() {
         const payload: Partial<CustomerProfileData> = {
             name: data.name,
             email: data.email,
-            latitude: data.latitude !== null && data.latitude !== "" ? Number(data.latitude) : null,
-            longitude: data.longitude !== null && data.longitude !== "" ? Number(data.longitude) : null,
+            latitude: typeof data.latitude === "number" ? data.latitude : null,
+            longitude: typeof data.longitude === "number" ? data.longitude : null,
         };
 
         if (data.password && data.password.trim() !== "") {
