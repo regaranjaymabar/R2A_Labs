@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { customerProfileService, type CustomerProfileData } from "../services/customerProfileService";
 import { useAuthStore } from "../store/useAuthStore";
-import { Loader2, Save, Navigation, Info, User, Mail } from "lucide-react";
+import { Loader2, Save, Navigation, Info, User, Mail, History } from "lucide-react";
 import { InputText } from "../components/ui/common/InputText";
 import { InputPassword } from "../components/ui/common/InputPassword";
 import Button from "../components/ui/common/Button";
@@ -187,13 +188,22 @@ export default function Profile() {
 
     return (
         <div className="max-w-4xl mx-auto px-6 pt-32 pb-20 space-y-6">
-            <div className="flex flex-col gap-1 border-b border-white/20 pb-5 text-center sm:text-left">
-                <h1 className="text-3xl font-extrabold tracking-tight flex items-center justify-center sm:justify-start gap-2.5">
-                    <span>Profil Saya</span>
-                </h1>
-                <p className="text-sm text-zinc-600">
-                    Kelola data diri dan lokasi Anda untuk mendapatkan rekomendasi toko laptop terdekat.
-                </p>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-white/20 pb-5 text-center sm:text-left">
+                <div>
+                    <h1 className="text-3xl font-extrabold tracking-tight flex items-center justify-center sm:justify-start gap-2.5">
+                        <span>Profil Saya</span>
+                    </h1>
+                    <p className="text-sm text-zinc-600 mt-1">
+                        Kelola data diri dan lokasi Anda untuk mendapatkan rekomendasi toko laptop terdekat.
+                    </p>
+                </div>
+                <Link
+                    to="/spk/history"
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl border border-zinc-200 bg-white hover:bg-zinc-50 font-bold text-xs shadow-xs active:scale-95 transition-all cursor-pointer whitespace-nowrap self-center sm:self-auto"
+                >
+                    <History className="w-4 h-4" />
+                    <span>Riwayat Request SPK</span>
+                </Link>
             </div>
 
             <div className="bg-white/70 backdrop-blur-xl rounded-[30px] border border-white/30 shadow-xl overflow-hidden">

@@ -38,6 +38,9 @@ import Marketplace from "./pages/Marketplace";
 import ReqHistory from "./pages/admin/recommendations/ReqHistory";
 import ResultDetail from "./pages/admin/recommendations/ResultDetail";
 import Profile from "./pages/Profile";
+import RequestSpk from "./pages/customer/recommendations/RequestSpk";
+import SpkResult from "./pages/customer/recommendations/SpkResult";
+import SpkHistory from "./pages/customer/recommendations/SpkHistory";
 
 import { Toaster } from "react-hot-toast";
 
@@ -101,6 +104,9 @@ function App() {
           <Route element={<ProtectedRoute allowedRoles={["customer", "user"]} redirectTo="/login" />}>
             <Route element={<MainLayout />}>
               <Route path="/profile" element={<Profile />} />
+              <Route path="/spk/request" element={<RequestSpk />} />
+              <Route path="/spk/history" element={<SpkHistory />} />
+              <Route path="/spk/result/:id" element={<SpkResult />} />
             </Route>
           </Route>
 

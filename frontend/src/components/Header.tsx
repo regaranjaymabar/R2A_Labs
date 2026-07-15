@@ -1,4 +1,4 @@
-import { Search, CircleUserRound, LogOut, LayoutDashboard, ChevronDown, User as UserIcon } from "lucide-react";
+import { Search, CircleUserRound, LogOut, LayoutDashboard, ChevronDown, User as UserIcon, Award, History } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import toast from "react-hot-toast";
@@ -59,7 +59,7 @@ export default function Header({
           </div>
 
           {/* Nav */}
-          <nav className="hidden lg:flex items-center gap-10 text-sm font-medium">
+          <nav className="hidden lg:flex items-center gap-8 text-sm font-medium">
             <Link
               to="/"
               className="transition-transform duration-300 hover:scale-105"
@@ -72,6 +72,14 @@ export default function Header({
             >
               Rekomendasi
             </Link>
+            {isAuthenticated && (user?.role === "customer" || user?.role === "user") && (
+              <Link
+                to="/spk/request"
+                className="transition-all duration-350 hover:scale-105 font-extrabold text-purple-700 bg-purple-100/80 border border-purple-200/50 px-3.5 py-1.5 rounded-full shadow-xs"
+              >
+                Rekomendasi SPK
+              </Link>
+            )}
             <Link
               to="/"
               className="transition-transform duration-300 hover:scale-105"
@@ -159,13 +167,29 @@ export default function Header({
                   )}
 
                   {(user.role === "customer" || user.role === "user") && (
-                    <Link
-                      to="/profile"
-                      className="flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-zinc-50 transition-colors"
-                    >
-                      <UserIcon size={14} />
-                      <span>Profil Saya</span>
-                    </Link>
+                    <>
+                      <Link
+                        to="/profile"
+                        className="flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-zinc-50 transition-colors"
+                      >
+                        <UserIcon size={14} />
+                        <span>Profil Saya</span>
+                      </Link>
+                      <Link
+                        to="/spk/history"
+                        className="flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-zinc-50 transition-colors"
+                      >
+                        <History size={14} />
+                        <span>Riwayat Request</span>
+                      </Link>
+                      <Link
+                        to="/spk/request"
+                        className="flex items-center gap-2 px-3 py-2 text-xs font-bold text-purple-700 rounded-xl hover:bg-purple-50 transition-colors"
+                      >
+                        <Award size={14} />
+                        <span>Rekomendasi SPK</span>
+                      </Link>
+                    </>
                   )}
 
                   <button
