@@ -42,10 +42,18 @@ export default function EditStock() {
   const updateMutation = useMutation({
     mutationFn: async () => {
       if (!id) throw new Error("ID tidak valid");
+      const prod: any = (item as any)?.product || {};
+      const brandName = prod.brand?.name || (item as any)?.brand_name || "";
+      const modelName = prod.modelName || prod.name || (item as any)?.model_name || (item as any)?.product_name || `Produk #${id}`;
+      const fullLaptopName = [brandName, modelName].filter(Boolean).join(" ");
+      const specs = [prod.processor || (item as any)?.processor, prod.ram || (item as any)?.ram, prod.storage || (item as any)?.storage].filter(Boolean).join(" • ");
+
       return await productStoreService.update(id, {
         price: Number(price),
         stock: Number(stock),
         is_available: isAvailable,
+        productName: fullLaptopName,
+        specs: specs,
       });
     },
     onSuccess: () => {

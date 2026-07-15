@@ -49,14 +49,17 @@ export function ResultInfoCard({ session, weightsMap }: ResultInfoCardProps) {
 
         <div className="rounded-2xl space-y-2 text-xs">
           <span className="font-bold text-black uppercase tracking-wider flex items-center gap-1.5">
-            Bobot Input Kriteria
+            Bobot Input Kriteria (C1 - C8)
           </span>
-          <div className="grid grid-cols-5 gap-1 text-center font-mono text-[10px] font-bold">
-            <div className="bg-red-100  p-1.5 rounded-lg border border-red-100 text-red-700">Harga: {((weightsMap.C1 ?? 0) * 100).toFixed(0)}%</div>
-            <div className="bg-white p-1.5 rounded-lg border border-purple-100 text-gray-900">RAM: {((weightsMap.C2 ?? 0) * 100).toFixed(0)}%</div>
-            <div className="bg-white p-1.5 rounded-lg border border-purple-100 text-gray-900">Storage: {((weightsMap.C3 ?? 0) * 100).toFixed(0)}%</div>
-            <div className="bg-white p-1.5 rounded-lg border border-purple-100 text-gray-900">Baterai: {((weightsMap.C4 ?? 0) * 100).toFixed(0)}%</div>
-            <div className="bg-white p-1.5 rounded-lg border border-purple-100 text-gray-900">Berat: {((weightsMap.C5 ?? 0) * 100).toFixed(0)}%</div>
+          <div className="grid grid-cols-4 gap-1.5 text-center font-mono text-[10px] font-bold">
+            <div className="bg-gray-50 p-1.5 rounded-lg border border-gray-300 text-gray-800 shadow-3xs">Harga: {((weightsMap.C1 ?? 0) * 100).toFixed(0)}%</div>
+            <div className="bg-gray-50 p-1.5 rounded-lg border border-gray-300 text-gray-800 shadow-3xs">RAM: {((weightsMap.C2 ?? 0) * 100).toFixed(0)}%</div>
+            <div className="bg-gray-50 p-1.5 rounded-lg border border-gray-300 text-gray-800 shadow-3xs">Storage: {((weightsMap.C3 ?? 0) * 100).toFixed(0)}%</div>
+            <div className="bg-gray-50 p-1.5 rounded-lg border border-gray-300 text-gray-800 shadow-3xs">Baterai: {((weightsMap.C4 ?? 0) * 100).toFixed(0)}%</div>
+            <div className="bg-gray-50 p-1.5 rounded-lg border border-gray-300 text-gray-800 shadow-3xs">Berat: {((weightsMap.C5 ?? 0) * 100).toFixed(0)}%</div>
+            <div className="bg-gray-50 p-1.5 rounded-lg border border-gray-300 text-gray-800 shadow-3xs">Prosesor: {((weightsMap.C6 ?? 0) * 100).toFixed(0)}%</div>
+            <div className="bg-gray-50 p-1.5 rounded-lg border border-gray-300 text-gray-800 shadow-3xs">Layar: {((weightsMap.C7 ?? 0) * 100).toFixed(0)}%</div>
+            <div className="bg-gray-50 p-1.5 rounded-lg border border-gray-300 text-gray-800 shadow-3xs">Rilis: {((weightsMap.C8 ?? 0) * 100).toFixed(0)}%</div>
           </div>
         </div>
       </div>

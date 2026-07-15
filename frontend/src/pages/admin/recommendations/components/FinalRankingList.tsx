@@ -124,9 +124,6 @@ export function FinalRankingList({
                           {bestLaptop.brand}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-400 font-mono mt-1">
-                        RAM: {bestLaptop.ram} | CPU: {bestLaptop.cpu}
-                      </p>
                     </div>
 
                     {/* Stores List */}
@@ -210,11 +207,6 @@ export function FinalRankingList({
                           {bestItem.brand}
                         </span>
                       </div>
-                      {originalLaptop && (
-                        <p className="text-xs text-gray-400 font-mono mt-1">
-                          RAM: {originalLaptop.ram} | CPU: {originalLaptop.cpu}
-                        </p>
-                      )}
                     </div>
 
                     {/* Stores List */}
@@ -303,11 +295,6 @@ export function FinalRankingList({
                           {bestItem.brand}
                         </span>
                       </div>
-                      {originalLaptop && (
-                        <p className="text-xs text-gray-400 font-mono mt-1">
-                          RAM: {originalLaptop.ram} | CPU: {originalLaptop.cpu}
-                        </p>
-                      )}
                     </div>
 
                     {/* Stores List */}

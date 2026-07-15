@@ -1,23 +1,42 @@
+import { useState, useEffect } from "react";
 import { GlowingCards, GlowingCard } from "../../components/ui/glowing-cards";
-import { Package, Tag, TrendingUp, Store, DollarSign, Award, Boxes, ArrowRight } from "lucide-react";
+import { Package, Tag, TrendingUp, Store, DollarSign, Award, Boxes, ArrowRight, Clock, PlusCircle, Trash2, Edit3, CheckCircle2 } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useQuery } from "@tanstack/react-query";
 import { storeAdminService } from "../../services/storeAdminService";
 import { productService } from "../../services/productService";
 import { brandService } from "../../services/brandService";
 import { storeService } from "../../services/storeService";
+import { productStoreService } from "../../services/productStoreService";
+import { storeLogger, type StoreActivityLog } from "../../utils/storeLogger";
 import { Link } from "react-router-dom";
 
 export default function AdminDashboard() {
     const user = useAuthStore((state) => state.user);
     const isSuperAdmin = user?.role === "superadmin" || user?.role === "super_admin";
     const isStoreAdmin = !isSuperAdmin;
+    const storeId = (user as any)?.store?.id || (user as any)?.id || "default";
+
+    const [activityLogs, setActivityLogs] = useState<StoreActivityLog[]>([]);
 
     const { data: storeSummary } = useQuery({
         queryKey: ["admin-summary"],
         queryFn: () => storeAdminService.getSummary(),
         enabled: isStoreAdmin,
     });
+
+    const { data: storeInventory = [] } = useQuery({
+        queryKey: ["store-inventory"],
+        queryFn: () => productStoreService.getAll(),
+        enabled: isStoreAdmin,
+    });
+
+    useEffect(() => {
+        if (isStoreAdmin) {
+            setActivityLogs(storeLogger.getLogs(storeId));
+        }
+    }, [isStoreAdmin, storeId, storeInventory]);
+
 
     // ambil data untuk Superadmin
     const { data: products = [] } = useQuery({
@@ -58,7 +77,7 @@ export default function AdminDashboard() {
         {
             title: "Rata-rata Harga",
             value: storeSummary
-                ? `Rp ${(storeSummary.avgPrice || 0).toLocaleString("id-ID")}`
+                ? `Rp ${Math.round(storeSummary.avgPrice || 0).toLocaleString("id-ID")}`
                 : "Memuat...",
             change: "Harga rata-rata toko",
             icon: <DollarSign className="w-5 h-5 text-blue-600" />,
@@ -85,8 +104,8 @@ export default function AdminDashboard() {
             glowColor: "#3b82f6",
         },
         {
-            title: "Total Merek",
-            value: `${brands.length} Merek`,
+            title: "Total Brand",
+            value: `${brands.length} Brand`,
             change: "Brand Partner",
             icon: <Tag className="w-5 h-5 text-emerald-600" />,
             iconBg: "bg-emerald-50",
@@ -113,7 +132,7 @@ export default function AdminDashboard() {
                     </h1>
                     <p className="text-sm text-gray-500 mt-1">
                         {isStoreAdmin
-                            ? `Pantau statistik inventaris, harga, dan performa rekomendasi dari ${(user as any)?.store?.name || "toko kamu"}.`
+                            ? `Pantau inventaris, harga, dan performa rekomendasi dari ${(user as any)?.store?.name || "toko kamu"}.`
                             : "Panel kendali utama Sistem Pendukung Keputusan & Aggregator Laptop."}
                     </p>
                 </div>
@@ -157,46 +176,148 @@ export default function AdminDashboard() {
             </div>
 
             {isStoreAdmin && (
-                <div className="space-y-4 pt-4">
-                    <h2 className="text-lg font-semibold text-gray-800">
-                        Aksi Cepat Toko
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Link
-                            to="/admin/productstores"
-                            className="p-6 rounded-3xl bg-white border border-gray-200 hover:border-purple-500/50 transition-all group shadow-lg"
-                        >
-                            <div className="flex items-center justify-between mb-3">
-                                <div className="p-3 rounded-2xl bg-purple-50 text-purple-600">
-                                    <Boxes className="w-6 h-6" />
+                <div className="space-y-6 pt-4">
+                    <div className="bg-white p-6 md:p-8 rounded-3xl border border-gray-200/80 shadow-xs flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-5">
+                                <div className="flex items-center gap-3">
+                                    <div>
+                                        <h3 className="text-lg font-bold text-gray-900">
+                                            Aktivitas Terakhir Anda
+                                        </h3>
+                                    </div>
                                 </div>
-                                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" />
+                                {activityLogs.length > 0 && (
+                                    <button
+                                        onClick={() => {
+                                            storeLogger.clearLogs(storeId);
+                                            setActivityLogs([]);
+                                        }}
+                                        className="px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                                        title="Bersihkan riwayat log"
+                                    >
+                                        Bersihkan Log
+                                    </button>
+                                )}
                             </div>
-                            <h3 className="text-lg font-bold text-gray-900">
-                                Kelola Stok & Harga
-                            </h3>
-                            <p className="text-sm text-gray-500 mt-1">
-                                Tambahkan laptop ke tokomu atau perbarui harga jual dan ketersediaan stok.
-                            </p>
-                        </Link>
 
-                        <Link
-                            to="/admin/my-store-profile"
-                            className="p-6 rounded-3xl bg-white border border-gray-200 hover:border-purple-500/50 transition-all group shadow-lg"
-                        >
-                            <div className="flex items-center justify-between mb-3">
-                                <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600">
-                                    <Store className="w-6 h-6" />
-                                </div>
-                                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all" />
+                            <div className="space-y-3.5">
+                                {(() => {
+                                    let displayLogs: any[] = activityLogs;
+                                    if (displayLogs.length === 0 && storeInventory.length > 0) {
+                                        displayLogs = storeInventory
+                                            .slice()
+                                            .sort((a: any, b: any) => {
+                                                const timeA = new Date(a.updated_at || a.updatedAt || 0).getTime();
+                                                const timeB = new Date(b.updated_at || b.updatedAt || 0).getTime();
+                                                return timeB - timeA;
+                                            })
+                                            .slice(0, 6)
+                                            .map((item: any, idx: number) => {
+                                                const brandName = item.product?.brand?.name || item.brand_name || "";
+                                                const modelName = item.product?.modelName || item.product?.name || item.model_name || item.product_name || `Produk #${item.productId ?? item.product_id ?? item.id}`;
+                                                const fullLaptopName = [brandName, modelName].filter(Boolean).join(" ");
+                                                
+                                                const processor = item.product?.processor || item.processor;
+                                                const ram = item.product?.ram || item.ram;
+                                                const storage = item.product?.storage || item.storage;
+                                                const specs = [processor, ram, storage].filter(Boolean).join(" • ");
+                                                
+                                                const isReady = (item.is_available ?? item.isAvailable) ? "Tersedia" : "Nonaktif";
+
+                                                return {
+                                                    id: `fb-${item.id || idx}`,
+                                                    title: `Inventaris: ${fullLaptopName}`,
+                                                    description: `${specs ? specs + " — " : ""}Rp ${Number(item.price || 0).toLocaleString("id-ID")} (Stok: ${item.stock} Unit • ${isReady})`,
+                                                    timestamp: item.updated_at || item.updatedAt || new Date().toISOString(),
+                                                    type: "update",
+                                                };
+                                            });
+                                    }
+
+                                    if (displayLogs.length === 0) {
+                                        return (
+                                            <div className="py-12 text-center bg-gray-50/70 rounded-2xl border border-dashed border-gray-200">
+                                                <Clock className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                                                <p className="text-base font-medium text-gray-600">
+                                                    Belum ada catatan aktivitas
+                                                </p>
+                                                <p className="text-xs md:text-sm text-gray-400 mt-1 max-w-sm mx-auto">
+                                                    Setiap kali Anda menambah produk atau mengubah harga/stok, jejak perubahannya akan otomatis muncul di sini.
+                                                </p>
+                                            </div>
+                                        );
+                                    }
+
+                                    const formatTime = (isoString?: string) => {
+                                        if (!isoString) return "-";
+                                        const date = new Date(isoString);
+                                        if (isNaN(date.getTime())) return isoString;
+                                        const now = new Date();
+                                        const diffMs = now.getTime() - date.getTime();
+                                        const diffMins = Math.floor(diffMs / 60000);
+                                        const diffHours = Math.floor(diffMins / 60);
+                                        const diffDays = Math.floor(diffHours / 24);
+
+                                        if (diffMins < 1) return "Baru saja";
+                                        if (diffMins < 60) return `${diffMins} mnt lalu`;
+                                        if (diffHours < 24) return `${diffHours} jam lalu`;
+                                        if (diffDays < 7) return `${diffDays} hari lalu`;
+                                        return date.toLocaleDateString("id-ID", { day: "numeric", month: "short" });
+                                    };
+
+                                    return displayLogs.slice(0, 8).map((log, idx) => {
+                                        let icon = <CheckCircle2 className="w-5 h-5 text-amber-600" />;
+                                        let bg = "bg-amber-50 border-amber-100";
+                                        if (log.type === "add") {
+                                            icon = <PlusCircle className="w-5 h-5 text-emerald-600" />;
+                                            bg = "bg-emerald-50 border-emerald-100";
+                                        } else if (log.type === "update") {
+                                            icon = <Edit3 className="w-5 h-5 text-blue-600" />;
+                                            bg = "bg-blue-50 border-blue-100";
+                                        } else if (log.type === "delete") {
+                                            icon = <Trash2 className="w-5 h-5 text-rose-600" />;
+                                            bg = "bg-rose-50 border-rose-100";
+                                        } else if (log.type === "profile") {
+                                            icon = <Store className="w-5 h-5 text-purple-600" />;
+                                            bg = "bg-purple-50 border-purple-100";
+                                        }
+
+                                        return (
+                                            <div key={log.id || idx} className="flex items-start gap-3.5 p-4 rounded-2xl bg-gray-50/70 border border-gray-100 hover:bg-gray-50 transition-all">
+                                                <div className={`p-2.5 rounded-xl border ${bg} mt-0.5 shrink-0`}>
+                                                    {icon}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <h4 className="text-sm md:text-base font-bold text-gray-900 truncate">
+                                                            {log.title}
+                                                        </h4>
+                                                        <span className="text-xs font-semibold text-gray-400 whitespace-nowrap shrink-0">
+                                                            {formatTime(log.timestamp)}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-xs md:text-sm text-gray-600 mt-1 line-clamp-2">
+                                                        {log.description}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        );
+                                    });
+                                })()}
                             </div>
-                            <h3 className="text-lg font-bold text-gray-900">
-                                Profil Tokoku
-                            </h3>
-                            <p className="text-sm text-gray-500 mt-1">
-                                Ubah nama cabang, alamat lengkap, kontak WhatsApp, dan koordinat GPS peta toko.
-                            </p>
-                        </Link>
+                        </div>
+
+                        <div className="pt-5 mt-5 border-t border-gray-100 flex flex-col sm:flex-row justify-between sm:items-center gap-2 text-xs md:text-sm text-gray-500">
+                            <span>Pencatatan sesi real-time otomatis</span>
+                            <Link
+                                to="/admin/productstores"
+                                className="font-bold text-purple-600 hover:text-purple-700 inline-flex items-center gap-1.5"
+                            >
+                                <span>Kelola Semua Inventaris</span>
+                                <ArrowRight className="w-4 h-4" />
+                            </Link>
+                        </div>
                     </div>
                 </div>
             )}

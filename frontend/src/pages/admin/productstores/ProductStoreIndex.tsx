@@ -194,6 +194,7 @@ export default function ProductStoreIndex() {
         onEdit={handleOpenEdit}
         onDelete={handleDelete}
         deletingId={deletingId}
+        showStoreColumn={isSuperAdmin}
       />
 
       <Modal
