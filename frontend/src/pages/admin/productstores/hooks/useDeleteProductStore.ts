@@ -10,7 +10,7 @@ export function useDeleteProductStore() {
     isDeleting,
     deleteMutation,
   } = useDeleteWithConfirm({
-    mutationFn: ({ id }) => productStoreService.delete(id),
+    mutationFn: ({ id, name }) => productStoreService.delete(id, name),
     queryKey: ["productstores"],
     successMessage: ({ name }) => `Data stok untuk produk "${name}" berhasil dihapus!`,
     errorMessage: ({ name }, err) =>

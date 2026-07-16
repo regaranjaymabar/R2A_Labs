@@ -62,9 +62,6 @@ export default function ProductIndex() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Daftar Produk</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Kelola katalog spesifikasi laptop (`model_name`, `processor`, `ram`, `storage`, `is_active`) di sistem R2A LABS.
-          </p>
         </div>
         <div>
           <Link
@@ -78,11 +75,11 @@ export default function ProductIndex() {
       </div>
 
       {isDummyData && (
-        <div className="bg-amber-50 dark:bg-amber-950/25 border border-amber-200 dark:border-amber-900/60 p-4 rounded-2xl flex items-start gap-3 text-amber-900 dark:text-amber-300">
-          <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+        <div className="bg-amber-50  border border-amber-200 p-4 rounded-2xl flex items-start gap-3 text-amber-900 ">
+          <AlertCircle className="w-5 h-5 text-amber-600  shrink-0 mt-0.5" />
           <div>
             <h4 className="font-semibold text-sm">Mode Demo / Offline</h4>
-            <p className="text-xs mt-0.5 text-amber-700 dark:text-amber-400">
+            <p className="text-xs mt-0.5 text-amber-700">
               Gagal terhubung ke API backend. Data sub-kriteria yang ditampilkan di bawah ini adalah <strong>data dummy lokal</strong> untuk keperluan demonstrasi UI.
             </p>
           </div>

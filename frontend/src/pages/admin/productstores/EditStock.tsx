@@ -42,10 +42,18 @@ export default function EditStock() {
   const updateMutation = useMutation({
     mutationFn: async () => {
       if (!id) throw new Error("ID tidak valid");
+      const prod: any = (item as any)?.product || {};
+      const brandName = prod.brand?.name || (item as any)?.brand_name || "";
+      const modelName = prod.modelName || prod.name || (item as any)?.model_name || (item as any)?.product_name || `Produk #${id}`;
+      const fullLaptopName = [brandName, modelName].filter(Boolean).join(" ");
+      const specs = [prod.processor || (item as any)?.processor, prod.ram || (item as any)?.ram, prod.storage || (item as any)?.storage].filter(Boolean).join(" • ");
+
       return await productStoreService.update(id, {
         price: Number(price),
         stock: Number(stock),
         is_available: isAvailable,
+        productName: fullLaptopName,
+        specs: specs,
       });
     },
     onSuccess: () => {
@@ -78,28 +86,28 @@ export default function EditStock() {
       <div>
         <Link
           to="/admin/productstores"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-blue-600 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Kembali ke Stok & Harga</span>
         </Link>
       </div>
 
-      <div className="border-b border-gray-200 dark:border-gray-800 pb-5">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+      <div className="border-b border-gray-200 pb-5">
+        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2.5">
           <span>Edit Stok & Harga Laptop</span>
         </h1>
       </div>
 
-      <div className="bg-white dark:bg-[#151216] rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         {item && (
-          <div className="p-6 bg-gray-50 dark:bg-white/5 border-b border-gray-200 dark:border-gray-800 space-y-4">
-            <div className="flex items-center gap-2 text-sm font-bold text-black dark:text-white">
-              <Package className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0" />
+          <div className="p-6 bg-gray-50 border-b border-gray-200 space-y-4">
+            <div className="flex items-center gap-2 text-sm font-bold text-black">
+              <Package className="w-5 h-5 text-blue-600 shrink-0" />
               <span>Detail Spesifikasi Laptop</span>
             </div>
             <div className="flex flex-col md:flex-row gap-6 items-start">
-              <div className="w-32 h-32 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+              <div className="w-32 h-32 rounded-xl border border-gray-200 bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
                 {(item as any).product?.imageUrl ? (
                   <img
                     src={(item as any).product.imageUrl}
@@ -114,49 +122,49 @@ export default function EditStock() {
               <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
                 <div className="space-y-1">
                   <span className="text-gray-400 font-medium block">Nama & Model</span>
-                  <span className="font-bold text-gray-900 dark:text-white text-sm">
+                  <span className="font-bold text-gray-900 text-sm">
                     {(item as any).product?.brand?.name || (item as any).brand_name || "-"} {(item as any).product?.modelName || (item as any).product_name || "-"}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-gray-400 font-medium block">Processor</span>
-                  <span className="font-bold text-gray-900 dark:text-white text-sm">
+                  <span className="font-bold text-gray-900 text-sm">
                     {(item as any).product?.processor || "-"}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-gray-400 font-medium block">RAM</span>
-                  <span className="font-bold text-gray-900 dark:text-white text-sm">
+                  <span className="font-bold text-gray-900 text-sm">
                     {(item as any).product?.ram || "-"}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-gray-400 font-medium block">Penyimpanan (Storage)</span>
-                  <span className="font-bold text-gray-900 dark:text-white text-sm">
+                  <span className="font-bold text-gray-900 text-sm">
                     {(item as any).product?.storage || "-"}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-gray-400 font-medium block">Ukuran Layar</span>
-                  <span className="font-bold text-gray-900 dark:text-white text-sm">
+                  <span className="font-bold text-gray-900 text-sm">
                     {(item as any).product?.screenSize || (item as any).product?.screen_size ? `${(item as any).product.screenSize || (item as any).product.screen_size}"` : "-"}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-gray-400 font-medium block">Kapasitas Baterai</span>
-                  <span className="font-bold text-gray-900 dark:text-white text-sm">
+                  <span className="font-bold text-gray-900 text-sm">
                     {(item as any).product?.battery || "-"}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-gray-400 font-medium block">Berat</span>
-                  <span className="font-bold text-gray-900 dark:text-white text-sm">
+                  <span className="font-bold text-gray-900 text-sm">
                     {(item as any).product?.weight ? (String((item as any).product.weight).toLowerCase().endsWith("kg") ? (item as any).product.weight : `${(item as any).product.weight}kg`) : "-"}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-gray-400 font-medium block">Tahun Rilis</span>
-                  <span className="font-bold text-gray-900 dark:text-white text-sm">
+                  <span className="font-bold text-gray-900 text-sm">
                     {(item as any).product?.releaseYear || (item as any).product?.release_year ? String((item as any).product.releaseYear || (item as any).product.release_year).slice(0, 4) : "-"}
                   </span>
                 </div>
@@ -167,14 +175,14 @@ export default function EditStock() {
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {errorMsg && (
-            <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 text-xs font-bold">
+            <div className="p-3.5 rounded-xl bg-red-50 text-red-600 text-xs font-bold">
               {errorMsg}
             </div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Harga Jual Toko (Rp) <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -187,17 +195,17 @@ export default function EditStock() {
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   required
-                  className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/60 text-gray-900 dark:text-white font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="20500000"
                 />
               </div>
-              <p className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400 pt-0.5">
+              <p className="text-xs font-mono font-bold text-blue-600 pt-0.5">
                 Preview: {formattedPrice}
               </p>
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Stok Fisik Tersedia (Unit) <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -210,18 +218,18 @@ export default function EditStock() {
                   value={stock}
                   onChange={(e) => setStock(e.target.value)}
                   required
-                  className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/60 text-gray-900 dark:text-white font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="15"
                 />
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500">
                 Jumlah unit siap kirim atau tersedia di toko.
               </p>
             </div>
           </div>
 
           <div className="pt-2">
-            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-bold text-gray-700  uppercase tracking-wider mb-2">
               Status Ketersediaan Katalog
             </label>
             <div className="flex flex-wrap gap-3">
@@ -230,8 +238,8 @@ export default function EditStock() {
                 onClick={() => setIsAvailable(true)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-bold transition-all ${
                   isAvailable
-                    ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-700 dark:text-emerald-300 shadow-sm"
-                    : "border-gray-200 dark:border-gray-800 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-900"
+                    ? "bg-emerald-50 0/40 border-emerald-500 text-emerald-700 300 shadow-sm"
+                    : "border-gray-200 text-gray-500 hover:bg-gray-50 -900"
                 }`}
               >
                 <CheckCircle2 className="w-4 h-4" />
@@ -243,8 +251,8 @@ export default function EditStock() {
                 onClick={() => setIsAvailable(false)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-bold transition-all ${
                   !isAvailable
-                    ? "bg-red-50 dark:bg-red-950/40 border-red-500 text-red-700 dark:text-red-300 shadow-sm"
-                    : "border-gray-200 dark:border-gray-800 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-900"
+                    ? "bg-red-50  border-red-500 text-red-700 shadow-sm"
+                    : "border-gray-200 text-gray-500 hover:bg-gray-50 -900"
                 }`}
               >
                 <Ban className="w-4 h-4" />
@@ -253,10 +261,10 @@ export default function EditStock() {
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-100 dark:border-gray-800">
+          <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-100">
             <Link
               to="/admin/productstores"
-              className="px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="px-5 py-2.5 rounded-xl text-xs font-bold text-gray-600  hover:bg-gray-100 -800 transition-colors"
             >
               Batal
             </Link>

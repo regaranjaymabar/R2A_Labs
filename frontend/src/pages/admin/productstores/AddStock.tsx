@@ -23,6 +23,14 @@ export default function AddStock() {
   const isSuperAdmin = user?.role === "super_admin" || user?.role === "superadmin";
   const isStoreAdmin = !isSuperAdmin;
 
+  const userStoreId = Number(
+    (user as any)?.storeId ?? 
+    (user as any)?.store_id ?? 
+    (user as any)?.store?.id ?? 
+    1
+  );
+  const userStoreName = (user as any)?.store?.name || `Store #${userStoreId}`;
+
   const {
     register,
     control,
@@ -38,6 +46,7 @@ export default function AddStock() {
     queryKey: ["stores"],
     queryFn: storeService.getAll,
     offlineFallbackData: initialStores,
+    enabled: isSuperAdmin, // Hanya jalankan query jika Super Admin
   });
   const stores = fetchedStores && fetchedStores.length > 0 ? fetchedStores : initialStores;
 
@@ -59,10 +68,9 @@ export default function AddStock() {
   // Jika masuk sebagai Store Admin, maka kunci store_id
   useEffect(() => {
     if (isStoreAdmin) {
-      const userStoreId = (user as any)?.store_id || (stores.length > 0 ? stores[0].id : 1);
       setValue("store_id", userStoreId, { shouldValidate: true });
     }
-  }, [isStoreAdmin, user, stores, setValue]);
+  }, [isStoreAdmin, userStoreId, setValue]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
@@ -106,7 +114,7 @@ export default function AddStock() {
                 <InputSearchSelect
                   label={
                     <span className="flex items-center justify-between">
-                      <span>Pilih Toko Cabang</span>
+                      <span>{isSuperAdmin ? "Pilih Toko Cabang" : "Toko"}</span>
                       {isStoreAdmin && (
                         <span className="text-[10px] font-mono font-bold text-black flex items-center gap-1 bg-purple-100 px-2 py-0.5 rounded-full">
                           {user?.name}
@@ -116,17 +124,28 @@ export default function AddStock() {
                   }
                   name="store_id"
                   control={control}
-                  options={stores.map((s) => ({
-                    value: s.id,
-                    label: `${s.name} (#${s.id})`,
-                  }))}
+                  options={
+                    isStoreAdmin
+                      ? [
+                          {
+                            value: userStoreId,
+                            label: `${userStoreName} (#${userStoreId})`,
+                          },
+                        ]
+                      : stores.map((s) => ({
+                          value: s.id,
+                          label: `${s.name} (#${s.id})`,
+                        }))
+                  }
                   placeholder={
-                    isStoresLoading && stores.length === 0
+                    isStoreAdmin
+                      ? `${userStoreName} (#${userStoreId})`
+                      : isStoresLoading && stores.length === 0
                       ? "Memuat Toko..."
                       : "Cari & Pilih Cabang Toko"
                   }
-                  isLoading={isStoresLoading && stores.length === 0}
-                  disabled={isStoresLoading && stores.length === 0}
+                  isLoading={isStoreAdmin ? false : isStoresLoading && stores.length === 0}
+                  disabled={isStoreAdmin}
                   error={errors.store_id?.message}
                   helperText="* Ketik nama atau ID toko untuk mencari cepat."
                 />
@@ -238,7 +257,7 @@ export default function AddStock() {
 
           <div className="space-y-4 pt-2">
             <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-black">
-              <span>Penetapan Harga Lokal & Stok Fisik</span>
+              <span>Penetapan Harga & Stok Unit</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

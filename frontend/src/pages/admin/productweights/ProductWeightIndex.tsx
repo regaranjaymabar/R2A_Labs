@@ -168,10 +168,10 @@ export default function ProductWeightIndex() {
 
   return (
     <div className="space-y-6 pb-12">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200  pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-2xl font-bold text-gray-900">
               Pembobotan Produk
             </h1>
           </div>
@@ -179,7 +179,7 @@ export default function ProductWeightIndex() {
         <div>
           <Link
             to="/admin/productweights/add"
-            className="inline-flex items-center gap-2 bg-[#151216] dark:bg-white text-white dark:text-gray-900 hover:bg-[#262128] dark:hover:bg-gray-200 font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all active:scale-95 text-sm"
+            className="inline-flex items-center gap-2 bg-[#151216] text-white hover:bg-[#262128] font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all active:scale-95 text-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Bobot Produk</span>
@@ -187,15 +187,15 @@ export default function ProductWeightIndex() {
         </div>
       </div>
 
-      <div className="bg-gray-50 dark:bg-[#181519] border border-gray-200 dark:border-gray-800 p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs text-gray-800 dark:text-gray-300">
+      <div className="bg-gray-50 border border-gray-200 p-4 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 text-xs text-gray-800 ">
 
-        <div className="flex items-center gap-2 bg-white dark:bg-[#151216] px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xs shrink-0">
-          <Filter className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-          <span className="font-semibold text-gray-700 dark:text-gray-300">Filter Laptop:</span>
+        <div className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-xl border border-gray-200 shadow-2xs shrink-0">
+          <Filter className="w-4 h-4 text-gray-600" />
+          <span className="font-semibold text-gray-700">Filter Laptop:</span>
           <select
             value={selectedProductFilter}
             onChange={(e) => setSelectedProductFilter(e.target.value)}
-            className="bg-transparent font-bold text-gray-900 dark:text-white focus:outline-none cursor-pointer"
+            className="bg-transparent font-bold text-gray-900 focus:outline-none cursor-pointer"
           >
             <option value="ALL">Semua Laptop ({uniqueProducts.length})</option>
             {uniqueProducts.map((prod) => (
@@ -222,7 +222,7 @@ export default function ProductWeightIndex() {
         onClose={() => setEditingItem(null)}
         maxWidth="lg"
         badge={
-          <span className="text-gray-900 dark:text-gray-100 font-bold">
+          <span className="text-gray-900 font-bold">
             Pilih Spesifikasi dari Sub-Kriteria
           </span>
         }
@@ -242,17 +242,17 @@ export default function ProductWeightIndex() {
                       key={opt.id}
                       onClick={() => setSelectedSubCriteriaId(opt.id)}
                       className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${isSelected
-                          ? "bg-gray-100 dark:bg-gray-800 border-gray-900 dark:border-white text-gray-900 dark:text-white ring-2 ring-gray-900/10 dark:ring-white/20 shadow-xs"
-                          : "bg-gray-50 dark:bg-[#181519] border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-300"
+                          ? "bg-gray-100 border-gray-900 text-gray-900 ring-2 ring-gray-900/10 shadow-xs"
+                          : "bg-gray-50 border-gray-200 text-gray-700 hover:border-gray-300"
                         }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSelected ? "border-gray-900 bg-gray-900 dark:border-white dark:bg-white text-white dark:text-gray-900" : "border-gray-300 bg-white dark:bg-gray-800"}`}>
-                          {isSelected && <span className="w-2 h-2 rounded-full bg-white dark:bg-gray-900 block" />}
+                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSelected ? "border-gray-900 bg-gray-900 text-white " : "border-gray-300 bg-white"}`}>
+                          {isSelected && <span className="w-2 h-2 rounded-full bg-white" />}
                         </div>
                         <span className="font-bold text-sm">{opt.description}</span>
                       </div>
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg font-mono font-bold text-xs bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg font-mono font-bold text-xs bg-white text-gray-900 border border-gray-300 ">
                         {Number(opt.value_numeric ?? opt.valueNumeric ?? 0).toFixed(2)}
                       </span>
                     </div>
@@ -261,13 +261,13 @@ export default function ProductWeightIndex() {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200 dark:border-gray-800">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200 ">
               <Button
                 type="button"
                 variant="secondary"
                 onClick={() => setEditingItem(null)}
                 label="Batal"
-                className="!text-xs! py-2! px-5! rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 cursor-pointer"
+                className="text-xs py-2 px-5 rounded-xl cursor-pointer"
               />
               <Button
                 type="submit"
@@ -287,7 +287,7 @@ export default function ProductWeightIndex() {
         title="Hapus Bobot Spesifikasi?"
         message={
           <span>
-            Apakah kamu yakin ingin menghapus bobot spesifikasi <strong className="font-bold text-gray-900 dark:text-white">{deleteTarget?.name}</strong>? Data perhitungan SPK yang terkait dengan spesifikasi ini akan berubah.
+            Apakah kamu yakin ingin menghapus bobot spesifikasi <strong className="font-bold text-gray-900 ">{deleteTarget?.name}</strong>? Data perhitungan SPK yang terkait dengan spesifikasi ini akan berubah.
           </span>
         }
         confirmLabel="Ya, Hapus Bobot"

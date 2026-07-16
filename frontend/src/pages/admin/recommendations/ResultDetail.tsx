@@ -3,29 +3,27 @@ import { Link, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Loader2,
-  Info,
 } from "lucide-react";
 import { Button } from "../../../components/ui/common/Button";
 import { useGet } from "../../../hooks/useGet";
 import { recommendationService } from "../../../services/recommendationService";
 import { productWeightService } from "../../../services/productWeightService";
+import { criteriaService } from "../../../services/criteriaService";
 import { ResultInfoCard } from "./components/ResultInfoCard";
 import { DecisionMatrixTable } from "./components/DecisionMatrixTable";
 import { NormalisationMatrixTable } from "./components/NormalisationMatrixTable";
 import { FinalRankingList } from "./components/FinalRankingList";
 
-export const CRITERIAS = [
-  { code: "C1", name: "Harga", type: "cost", desc: "Harga produk laptop (Semakin murah semakin baik)" },
-  { code: "C2", name: "RAM", type: "benefit", desc: "Kapasitas RAM laptop (Semakin besar semakin baik)" },
-  { code: "C3", name: "Storage", type: "benefit", desc: "Kapasitas Storage/Penyimpanan (Semakin besar semakin baik)" },
-  { code: "C4", name: "Battery", type: "benefit", desc: "Kapasitas Baterai laptop dalam Wh (Semakin awet semakin baik)" },
-  { code: "C5", name: "Berat", type: "cost", desc: "Berat fisik laptop dalam Kg (Semakin ringan semakin baik)" },
-  { code: "C6", name: "Processor", type: "benefit", desc: "Kelas benchmark performa processor (Semakin tinggi semakin baik)" },
-  { code: "C7", name: "Ukuran Layar", type: "benefit", desc: "Bentang layar laptop dalam Inch (Semakin luas semakin baik)" },
-  { code: "C8", name: "Tahun Rilis", type: "benefit", desc: "Tahun rilis laptop ke pasar (Semakin baru semakin baik)" },
-];
+const STATIC_CRITERIAS: any[] = [];
 
 const getCriteriaScaleValue = (criteriaCode: string, alt: any): number => {
+  // 1. C1 (Harga) uses original price in millions (e.g. Rp 5.485.000 -> 5.485)
+  if (criteriaCode === "C1") {
+    const price = Number(alt.price ?? 0);
+    return price > 0 ? price / 1000000 : 1;
+  }
+
+  // 2. C2-C8 dynamically matched with product custom weight configuration
   const dbVal = alt.dbWeights?.find((w: any) => w.criteria_code === criteriaCode);
   if (dbVal && dbVal.value_numeric !== undefined && dbVal.value_numeric !== null) {
     return Number(dbVal.value_numeric);
@@ -130,6 +128,23 @@ export default function ResultDetail() {
     offlineFallbackData: [],
   });
 
+  const { data: dbCriterias } = useGet<any[]>({
+    queryKey: ["criterias-all"],
+    queryFn: () => criteriaService.getAll(),
+    offlineFallbackData: [],
+  });
+
+  const dbSortedCriterias = useMemo(() => {
+    if (dbCriterias && dbCriterias.length > 0) {
+      return [...dbCriterias].sort((a: any, b: any) => {
+        const aCode = a.code || `C${a.id}`;
+        const bCode = b.code || `C${b.id}`;
+        return aCode.localeCompare(bCode);
+      });
+    }
+    return STATIC_CRITERIAS;
+  }, [dbCriterias]);
+
   const session = useMemo(() => {
     if (!fetchedData) return null;
     const data: any = fetchedData;
@@ -207,8 +222,8 @@ export default function ResultDetail() {
       });
     }
 
-    return CRITERIAS;
-  }, [session]);
+    return dbSortedCriterias;
+  }, [session, dbSortedCriterias]);
 
   const activeAlternatives = useMemo(() => {
     if (!session || !Array.isArray(session.results)) return [];
@@ -421,7 +436,7 @@ export default function ResultDetail() {
         values: alt.values || {},
       };
     });
-  }, [activeAlternatives]);
+  }, [activeAlternatives, criterias]);
 
   const columnExtremes = useMemo(() => {
     const extremes: Record<string, { min: number; max: number }> = {};
@@ -617,9 +632,9 @@ export default function ResultDetail() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-20 space-y-5 text-center">
-        <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/60 p-6 rounded-3xl max-w-md mx-auto text-red-900 dark:text-red-300">
+        <div className="bg-red-50 border border-red-200 p-6 rounded-3xl max-w-md mx-auto text-red-900">
           <p className="font-bold text-base mb-2">Gagal Menghubungi Server Backend</p>
-          <p className="text-xs leading-relaxed text-red-700 dark:text-red-400">
+          <p className="text-xs leading-relaxed text-red-700">
             Terjadi masalah saat mengambil data analisis perhitungan. Silakan pastikan server backend Anda sudah diaktifkan dan dapat dihubungi.
           </p>
         </div>
@@ -753,13 +768,12 @@ export default function ResultDetail() {
           </div>
 
           {activeFormulaDetails && (
-            <div className="mx-6 mt-6 p-4 bg-purple-50 border border-purple-200 rounded-2xl flex items-start gap-3">
-              <Info className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
+            <div className="mx-6 mt-6 p-4 bg-white border border-gray-200 rounded-2xl flex items-start gap-3">
               <div className="text-xs space-y-1">
-                <span className="font-extrabold text-purple-900 block">
+                <span className="font-extrabold text-black block">
                   Detail Kalkulasi Matematika:
                 </span>
-                <p className="text-purple-800 font-mono leading-relaxed break-all font-semibold">
+                <p className="text-gray-900 font-mono leading-relaxed break-all font-semibold whitespace-pre-wrap">
                   {activeFormulaDetails.description}
                 </p>
               </div>

@@ -63,6 +63,8 @@ export function NormalisationMatrixTable({
   columnSquareSums,
   weightsMap,
 }: NormalisationMatrixTableProps) {
+  const totalW = criterias.reduce((sum, crit) => sum + (weightsMap[crit.code] ?? 0), 0);
+
   return (
     <div className="space-y-4">
       {activeMethod === "TOPSIS" && (
@@ -70,33 +72,30 @@ export function NormalisationMatrixTable({
           <button
             type="button"
             onClick={() => setTopsisSubTab("R")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              topsisSubTab === "R"
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${topsisSubTab === "R"
                 ? "bg-white text-gray-900 shadow-xs border border-gray-200"
                 : "text-gray-500 hover:text-gray-900"
-            }`}
+              }`}
           >
             Langkah 2.1: Matriks Ternormalisasi (R)
           </button>
           <button
             type="button"
             onClick={() => setTopsisSubTab("Y")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              topsisSubTab === "Y"
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${topsisSubTab === "Y"
                 ? "bg-white text-gray-900 shadow-xs border border-gray-200"
                 : "text-gray-500 hover:text-gray-900"
-            }`}
+              }`}
           >
             Langkah 2.2: Matriks Ternormalisasi Terbobot (Y)
           </button>
           <button
             type="button"
             onClick={() => setTopsisSubTab("D")}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              topsisSubTab === "D"
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${topsisSubTab === "D"
                 ? "bg-white text-gray-900 shadow-xs border border-gray-200"
                 : "text-gray-500 hover:text-gray-900"
-            }`}
+              }`}
           >
             Langkah 2.3: Jarak Ideal & Preferensi (D & V)
           </button>
@@ -105,7 +104,7 @@ export function NormalisationMatrixTable({
 
       <div className="flex items-center justify-between text-xs text-gray-500">
         <span>* Menampilkan hasil normalisasi berdasarkan sifat kriteria (Benefit / Cost)</span>
-        <span className="font-mono text-purple-600 flex items-center gap-1 bg-purple-50 px-2.5 py-1 rounded-lg">
+        <span className="font-mono text-black flex items-center gap-1 bg-gray-100 px-2.5 py-1 rounded-lg">
           <HelpCircle className="w-3.5 h-3.5" />
           Klik sel nilai untuk melihat rumus matematika rincinya!
         </span>
@@ -125,15 +124,15 @@ export function NormalisationMatrixTable({
             }
             {activeMethod === "WP" && (
               <>
-                <th className="py-3 px-3 text-center text-purple-700 bg-purple-50/50 dark:bg-purple-950/20 font-bold">Vektor S</th>
-                <th className="py-3 px-3 text-center text-emerald-700 bg-emerald-50/50 dark:bg-emerald-950/20 font-bold">Vektor V</th>
+                <th className="py-3 px-3 text-center text-gray-800 bg-gray-100/80 font-bold">Vektor S</th>
+                <th className="py-3 px-3 text-center text-emerald-700 bg-emerald-50/50 font-bold">Vektor V</th>
               </>
             )}
             {activeMethod === "TOPSIS" && topsisSubTab === "D" && (
               <>
-                <th className="py-3 px-3 text-center text-amber-700 bg-amber-50/50 dark:bg-amber-950/20 font-bold">D+ (Ideal+)</th>
-                <th className="py-3 px-3 text-center text-blue-700 bg-blue-50/50 dark:bg-blue-950/20 font-bold">D- (Ideal-)</th>
-                <th className="py-3 px-3 text-center text-emerald-700 bg-emerald-50/50 dark:bg-emerald-950/20 font-bold">Kedekatan (V)</th>
+                <th className="py-3 px-3 text-center text-amber-700 bg-amber-50/50 font-bold">D+ (Ideal+)</th>
+                <th className="py-3 px-3 text-center text-blue-700 bg-blue-50/50 font-bold">D- (Ideal-)</th>
+                <th className="py-3 px-3 text-center text-emerald-700 bg-emerald-50/50 font-bold">Kedekatan (V)</th>
               </>
             )}
           </tr>
@@ -144,14 +143,13 @@ export function NormalisationMatrixTable({
             sawNormalizedMatrix.map((row, idx) => (
               <tr
                 key={idx}
-                className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${
-                  row.is_chosen_by_user ? "bg-purple-50/30" : ""
-                }`}
+                className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${row.is_chosen_by_user ? "bg-gray-100/60" : ""
+                  }`}
               >
                 <td className="py-3.5 px-4 font-bold text-gray-900">
                   {row.alternativeName}
                   <span className="text-[10px] text-gray-400 font-medium block">
-                    {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
+                    {row.brand} | Toko: <span className="text-black font-semibold">{row.storeName}</span>
                   </span>
                 </td>
                 {criterias.map((crit) => {
@@ -167,9 +165,9 @@ export function NormalisationMatrixTable({
                   const isCost = crit.type === "cost";
                   const formulaDesc = isCost
                     ? `Rumus Cost: R_ij = min(X_kj) / X_ij\n` +
-                      `Perhitungan: ${formatVal(ext.min)} / ${formatVal(x)} = ${val.toFixed(4)}`
+                    `Perhitungan: ${formatVal(ext.min)} / ${formatVal(x)} = ${val.toFixed(4)}`
                     : `Rumus Benefit: R_ij = X_ij / max(X_kj)\n` +
-                      `Perhitungan: ${formatVal(x)} / ${formatVal(ext.max)} = ${val.toFixed(4)}`;
+                    `Perhitungan: ${formatVal(x)} / ${formatVal(ext.max)} = ${val.toFixed(4)}`;
 
                   const activeCellKey = `${idx}-${crit.code}`;
                   const isCellSelected = activeFormulaDetails?.cellKey === activeCellKey;
@@ -178,11 +176,10 @@ export function NormalisationMatrixTable({
                     <td
                       key={crit.code}
                       onClick={() => onCellClick(activeCellKey, formulaDesc)}
-                      className={`py-3.5 px-3 text-center font-mono font-bold cursor-pointer ${
-                        isCellSelected ? "bg-purple-100 text-purple-900 ring-2 ring-purple-500/20 rounded-lg scale-95" : "text-gray-900"
-                      }`}
+                      className={`py-3.5 px-3 text-center font-mono font-bold cursor-pointer ${isCellSelected ? "bg-gray-200 text-gray-900 ring-2 ring-gray-400 rounded-lg scale-95" : "text-gray-900"
+                        }`}
                     >
-                      <span className="bg-indigo-50 text-gray-900 px-2.5 py-1 rounded-lg border border-indigo-100 hover:bg-indigo-100 block">
+                      <span className="bg-gray-100 text-gray-900 px-2.5 py-1 rounded-lg border border-gray-200 hover:bg-gray-200 block">
                         {val.toFixed(4)}
                       </span>
                     </td>
@@ -197,32 +194,36 @@ export function NormalisationMatrixTable({
               return (
                 <tr
                   key={idx}
-                  className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${
-                    row.is_chosen_by_user ? "bg-purple-50/30" : ""
-                  }`}
+                  className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${row.is_chosen_by_user ? "bg-gray-100/60" : ""
+                    }`}
                 >
                   <td className="py-3.5 px-4 font-bold text-gray-900">
                     {row.alternativeName}
                     <span className="text-[10px] text-gray-400 font-medium block">
-                      {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
+                      {row.brand} | Toko: <span className="text-black font-semibold">{row.storeName}</span>
                     </span>
                   </td>
                   {criterias.map((crit) => {
                     const normVal = row.norms[crit.code];
                     const w = weightsMap[crit.code] ?? 0;
+                    const normW = totalW > 0 ? w / totalW : 0;
                     const isCost = crit.type === "cost";
                     const exponent = isCost ? -w : w;
 
-                    const formatRawX = (v: number) => {
-                      if (crit.code === "C1") return `Rp ${v.toLocaleString("id-ID")}`;
-                      return String(v);
-                    };
 
+
+                    const rawXVal = Number(row.norms[crit.code + "_raw"] ?? 1);
                     const formulaDesc =
-                      `Pangkat Bobot w_j = W_j\n` +
-                      `w_${crit.code} = ${w} ${isCost ? "(Cost -> negatif)" : "(Benefit -> positif)"}\n\n` +
-                      `Perhitungan Nilai Pangkat X_ij^w_j:\n` +
-                      `Nilai Skala X = ${formatRawX(Number(row.norms[crit.code + "_raw"] ?? 1))} pangkat ${exponent} = ${normVal.toFixed(6)}`;
+                      `1. Langkah Normalisasi Bobot Kriteria:\n` +
+                      `   - Bobot Asli (W) = ${w.toFixed(2)}\n` +
+                      `   - Total Semua Bobot = ${totalW.toFixed(2)}\n` +
+                      `   - Hasil Bobot Ternormalisasi (w) = ${w.toFixed(2)} / ${totalW.toFixed(2)} = ${normW.toFixed(4)}\n` +
+                      `   *Karena kriteria ini bertipe ${isCost ? "COST (Biaya)" : "BENEFIT (Keuntungan)"}, maka pangkatnya bernilai: ${exponent.toFixed(4)}\n\n` +
+                      `2. Perhitungan Nilai Preferensi (X pangkat w):\n` +
+                      (crit.code === "C1"
+                        ? `   - Nilai Harga (X) = ${rawXVal.toFixed(3)} Juta\n`
+                        : `   - Nilai Skala (X) = ${rawXVal} (Skala 1-5)\n`) +
+                      `   - Hasil Pangkat = ${rawXVal.toFixed(3)} pangkat (${exponent.toFixed(4)}) = ${normVal.toFixed(4)}`;
 
                     const activeCellKey = `${idx}-${crit.code}`;
                     const isCellSelected = activeFormulaDetails?.cellKey === activeCellKey;
@@ -231,11 +232,10 @@ export function NormalisationMatrixTable({
                       <td
                         key={crit.code}
                         onClick={() => onCellClick(activeCellKey, formulaDesc)}
-                        className={`py-3.5 px-3 text-center font-mono font-bold cursor-pointer ${
-                          isCellSelected ? "bg-purple-100 text-purple-900 ring-2 ring-purple-500/20 rounded-lg scale-95" : "text-gray-900"
-                        }`}
+                        className={`py-3.5 px-3 text-center font-mono font-bold cursor-pointer ${isCellSelected ? "bg-gray-200 text-gray-900 ring-2 ring-gray-400 rounded-lg scale-95" : "text-gray-900"
+                          }`}
                       >
-                        <span className="bg-purple-50 text-gray-900 px-2.5 py-1 rounded-lg border border-purple-100 hover:bg-purple-100 block">
+                        <span className="bg-gray-100 text-gray-900 px-2.5 py-1 rounded-lg border border-gray-200 hover:bg-gray-200 block">
                           {normVal.toFixed(4)}
                         </span>
                       </td>
@@ -247,12 +247,12 @@ export function NormalisationMatrixTable({
                       onCellClick(
                         `${idx}-vektorS`,
                         `Vektor S_i = product(X_ij^w_j)\n` +
-                          `Hasil Kali Seluruh Kriteria Pangkat: ${row.s.toFixed(6)}`
+                        `Hasil Kali Seluruh Kriteria Pangkat: ${row.s.toFixed(6)}`
                       )
                     }
-                    className="py-3.5 px-3 text-center font-mono font-bold cursor-pointer bg-purple-50/30 text-purple-700"
+                    className="py-3.5 px-3 text-center font-mono font-bold cursor-pointer bg-gray-100/50 text-gray-800"
                   >
-                    <span className="bg-purple-100/50 px-2.5 py-1 rounded-lg border border-purple-200 block hover:bg-purple-200/50">
+                    <span className="bg-gray-200/60 px-2.5 py-1 rounded-lg border border-gray-300 block hover:bg-gray-300/60">
                       {row.s.toFixed(4)}
                     </span>
                   </td>
@@ -262,8 +262,8 @@ export function NormalisationMatrixTable({
                       onCellClick(
                         `${idx}-vektorV`,
                         `Vektor V_i = S_i / sum(S_k)\n` +
-                          `Pembagian Vektor S alternatif ini dengan Total Seluruh S:\n` +
-                          `Hasil Vektor V: ${row.v.toFixed(6)}`
+                        `Pembagian Vektor S alternatif ini dengan Total Seluruh S:\n` +
+                        `Hasil Vektor V: ${row.v.toFixed(6)}`
                       )
                     }
                     className="py-3.5 px-3 text-center font-mono font-bold cursor-pointer bg-emerald-50/30 text-emerald-700"
@@ -282,14 +282,13 @@ export function NormalisationMatrixTable({
               {topsisCalculations.map((row, idx) => (
                 <tr
                   key={idx}
-                  className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${
-                    row.is_chosen_by_user ? "bg-purple-50/30" : ""
-                  }`}
+                  className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${row.is_chosen_by_user ? "bg-gray-100/60" : ""
+                    }`}
                 >
                   <td className="py-3.5 px-4 font-bold text-gray-900">
                     {row.alternativeName}
                     <span className="text-[10px] text-gray-400 font-medium block">
-                      {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
+                      {row.brand} | Toko: <span className="text-black font-semibold">{row.storeName}</span>
                     </span>
                   </td>
                   {criterias.map((crit) => {
@@ -300,24 +299,20 @@ export function NormalisationMatrixTable({
                     const activeCellKey = `R-${idx}-${crit.code}`;
                     const isCellSelected = activeFormulaDetails?.cellKey === activeCellKey;
 
-                    const formatRawX = (v: number) => {
-                      if (crit.code === "C1") return `Rp ${v.toLocaleString("id-ID")}`;
-                      return String(v);
-                    };
-
                     const formulaDesc =
                       `Normalisasi Vektor R_ij = X_ij / sqrt(sum(X_kj^2))\n` +
-                      `Perhitungan R: ${formatRawX(x)} / ${crit.code === "C1" ? `Rp ${squareSum.toLocaleString("id-ID")}` : squareSum.toFixed(4)} = ${rVal.toFixed(4)}`;
+                      (crit.code === "C1"
+                        ? `Perhitungan R: ${x.toFixed(3)} Juta / ${squareSum.toFixed(4)} = ${rVal.toFixed(4)}`
+                        : `Perhitungan R: ${x} / ${squareSum.toFixed(4)} = ${rVal.toFixed(4)}`);
 
                     return (
                       <td
                         key={crit.code}
                         onClick={() => onCellClick(activeCellKey, formulaDesc)}
-                        className={`py-3.5 px-3 text-center font-mono font-bold cursor-pointer ${
-                          isCellSelected ? "bg-purple-100 text-purple-900 ring-2 ring-purple-500/20 rounded-lg scale-95" : "text-gray-900"
-                        }`}
+                        className={`py-3.5 px-3 text-center font-mono font-bold cursor-pointer ${isCellSelected ? "bg-gray-200 text-gray-900 ring-2 ring-gray-400 rounded-lg scale-95" : "text-gray-900"
+                          }`}
                       >
-                        <span className="bg-indigo-50 text-gray-900 px-2 py-1 rounded-lg border border-indigo-100 hover:bg-indigo-100 block">
+                        <span className="bg-gray-100 text-gray-900 px-2 py-1 rounded-lg border border-gray-200 hover:bg-gray-200 block">
                           {rVal.toFixed(4)}
                         </span>
                       </td>
@@ -346,14 +341,13 @@ export function NormalisationMatrixTable({
               {topsisCalculations.map((row, idx) => (
                 <tr
                   key={idx}
-                  className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${
-                    row.is_chosen_by_user ? "bg-purple-50/30" : ""
-                  }`}
+                  className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${row.is_chosen_by_user ? "bg-gray-100/60" : ""
+                    }`}
                 >
                   <td className="py-3.5 px-4 font-bold text-gray-900">
                     {row.alternativeName}
                     <span className="text-[10px] text-gray-400 font-medium block">
-                      {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
+                      {row.brand} | Toko: <span className="text-black font-semibold">{row.storeName}</span>
                     </span>
                   </td>
                   {criterias.map((crit) => {
@@ -372,11 +366,10 @@ export function NormalisationMatrixTable({
                       <td
                         key={crit.code}
                         onClick={() => onCellClick(activeCellKey, formulaDesc)}
-                        className={`py-3.5 px-3 text-center font-mono font-bold cursor-pointer ${
-                          isCellSelected ? "bg-purple-100 text-purple-900 ring-2 ring-purple-500/20 rounded-lg scale-95" : "text-gray-900"
-                        }`}
+                        className={`py-3.5 px-3 text-center font-mono font-bold cursor-pointer ${isCellSelected ? "bg-gray-200 text-gray-900 ring-2 ring-gray-400 rounded-lg scale-95" : "text-gray-900"
+                          }`}
                       >
-                        <span className="bg-purple-50 text-gray-900 px-2 py-1 rounded-lg border border-purple-100 hover:bg-purple-100 block">
+                        <span className="bg-gray-100 text-gray-900 px-2 py-1 rounded-lg border border-gray-200 hover:bg-gray-200 block">
                           {vVal.toFixed(4)}
                         </span>
                       </td>
@@ -386,12 +379,12 @@ export function NormalisationMatrixTable({
               ))}
 
               {/* Row A+ */}
-              <tr className="bg-purple-50/40 border-t border-gray-200 font-bold text-purple-900">
+              <tr className="bg-gray-100/60 border-t border-gray-200 font-bold text-gray-900">
                 <td className="py-3 px-4 font-bold">Ideal Positif (A⁺)</td>
                 {criterias.map((crit) => {
                   const val = topsisCalculations[0]?.idealPositive?.[crit.code] ?? 0;
                   return (
-                    <td key={crit.code} className="py-3 px-3 text-center font-mono text-purple-700">
+                    <td key={crit.code} className="py-3 px-3 text-center font-mono text-gray-800">
                       {val.toFixed(4)}
                     </td>
                   );
@@ -418,14 +411,13 @@ export function NormalisationMatrixTable({
             topsisCalculations.map((row, idx) => (
               <tr
                 key={idx}
-                className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${
-                  row.is_chosen_by_user ? "bg-purple-50/30" : ""
-                }`}
+                className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${row.is_chosen_by_user ? "bg-gray-100/60" : ""
+                  }`}
               >
                 <td className="py-3.5 px-4 font-bold text-gray-900">
                   {row.alternativeName}
                   <span className="text-[10px] text-gray-400 font-medium block">
-                    {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
+                    {row.brand} | Toko: <span className="text-black font-semibold">{row.storeName}</span>
                   </span>
                 </td>
                 {/* D+ */}
@@ -434,7 +426,7 @@ export function NormalisationMatrixTable({
                     onCellClick(
                       `${idx}-dPlus`,
                       `Jarak ke Solusi Ideal Positif D_i^+ = sqrt(sum((V_ij - A_j^+)^2))\n` +
-                        `Hasil Jarak (D+): ${row.dPlus.toFixed(6)}`
+                      `Hasil Jarak (D+): ${row.dPlus.toFixed(6)}`
                     )
                   }
                   className="py-3.5 px-3 text-center font-mono font-bold cursor-pointer bg-amber-50/30 text-amber-700"
@@ -450,7 +442,7 @@ export function NormalisationMatrixTable({
                     onCellClick(
                       `${idx}-dMinus`,
                       `Jarak ke Solusi Ideal Negatif D_i^- = sqrt(sum((V_ij - A_j^-)^2))\n` +
-                        `Hasil Jarak (D-): ${row.dMinus.toFixed(6)}`
+                      `Hasil Jarak (D-): ${row.dMinus.toFixed(6)}`
                     )
                   }
                   className="py-3.5 px-3 text-center font-mono font-bold cursor-pointer bg-blue-50/30 text-blue-700"
@@ -466,7 +458,7 @@ export function NormalisationMatrixTable({
                     onCellClick(
                       `${idx}-closeness`,
                       `Nilai Preferensi V_i = D_i^- / (D_i^+ + D_i^-)\n` +
-                        `Perhitungan: ${row.dMinus.toFixed(6)} / (${row.dPlus.toFixed(6)} + ${row.dMinus.toFixed(6)}) = ${row.c.toFixed(6)}`
+                      `Perhitungan: ${row.dMinus.toFixed(6)} / (${row.dPlus.toFixed(6)} + ${row.dMinus.toFixed(6)}) = ${row.c.toFixed(6)}`
                     )
                   }
                   className="py-3.5 px-3 text-center font-mono font-bold cursor-pointer bg-emerald-50/30 text-emerald-700"
