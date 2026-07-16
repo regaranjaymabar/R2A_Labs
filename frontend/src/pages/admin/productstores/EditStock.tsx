@@ -101,13 +101,13 @@ export default function EditStock() {
 
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         {item && (
-          <div className="p-6 bg-gray-50 dark:bg-white/5 border-b border-gray-200 dark:border-gray-800 space-y-4">
-            <div className="flex items-center gap-2 text-sm font-bold text-black dark:text-white">
-              <Package className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0" />
+          <div className="p-6 bg-gray-50 border-b border-gray-200 space-y-4">
+            <div className="flex items-center gap-2 text-sm font-bold text-black">
+              <Package className="w-5 h-5 text-blue-600 shrink-0" />
               <span>Detail Spesifikasi Laptop</span>
             </div>
             <div className="flex flex-col md:flex-row gap-6 items-start">
-              <div className="w-32 h-32 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+              <div className="w-32 h-32 rounded-xl border border-gray-200 bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
                 {(item as any).product?.imageUrl ? (
                   <img
                     src={(item as any).product.imageUrl}
@@ -122,49 +122,49 @@ export default function EditStock() {
               <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
                 <div className="space-y-1">
                   <span className="text-gray-400 font-medium block">Nama & Model</span>
-                  <span className="font-bold text-gray-900 dark:text-white text-sm">
+                  <span className="font-bold text-gray-900 text-sm">
                     {(item as any).product?.brand?.name || (item as any).brand_name || "-"} {(item as any).product?.modelName || (item as any).product_name || "-"}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-gray-400 font-medium block">Processor</span>
-                  <span className="font-bold text-gray-900 dark:text-white text-sm">
+                  <span className="font-bold text-gray-900 text-sm">
                     {(item as any).product?.processor || "-"}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-gray-400 font-medium block">RAM</span>
-                  <span className="font-bold text-gray-900 dark:text-white text-sm">
+                  <span className="font-bold text-gray-900 text-sm">
                     {(item as any).product?.ram || "-"}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-gray-400 font-medium block">Penyimpanan (Storage)</span>
-                  <span className="font-bold text-gray-900 dark:text-white text-sm">
+                  <span className="font-bold text-gray-900 text-sm">
                     {(item as any).product?.storage || "-"}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-gray-400 font-medium block">Ukuran Layar</span>
-                  <span className="font-bold text-gray-900 dark:text-white text-sm">
+                  <span className="font-bold text-gray-900 text-sm">
                     {(item as any).product?.screenSize || (item as any).product?.screen_size ? `${(item as any).product.screenSize || (item as any).product.screen_size}"` : "-"}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-gray-400 font-medium block">Kapasitas Baterai</span>
-                  <span className="font-bold text-gray-900 dark:text-white text-sm">
+                  <span className="font-bold text-gray-900 text-sm">
                     {(item as any).product?.battery || "-"}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-gray-400 font-medium block">Berat</span>
-                  <span className="font-bold text-gray-900 dark:text-white text-sm">
+                  <span className="font-bold text-gray-900 text-sm">
                     {(item as any).product?.weight ? (String((item as any).product.weight).toLowerCase().endsWith("kg") ? (item as any).product.weight : `${(item as any).product.weight}kg`) : "-"}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-gray-400 font-medium block">Tahun Rilis</span>
-                  <span className="font-bold text-gray-900 dark:text-white text-sm">
+                  <span className="font-bold text-gray-900 text-sm">
                     {(item as any).product?.releaseYear || (item as any).product?.release_year ? String((item as any).product.releaseYear || (item as any).product.release_year).slice(0, 4) : "-"}
                   </span>
                 </div>

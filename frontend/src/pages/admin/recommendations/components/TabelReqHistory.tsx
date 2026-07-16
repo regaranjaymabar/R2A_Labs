@@ -94,7 +94,7 @@ export function TabelReqHistory({
                             return "bg-gray-100 text-gray-700 border-gray-200";
                         }
                         if (term.includes("processor") || term.includes("cpu") || term.includes("c6")) {
-                            return "bg-blue-100 text-blue-700 border-blue-200";
+                            return "bg-gray-100 text-gray-700 border-gray-200";
                         }
                         if (term.includes("storage") || term.includes("c3")) {
                             return "bg-gray-100 text-gray-700 border-gray-200";

@@ -133,7 +133,7 @@ export default function AdminDashboard() {
                     <p className="text-sm text-gray-500 mt-1">
                         {isStoreAdmin
                             ? `Pantau inventaris, harga, dan performa rekomendasi dari ${(user as any)?.store?.name || "toko kamu"}.`
-                            : "Panel kendali utama Sistem Pendukung Keputusan & Aggregator Laptop."}
+                            : ""}
                     </p>
                 </div>
             </div>

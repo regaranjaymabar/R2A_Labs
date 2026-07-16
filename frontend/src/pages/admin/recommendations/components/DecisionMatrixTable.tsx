@@ -25,7 +25,7 @@ export function DecisionMatrixTable({
     <div className="space-y-4">
       <div className="flex items-center justify-between text-xs text-gray-500">
         <span>* Menunjukkan konversi nilai spesifikasi ke skala numerik [1 sampai 5] (kecuali C1 Harga menggunakan rupiah asli)</span>
-        <span className="font-mono text-purple-600 flex items-center gap-1 bg-purple-50 px-2.5 py-1 rounded-lg">
+        <span className="font-mono text-black flex items-center gap-1 px-2.5 py-1 rounded-lg">
           <HelpCircle className="w-3.5 h-3.5" />
           Klik sel nilai untuk melihat spesifikasi mentahnya!
         </span>

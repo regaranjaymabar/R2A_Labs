@@ -139,7 +139,7 @@ export default function ReqHistory() {
             </div>
 
             <div className="space-y-2">
-              <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block uppercase tracking-wider">
+              <span className="text-xs font-bold text-gray-700  block uppercase tracking-wider">
                 Penggeseran Slider Bobot Kriteria (%):
               </span>
               <div className="flex flex-wrap gap-2.5">
@@ -154,14 +154,14 @@ export default function ReqHistory() {
                         key={index}
                         className={`p-3 rounded-xl min-w-[100px] text-center border transition-all ${
                           isCost
-                            ? "bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800/80 text-red-700"
-                            : "bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800/80 text-purple-700"
+                            ? "bg-red-50border-red-200 text-red-700"
+                            : "border-gray-300 text-black"
                         }`}
                       >
-                        <span className={`text-[11px] font-bold block ${isCost ? "text-red-600" : "text-black dark:text-purple-300"}`}>
+                        <span className={`text-[11px] font-bold block ${isCost ? "text-red-600" : "text-black"}`}>
                           {label.toUpperCase()}
                         </span>
-                        <span className={`text-lg font-extrabold font-mono ${isCost ? "text-red-950 dark:text-red-200" : "text-purple-900 dark:text-purple-200"}`}>
+                        <span className={`text-lg font-extrabold font-mono ${isCost ? "text-red-950 " : "text-black"}`}>
                           {percentage.toFixed(0)}%
                         </span>
                       </div>

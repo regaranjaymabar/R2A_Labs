@@ -13,7 +13,6 @@ import { useDeleteProductStore } from "./hooks/useDeleteProductStore";
 import type { ProductStore } from "../../../types/productStore";
 import { useGet } from "../../../hooks/useGet";
 import { productStoreService } from "../../../services/productStoreService";
-import { productService } from "../../../services/productService";
 import { useAuthStore } from "../../../store/useAuthStore";
 
 const initialProductStores: ProductStore[] = [
@@ -39,12 +38,6 @@ export default function ProductStoreIndex() {
   });
   const [localData, setLocalData] = useState<ProductStore[] | null>(null);
   const data: ProductStore[] = localData || (fetchedData && fetchedData.length > 0 ? fetchedData : initialProductStores);
-
-  const { data: fetchedProducts = [] } = useGet({
-    queryKey: ["products"],
-    queryFn: productService.getAll,
-  });
-
   const [selectedStoreFilter, setSelectedStoreFilter] = useState<string>("ALL");
 
   const [editingItem, setEditingItem] = useState<ProductStore | null>(null);
@@ -219,13 +212,7 @@ export default function ProductStoreIndex() {
               <span className="text-3xl font-extrabold text-gray-900">
                 {filteredData.length}
               </span>
-              <span className="text-[10px] text-gray-500 font-medium">
-                (Terdapat {fetchedProducts.length} total produk di DB)
-              </span>
             </div>
-          </div>
-          <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
-            <Laptop className="w-6 h-6" />
           </div>
         </div>
 
@@ -233,16 +220,11 @@ export default function ProductStoreIndex() {
         <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-xs flex items-center justify-between">
           <div className="space-y-1">
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">
-              Stok Hampir Habis (≤ 5)
+              Stok Hampir Habis
             </span>
-            <span className="text-3xl font-extrabold text-amber-600">
+            <span className="text-3xl font-extrabold text-black">
               {lowStockCount}
             </span>
-          </div>
-          <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600">
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
           </div>
         </div>
 
@@ -252,15 +234,11 @@ export default function ProductStoreIndex() {
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">
               Stok Habis
             </span>
-            <span className="text-3xl font-extrabold text-red-600">
+            <span className="text-3xl font-extrabold text-black">
               {outOfStockCount}
             </span>
           </div>
-          <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-600">
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-            </svg>
-          </div>
+
         </div>
       </div>
 
