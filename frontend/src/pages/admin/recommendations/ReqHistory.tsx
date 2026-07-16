@@ -139,26 +139,37 @@ export default function ReqHistory() {
             </div>
 
             <div className="space-y-2">
-              <span className="text-xs font-bold text-gray-700  block uppercase tracking-wider">
+              <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block uppercase tracking-wider">
                 Penggeseran Slider Bobot Kriteria (%):
               </span>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                <div className="p-3 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/80 text-center">
-                  <span className="text-[11px] font-bold text-black block">RAM</span>
-                  <span className="text-lg font-extrabold text-purple-900 dark:text-purple-200 font-mono">{selectedDetail.weights?.ram ?? 0}%</span>
-                </div>
-                <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 text-center">
-                  <span className="text-[11px] font-bold text-amber-600 block">HARGA</span>
-                  <span className="text-lg font-extrabold text-amber-900 dark:text-amber-200 font-mono">{selectedDetail.weights?.price ?? 0}%</span>
-                </div>
-                <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/80 text-center">
-                  <span className="text-[11px] font-bold text-blue-600 block">CPU</span>
-                  <span className="text-lg font-extrabold text-blue-900 dark:text-blue-200 font-mono">{selectedDetail.weights?.processor || 20}%</span>
-                </div>
-                <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-center">
-                  <span className="text-[11px] font-bold text-emerald-600 block">STORAGE</span>
-                  <span className="text-lg font-extrabold text-emerald-900 dark:text-emerald-200 font-mono">{selectedDetail.weights?.storage || 10}%</span>
-                </div>
+              <div className="flex flex-wrap gap-2.5">
+                {selectedDetail.recommendationWeights && selectedDetail.recommendationWeights.length > 0 ? (
+                  selectedDetail.recommendationWeights.map((w: any, index: number) => {
+                    const label = w.criteria?.name || w.criteria?.code || `C${w.criteriaId}`;
+                    const percentage = w.weightPercentage ?? (w.weight ? Number(w.weight) * 100 : 0);
+                    const isCost = w.criteria?.type === "cost" || String(label).toLowerCase().includes("harga") || String(label).toLowerCase().includes("berat");
+
+                    return (
+                      <div
+                        key={index}
+                        className={`p-3 rounded-xl min-w-[100px] text-center border transition-all ${
+                          isCost
+                            ? "bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800/80 text-red-700"
+                            : "bg-purple-50 dark:bg-purple-950/40 border-purple-200 dark:border-purple-800/80 text-purple-700"
+                        }`}
+                      >
+                        <span className={`text-[11px] font-bold block ${isCost ? "text-red-600" : "text-black dark:text-purple-300"}`}>
+                          {label.toUpperCase()}
+                        </span>
+                        <span className={`text-lg font-extrabold font-mono ${isCost ? "text-red-950 dark:text-red-200" : "text-purple-900 dark:text-purple-200"}`}>
+                          {percentage.toFixed(0)}%
+                        </span>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <span className="text-gray-400 font-mono text-xs">-</span>
+                )}
               </div>
             </div>
 

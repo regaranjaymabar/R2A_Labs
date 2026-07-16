@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import {
   Plus,
   Filter,
+  Laptop,
 } from "lucide-react";
 import { TableProductStoreIndex } from "./components/TableProductStoreIndex";
 import { Button } from "../../../components/ui/common/Button";
@@ -12,6 +13,7 @@ import { useDeleteProductStore } from "./hooks/useDeleteProductStore";
 import type { ProductStore } from "../../../types/productStore";
 import { useGet } from "../../../hooks/useGet";
 import { productStoreService } from "../../../services/productStoreService";
+import { productService } from "../../../services/productService";
 import { useAuthStore } from "../../../store/useAuthStore";
 
 const initialProductStores: ProductStore[] = [
@@ -37,6 +39,11 @@ export default function ProductStoreIndex() {
   });
   const [localData, setLocalData] = useState<ProductStore[] | null>(null);
   const data: ProductStore[] = localData || (fetchedData && fetchedData.length > 0 ? fetchedData : initialProductStores);
+
+  const { data: fetchedProducts = [] } = useGet({
+    queryKey: ["products"],
+    queryFn: productService.getAll,
+  });
 
   const [selectedStoreFilter, setSelectedStoreFilter] = useState<string>("ALL");
 
@@ -70,6 +77,17 @@ export default function ProductStoreIndex() {
     const names = data.map((item) => getStoreName(item));
     return Array.from(new Set(names));
   }, [data]);
+
+  const outOfStockCount = useMemo(() => {
+    return filteredData.filter((item) => Number(item.stock) === 0).length;
+  }, [filteredData]);
+
+  const lowStockCount = useMemo(() => {
+    return filteredData.filter((item) => {
+      const s = Number(item.stock);
+      return s > 0 && s <= 5;
+    }).length;
+  }, [filteredData]);
 
   const [isSavingEdit, setIsSavingEdit] = useState<boolean>(false);
 
@@ -189,6 +207,63 @@ export default function ProductStoreIndex() {
         </div>
       )}
 
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {/* Card 1: Total Produk Toko */}
+        <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-xs flex items-center justify-between">
+          <div className="space-y-1">
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">
+              Produk di Toko Anda
+            </span>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-3xl font-extrabold text-gray-900">
+                {filteredData.length}
+              </span>
+              <span className="text-[10px] text-gray-500 font-medium">
+                (Terdapat {fetchedProducts.length} total produk di DB)
+              </span>
+            </div>
+          </div>
+          <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+            <Laptop className="w-6 h-6" />
+          </div>
+        </div>
+
+        {/* Card 2: Stok Hampir Habis */}
+        <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-xs flex items-center justify-between">
+          <div className="space-y-1">
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">
+              Stok Hampir Habis (≤ 5)
+            </span>
+            <span className="text-3xl font-extrabold text-amber-600">
+              {lowStockCount}
+            </span>
+          </div>
+          <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Card 3: Stok Habis */}
+        <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-xs flex items-center justify-between">
+          <div className="space-y-1">
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">
+              Stok Habis
+            </span>
+            <span className="text-3xl font-extrabold text-red-600">
+              {outOfStockCount}
+            </span>
+          </div>
+          <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-600">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
       <TableProductStoreIndex
         data={filteredData}
         onEdit={handleOpenEdit}
@@ -207,6 +282,44 @@ export default function ProductStoreIndex() {
       >
         {editingItem && (
           <form onSubmit={handleSaveEdit} className="space-y-5">
+            <div className="p-4 bg-gray-50 rounded-2xl border border-gray-200/80 space-y-4 mb-4">
+              <div className="flex flex-col sm:flex-row gap-4 items-start">
+                <div className="w-20 h-20 rounded-lg border border-gray-200 bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-2xs">
+                  {(editingItem as any).product?.imageUrl ? (
+                    <img
+                      src={(editingItem as any).product.imageUrl}
+                      alt={getProductName(editingItem)}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Laptop className="w-8 h-8 text-gray-300" />
+                  )}
+                </div>
+                <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-2 text-[11px]">
+                  <div>
+                    <span className="text-gray-400 font-medium block">Processor</span>
+                    <span className="font-bold text-gray-800">{(editingItem as any).product?.processor || "-"}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400 font-medium block">RAM / Storage</span>
+                    <span className="font-bold text-gray-800">{(editingItem as any).product?.ram || "-"} / {(editingItem as any).product?.storage || "-"}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400 font-medium block">Layar / Baterai</span>
+                    <span className="font-bold text-gray-800">
+                      {((editingItem as any).product?.screenSize || (editingItem as any).product?.screen_size) ? `${(editingItem as any).product.screenSize || (editingItem as any).product.screen_size}"` : "-"} / {(editingItem as any).product?.battery || "-"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400 font-medium block">Berat / Rilis</span>
+                    <span className="font-bold text-gray-800">
+                      {(editingItem as any).product?.weight ? (String((editingItem as any).product.weight).toLowerCase().endsWith("kg") ? (editingItem as any).product.weight : `${(editingItem as any).product.weight}kg`) : "-"} / {((editingItem as any).product?.releaseYear || (editingItem as any).product?.release_year) ? String((editingItem as any).product.releaseYear || (editingItem as any).product.release_year).slice(0, 4) : "-"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-gray-700 items-center gap-1.5">
                 <span>Penyesuaian Harga Jual (IDR)</span>

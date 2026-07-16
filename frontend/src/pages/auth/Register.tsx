@@ -4,12 +4,13 @@ import { z } from "zod";
 import { InputText } from "../../components/ui/common/InputText";
 import { InputPassword } from "../../components/ui/common/InputPassword";
 import Button from "../../components/ui/common/Button";
-import { Link, useNavigate, type ErrorResponse } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useAuthStore } from "../../store/useAuthStore";
 import type { CustomerAuthWrapperResponse, User } from "../../types/auth";
 import { api } from "../../lib/axios";
+import toast from "react-hot-toast";
 
 type FormData = {
     email: string;
@@ -30,6 +31,7 @@ const schema = z.object({
 
 export default function RegisterForm() {
     const navigate = useNavigate();
+    const location = useLocation();
     const queryClient = useQueryClient();
     const login = useAuthStore((state) => state.login);
 
@@ -64,11 +66,14 @@ export default function RegisterForm() {
 
             queryClient.setQueryData(["me"], customerUser);
 
-            navigate("/");
+            toast.success("Akun berhasil dibuat! Selamat datang di AMBALABS");
+            
+            const from = (location.state as any)?.from || "/";
+            navigate(from, { replace: true });
         },
-        onError: (error: AxiosError<ErrorResponse>) => {
-            const message = error.message || "Email sudah terdaftar atau terjadi kesalahan";
-            alert(`Gagal Mendaftar : ${message}`);
+        onError: (error: AxiosError<any>) => {
+            const message = error.response?.data?.message || error.message || "Email sudah terdaftar atau terjadi kesalahan";
+            toast.error(`Gagal Mendaftar : ${message}`);
         }
     });
 
