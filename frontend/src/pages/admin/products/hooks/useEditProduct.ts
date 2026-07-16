@@ -104,6 +104,7 @@ export function useEditProduct() {
     control,
     handleSubmit: handleSubmit(onSubmit),
     setValue,
+    watch,
     errors,
     isSubmitting: updateMutation.isPending,
     isLoadingData,

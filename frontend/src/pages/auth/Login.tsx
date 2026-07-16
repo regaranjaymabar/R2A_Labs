@@ -53,6 +53,7 @@ export default function Login() {
       }
     },
     onSuccess: (result) => {
+      const from = (location.state as any)?.from || (result.type === "admin" ? "/admin/dashboard" : "/");
       if (result.type === "admin") {
         login({
           user: result.data.user,
@@ -60,7 +61,7 @@ export default function Login() {
         });
         queryClient.setQueryData(["me"], result.data.user);
         toast.success("Berhasil masuk ke Portal Admin AMBALABS");
-        navigate("/admin/dashboard");
+        navigate(from, { replace: true });
       } else {
         const customerUser: User = {
           ...result.data.customer,
@@ -74,7 +75,7 @@ export default function Login() {
 
         queryClient.setQueryData(["me"], customerUser);
         toast.success("Berhasil masuk ke AMBALABS");
-        navigate("/");
+        navigate(from, { replace: true });
       }
     },
     onError: (error: AxiosError<any>) => {

@@ -44,14 +44,15 @@ export function FinalRankingList({
   
   // Grouping SAW by laptop name
   const sawGroups = useMemo(() => {
+    const sorted = [...activeAlternatives].sort((a, b) => b.score - a.score);
     const groups: Record<string, typeof activeAlternatives> = {};
-    activeAlternatives.forEach((laptop) => {
+    sorted.forEach((laptop) => {
       const name = laptop.name;
       if (!groups[name]) groups[name] = [];
       groups[name].push(laptop);
     });
-    // Sort groups based on the best rank in each group (first item in array)
-    return Object.values(groups).sort((a, b) => a[0].rank - b[0].rank);
+    // Sort groups based on the best score in each group (first item in array)
+    return Object.values(groups).sort((a, b) => b[0].score - a[0].score);
   }, [activeAlternatives]);
 
   // Grouping WP by laptop name

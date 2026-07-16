@@ -4,6 +4,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import {
     Edit,
     Trash2,
+    Laptop,
 } from "lucide-react";
 import { DataTable, DataTableColumnHeader } from "../../../../components/ui/common/DataTable";
 import type { Product } from "../../../../types/product";
@@ -52,13 +53,24 @@ export function TabelProductIndex({
                         const brandName = product.brand?.name || product.brand_name;
                         return (
                             <div className="flex items-center gap-3.5">
+                                {product.imageUrl ? (
+                                    <img
+                                        src={product.imageUrl}
+                                        alt={modelName}
+                                        className="w-10 h-10 object-cover rounded-lg border border-gray-200 dark:border-gray-700 flex-shrink-0 shadow-2xs"
+                                    />
+                                ) : (
+                                    <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 dark:text-gray-500 border border-gray-200 dark:border-gray-700 flex-shrink-0">
+                                        <Laptop className="w-5 h-5" />
+                                    </div>
+                                )}
                                 <div>
-                                    <div className="font-bold text-gray-900 text-base">
+                                    <div className="font-bold text-gray-900 dark:text-white text-base">
                                         {modelName}
                                     </div>
                                     {brandName && (
                                         <span className="inline-block mt-0.5 px-2 py-0.5 rounded text-[11px] font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
-                                            Brand : <strong className="font-bold text-gray-900 ">{brandName}</strong>
+                                            Brand : <strong className="font-bold text-gray-900 dark:text-white">{brandName}</strong>
                                         </span>
                                     )}
                                 </div>

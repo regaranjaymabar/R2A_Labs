@@ -1,5 +1,4 @@
 import { HelpCircle } from "lucide-react";
-import { CRITERIAS } from "../ResultDetail";
 
 interface DecisionMatrixTableProps {
   decisionMatrix: Array<{
@@ -12,6 +11,7 @@ interface DecisionMatrixTableProps {
   activeAlternatives: any[];
   activeFormulaDetails: { cellKey: string; description: string } | null;
   onCellClick: (cellKey: string, description: string) => void;
+  criterias: Array<{ code: string; name: string; type: string; desc: string }>;
 }
 
 export function DecisionMatrixTable({
@@ -19,11 +19,12 @@ export function DecisionMatrixTable({
   activeAlternatives,
   activeFormulaDetails,
   onCellClick,
+  criterias,
 }: DecisionMatrixTableProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between text-xs text-gray-500">
-        <span>* Menunjukkan konversi nilai spesifikasi ke skala skala numerik [1 sampai 5]</span>
+        <span>* Menunjukkan konversi nilai spesifikasi ke skala numerik [1 sampai 5] (kecuali C1 Harga menggunakan rupiah asli)</span>
         <span className="font-mono text-purple-600 flex items-center gap-1 bg-purple-50 px-2.5 py-1 rounded-lg">
           <HelpCircle className="w-3.5 h-3.5" />
           Klik sel nilai untuk melihat spesifikasi mentahnya!
@@ -34,7 +35,7 @@ export function DecisionMatrixTable({
         <thead>
           <tr className="border-b border-gray-200 text-gray-400 font-bold uppercase tracking-wider">
             <th className="py-3 px-4 min-w-[200px]">Alternatif Laptop</th>
-            {CRITERIAS.map((c) => (
+            {criterias.map((c) => (
               <th key={c.code} className="py-3 px-3 text-center" title={c.desc}>
                 <span className="block font-mono text-[10px] text-gray-900 bg-gray-200/80 px-1 rounded-sm w-fit mx-auto mb-0.5">{c.code}</span>
                 <span>{c.name}</span>
@@ -63,19 +64,26 @@ export function DecisionMatrixTable({
                   {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
                 </span>
               </td>
-              {CRITERIAS.map((crit) => {
+              {criterias.map((crit) => {
                 const val = row.values[crit.code];
-                const rawAlt = activeAlternatives.find((a) => a.name === row.alternativeName);
+                const rawAlt = activeAlternatives.find((a) => a.name === row.alternativeName && a.storeName === row.storeName);
                 let rawSpec = "-";
                 if (rawAlt) {
-                  if (crit.code === "C1") rawSpec = `Rp ${rawAlt.price.toLocaleString("id-ID")}`;
-                  else if (crit.code === "C2") rawSpec = rawAlt.ram;
-                  else if (crit.code === "C3") rawSpec = rawAlt.storage;
-                  else if (crit.code === "C4") rawSpec = rawAlt.battery;
-                  else if (crit.code === "C5") rawSpec = `${rawAlt.weight} Kg`;
-                  else if (crit.code === "C6") rawSpec = rawAlt.cpu;
-                  else if (crit.code === "C7") rawSpec = `${rawAlt.screenSize || "14"}"`;
-                  else if (crit.code === "C8") rawSpec = rawAlt.releaseYear;
+                  const dbVal = rawAlt.dbWeights?.find((w: any) => w.criteria_code === crit.code);
+                  const isHarga = crit.code === "C1" || crit.name.toLowerCase().includes("harga");
+                  if (dbVal && dbVal.sub_criteria_description && dbVal.sub_criteria_description !== "-" && !isHarga) {
+                    rawSpec = dbVal.sub_criteria_description;
+                  } else {
+                    if (isHarga) rawSpec = `Rp ${rawAlt.price.toLocaleString("id-ID")}`;
+                    else if (crit.code === "C2") rawSpec = rawAlt.ram;
+                    else if (crit.code === "C3") rawSpec = rawAlt.storage;
+                    else if (crit.code === "C4") rawSpec = rawAlt.battery;
+                    else if (crit.code === "C5") rawSpec = `${rawAlt.weight} Kg`;
+                    else if (crit.code === "C6") rawSpec = rawAlt.cpu;
+                    else if (crit.code === "C7") rawSpec = `${rawAlt.screenSize || "14"}"`;
+                    else if (crit.code === "C8") rawSpec = rawAlt.releaseYear;
+                    else if (dbVal && dbVal.value_numeric !== undefined) rawSpec = String(dbVal.value_numeric);
+                  }
                 }
 
                 const activeCellKey = `${idx}-${crit.code}`;
@@ -87,7 +95,10 @@ export function DecisionMatrixTable({
                     onClick={() =>
                       onCellClick(
                         activeCellKey,
-                        `Laptop: ${row.alternativeName}\nSpesifikasi mentah: "${rawSpec}"\nTipe Kriteria: ${crit.type.toUpperCase()} (${crit.desc})\nSkala Mapped: ${val} (Skala 1-5)`
+                        `Laptop: ${row.alternativeName}\nSpesifikasi mentah: "${rawSpec}"\nTipe Kriteria: ${crit.type.toUpperCase()} (${crit.desc})\n` +
+                        (crit.code === "C1"
+                          ? `Nilai Asli: Rp ${val.toLocaleString("id-ID")}`
+                          : `Skala Mapped: ${val} (Skala 1-5)`)
                       )
                     }
                     className={`py-3.5 px-3 text-center font-mono font-bold transition-all cursor-pointer ${
@@ -95,7 +106,7 @@ export function DecisionMatrixTable({
                     }`}
                   >
                     <span className="bg-gray-100 px-2.5 py-1 rounded-lg border border-gray-200/50 block hover:bg-purple-50">
-                      {val}
+                      {crit.code === "C1" ? `Rp ${val.toLocaleString("id-ID")}` : val}
                     </span>
                   </td>
                 );

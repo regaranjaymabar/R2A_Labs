@@ -32,12 +32,7 @@ const getCriteriaScaleValue = (criteriaCode: string, alt: any): number => {
   }
   switch (criteriaCode) {
     case "C1": { // Harga (cost)
-      const price = Number(alt.price);
-      if (price < 6000000) return 5;
-      if (price < 10000000) return 4;
-      if (price < 15000000) return 3;
-      if (price < 20000000) return 2;
-      return 1;
+      return Number(alt.price);
     }
     case "C2": { // RAM (benefit)
       const ram = String(alt.ram).toLowerCase();
@@ -160,6 +155,7 @@ export default function ResultDetail() {
       user_choice: data.user_choice || "-",
       rawWeights,
       results,
+      calculationDetails: data.calculationDetails || null,
     };
   }, [fetchedData, id]);
 
@@ -187,12 +183,39 @@ export default function ResultDetail() {
     return map;
   }, [session]);
 
+  const criterias = useMemo(() => {
+    if (session && Array.isArray(session.rawWeights) && session.rawWeights.length > 0) {
+      return session.rawWeights.map((rw: any) => {
+        const code = rw.criteria?.code || (rw.criteriaId ? `C${rw.criteriaId}` : "");
+        const name = rw.criteria?.name || `Kriteria ${rw.criteriaId}`;
+        const type = rw.criteria?.type || "benefit";
+        
+        let desc = "";
+        if (code === "C1") desc = "Harga produk laptop (Semakin murah semakin baik)";
+        else if (code === "C2") desc = "Kapasitas RAM laptop (Semakin besar semakin baik)";
+        else if (code === "C3") desc = "Kapasitas Storage/Penyimpanan (Semakin besar semakin baik)";
+        else if (code === "C4") desc = "Kapasitas Baterai laptop dalam Wh (Semakin awet semakin baik)";
+        else if (code === "C5") desc = "Berat fisik laptop dalam Kg (Semakin ringan semakin baik)";
+        else if (code === "C6") desc = "Kelas benchmark performa processor (Semakin tinggi semakin baik)";
+        else if (code === "C7") desc = "Bentang layar laptop dalam Inch (Semakin luas semakin baik)";
+        else if (code === "C8") desc = "Tahun rilis laptop ke pasar (Semakin baru semakin baik)";
+        else {
+          desc = `${name} (${type === "cost" ? "Semakin kecil semakin baik" : "Semakin besar semakin baik"})`;
+        }
+
+        return { code, name, type, desc };
+      });
+    }
+
+    return CRITERIAS;
+  }, [session]);
+
   const activeAlternatives = useMemo(() => {
     if (!session || !Array.isArray(session.results)) return [];
 
-    return session.results
+    // 1. Map all alternatives in their base order first
+    const baseAlts = session.results
       .filter((r: any) => r.methodUsed === activeMethod || r.method_used === activeMethod)
-      .sort((a: any, b: any) => (a.ranking || a.rank || 1) - (b.ranking || b.rank || 1))
       .map((r: any, index: number) => {
         const pStore = r.productStore || {};
         const prod = pStore.product || {};
@@ -209,7 +232,7 @@ export default function ResultDetail() {
         const productId = prod.id || pStore.products_id_product || 0;
         const dbWeights = allWeights?.filter((w: any) => Number(w.product_id) === Number(productId)) || [];
 
-        return {
+        const alt = {
           productId,
           rank: r.ranking || r.rank || index + 1,
           name: prod.modelName || r.product_name || `Alternative #${index + 1}`,
@@ -229,15 +252,164 @@ export default function ResultDetail() {
           dbWeights,
           raw: r,
         };
+
+        // Precompute values map for scoring
+        const values: Record<string, number> = {};
+        criterias.forEach((crit) => {
+          values[crit.code] = getCriteriaScaleValue(crit.code, alt);
+        });
+
+        return { ...alt, values };
       });
-  }, [session, activeMethod, allWeights]);
+
+    if (baseAlts.length === 0) return [];
+
+    // 2. Sort and group depending on activeMethod
+    let finalAlts: typeof baseAlts = [];
+
+    if (activeMethod === "WP") {
+      const totalW = criterias.reduce((sum, crit) => sum + (weightsMap[crit.code] ?? 0), 0);
+      const normalizedW: Record<string, number> = {};
+      criterias.forEach((crit) => {
+        normalizedW[crit.code] = totalW > 0 ? (weightsMap[crit.code] ?? 0) / totalW : 0;
+      });
+
+      const wpS = baseAlts.map((alt) => {
+        let s = 1;
+        criterias.forEach((crit) => {
+          const x = alt.values[crit.code];
+          const w = normalizedW[crit.code];
+          if (w > 0) {
+            const power = crit.type === "cost" ? -w : w;
+            s *= Math.pow(x, power);
+          }
+        });
+        return s;
+      });
+
+      const sumS = wpS.reduce((sum, s) => sum + s, 0);
+      const calculatedAlts = baseAlts.map((alt, idx) => ({
+        ...alt,
+        calculatedScore: sumS > 0 ? wpS[idx] / sumS : 0,
+      }));
+
+      // Group by product name
+      const groups: Record<string, typeof calculatedAlts> = {};
+      calculatedAlts.forEach((alt) => {
+        const name = alt.name;
+        if (!groups[name]) groups[name] = [];
+        groups[name].push(alt);
+      });
+
+      // Sort items within each group by calculatedScore descending
+      Object.values(groups).forEach((g) => {
+        g.sort((a, b) => b.calculatedScore - a.calculatedScore);
+      });
+
+      // Sort groups based on the best calculatedScore descending
+      const sortedGroups = Object.values(groups).sort((a, b) => b[0].calculatedScore - a[0].calculatedScore);
+
+      // Flatten back into a single list
+      finalAlts = sortedGroups.flat();
+    } else if (activeMethod === "TOPSIS") {
+      const columnSquareSums: Record<string, number> = {};
+      criterias.forEach((crit) => {
+        const sum = baseAlts.reduce((s, alt) => s + Math.pow(alt.values[crit.code], 2), 0);
+        columnSquareSums[crit.code] = Math.sqrt(sum);
+      });
+
+      const normalizedV = baseAlts.map((alt) => {
+        const vValues: Record<string, number> = {};
+        criterias.forEach((crit) => {
+          const x = alt.values[crit.code];
+          const sqrtSum = columnSquareSums[crit.code];
+          const r = sqrtSum > 0 ? x / sqrtSum : 0;
+          const w = weightsMap[crit.code] ?? 0;
+          vValues[crit.code] = r * w;
+        });
+        return vValues;
+      });
+
+      const idealPositive: Record<string, number> = {};
+      const idealNegative: Record<string, number> = {};
+      criterias.forEach((crit) => {
+        const colValues = normalizedV.map((v) => v[crit.code]);
+        if (crit.type === "benefit") {
+          idealPositive[crit.code] = colValues.length > 0 ? Math.max(...colValues) : 0;
+          idealNegative[crit.code] = colValues.length > 0 ? Math.min(...colValues) : 0;
+        } else {
+          idealPositive[crit.code] = colValues.length > 0 ? Math.min(...colValues) : 0;
+          idealNegative[crit.code] = colValues.length > 0 ? Math.max(...colValues) : 0;
+        }
+      });
+
+      const calculatedAlts = baseAlts.map((alt, idx) => {
+        let dPlusSquareSum = 0;
+        let dMinusSquareSum = 0;
+        criterias.forEach((crit) => {
+          const v = normalizedV[idx][crit.code];
+          dPlusSquareSum += Math.pow(v - idealPositive[crit.code], 2);
+          dMinusSquareSum += Math.pow(v - idealNegative[crit.code], 2);
+        });
+        const dPlus = Math.sqrt(dPlusSquareSum);
+        const dMinus = Math.sqrt(dMinusSquareSum);
+        const closeness = (dPlus + dMinus) > 0 ? dMinus / (dPlus + dMinus) : 0;
+        return {
+          ...alt,
+          calculatedScore: closeness,
+        };
+      });
+
+      // Group by product name
+      const groups: Record<string, typeof calculatedAlts> = {};
+      calculatedAlts.forEach((alt) => {
+        const name = alt.name;
+        if (!groups[name]) groups[name] = [];
+        groups[name].push(alt);
+      });
+
+      // Sort items within each group by calculatedScore descending
+      Object.values(groups).forEach((g) => {
+        g.sort((a, b) => b.calculatedScore - a.calculatedScore);
+      });
+
+      // Sort groups based on the best calculatedScore descending
+      const sortedGroups = Object.values(groups).sort((a, b) => b[0].calculatedScore - a[0].calculatedScore);
+
+      // Flatten back
+      finalAlts = sortedGroups.flat();
+    } else {
+      // Default to SAW: sort by raw backend score descending
+      const calculatedAlts = baseAlts.map((alt) => ({
+        ...alt,
+        calculatedScore: alt.score,
+      }));
+
+      // Group by product name
+      const groups: Record<string, typeof calculatedAlts> = {};
+      calculatedAlts.forEach((alt) => {
+        const name = alt.name;
+        if (!groups[name]) groups[name] = [];
+        groups[name].push(alt);
+      });
+
+      // Sort items within each group by calculatedScore descending
+      Object.values(groups).forEach((g) => {
+        g.sort((a, b) => b.calculatedScore - a.calculatedScore);
+      });
+
+      // Sort groups based on the best calculatedScore descending
+      const sortedGroups = Object.values(groups).sort((a, b) => b[0].calculatedScore - a[0].calculatedScore);
+
+      // Flatten back
+      finalAlts = sortedGroups.flat();
+    }
+
+    return finalAlts;
+  }, [session, activeMethod, allWeights, criterias, weightsMap]);
 
   const decisionMatrix = useMemo(() => {
     return activeAlternatives.map((alt) => {
-      const rowValues: Record<string, number> = {};
-      CRITERIAS.forEach((crit) => {
-        rowValues[crit.code] = getCriteriaScaleValue(crit.code, alt);
-      });
       return {
         alternativeName: alt.name,
         brand: alt.brand,
@@ -246,36 +418,62 @@ export default function ResultDetail() {
         is_chosen_by_user: alt.is_chosen_by_user,
         storeName: alt.storeName,
         price: alt.price,
-        values: rowValues,
+        values: alt.values || {},
       };
     });
   }, [activeAlternatives]);
 
   const columnExtremes = useMemo(() => {
     const extremes: Record<string, { min: number; max: number }> = {};
-    CRITERIAS.forEach((crit) => {
+    criterias.forEach((crit) => {
+      const codeLower = crit.code.toLowerCase();
       const values = decisionMatrix.map((row) => row.values[crit.code]);
+      
+      let minVal = values.length > 0 ? Math.min(...values) : 1;
+      let maxVal = values.length > 0 ? Math.max(...values) : 5;
+
+      if (session?.calculationDetails?.saw) {
+        const sawDetails = session.calculationDetails.saw;
+        if (sawDetails[`min_${codeLower}`] !== undefined && sawDetails[`min_${codeLower}`] !== null) {
+          minVal = Number(sawDetails[`min_${codeLower}`]);
+        }
+        if (sawDetails[`max_${codeLower}`] !== undefined && sawDetails[`max_${codeLower}`] !== null) {
+          maxVal = Number(sawDetails[`max_${codeLower}`]);
+        }
+      }
+
       extremes[crit.code] = {
-        min: values.length > 0 ? Math.min(...values) : 1,
-        max: values.length > 0 ? Math.max(...values) : 5,
+        min: minVal,
+        max: maxVal,
       };
     });
+
     return extremes;
-  }, [decisionMatrix]);
+  }, [decisionMatrix, criterias, session?.calculationDetails?.saw]);
 
   const columnSquareSums = useMemo(() => {
     const squareSums: Record<string, number> = {};
-    CRITERIAS.forEach((crit) => {
+    criterias.forEach((crit) => {
+      const codeLower = crit.code.toLowerCase();
       const sum = decisionMatrix.reduce((s, row) => s + Math.pow(row.values[crit.code], 2), 0);
-      squareSums[crit.code] = Math.sqrt(sum);
+      let sqrtSum = Math.sqrt(sum);
+
+      if (session?.calculationDetails?.topsis) {
+        const topsisDetails = session.calculationDetails.topsis;
+        if (topsisDetails[`bagi_${codeLower}`] !== undefined && topsisDetails[`bagi_${codeLower}`] !== null) {
+          sqrtSum = Number(topsisDetails[`bagi_${codeLower}`]);
+        }
+      }
+
+      squareSums[crit.code] = sqrtSum;
     });
     return squareSums;
-  }, [decisionMatrix]);
+  }, [decisionMatrix, criterias, session?.calculationDetails?.topsis]);
 
   const sawNormalizedMatrix = useMemo(() => {
     return decisionMatrix.map((row) => {
       const rowNorms: Record<string, number> = {};
-      CRITERIAS.forEach((crit) => {
+      criterias.forEach((crit) => {
         const x = row.values[crit.code];
         const extremes = columnExtremes[crit.code];
         if (crit.type === "benefit") {
@@ -295,22 +493,23 @@ export default function ResultDetail() {
         rawValues: row.values,
       };
     });
-  }, [decisionMatrix, columnExtremes]);
+  }, [decisionMatrix, columnExtremes, criterias]);
 
   const wpCalculations = useMemo(() => {
-    const totalW = CRITERIAS.reduce((sum, crit) => sum + (weightsMap[crit.code] ?? 0), 0);
-    const normalizedW: Record<string, number> = {};
-    CRITERIAS.forEach((crit) => {
-      normalizedW[crit.code] = totalW > 0 ? (weightsMap[crit.code] ?? 0) / totalW : 0;
-    });
+    const useRawWeights = true; // database v_wp view uses raw weights
 
     const alternativesS = decisionMatrix.map((row) => {
       let s = 1;
       const norms: Record<string, number> = {};
-      CRITERIAS.forEach((crit) => {
+      criterias.forEach((crit) => {
         const x = row.values[crit.code];
-        const w = normalizedW[crit.code];
-        if (w > 0) {
+        // Use raw weight to match v_wp view in database
+        const w = useRawWeights ? (weightsMap[crit.code] ?? 0) : (() => {
+          const totalW = criterias.reduce((sum, c) => sum + (weightsMap[c.code] ?? 0), 0);
+          return totalW > 0 ? (weightsMap[crit.code] ?? 0) / totalW : 0;
+        })();
+
+        if (w > 0 || (useRawWeights && w !== 0)) {
           const power = crit.type === "cost" ? -w : w;
           const calculatedPower = Math.pow(x, power);
           s *= calculatedPower;
@@ -334,19 +533,21 @@ export default function ResultDetail() {
       };
     });
 
-    const sumS = alternativesS.reduce((sum, alt) => sum + alt.s, 0);
+    const sumS = session?.calculationDetails?.wp?.total_s !== undefined && session?.calculationDetails?.wp?.total_s !== null
+      ? Number(session.calculationDetails.wp.total_s)
+      : alternativesS.reduce((sum, alt) => sum + alt.s, 0);
 
     return alternativesS.map((alt) => ({
       ...alt,
       v: sumS > 0 ? alt.s / sumS : 0,
     }));
-  }, [decisionMatrix, weightsMap]);
+  }, [decisionMatrix, weightsMap, criterias, session?.calculationDetails?.wp?.total_s]);
 
   const topsisCalculations = useMemo(() => {
     const normalizedV = decisionMatrix.map((row) => {
       const vValues: Record<string, number> = {};
       const rValues: Record<string, number> = {};
-      CRITERIAS.forEach((crit) => {
+      criterias.forEach((crit) => {
         const x = row.values[crit.code];
         const sqrtSum = columnSquareSums[crit.code];
         const r = sqrtSum > 0 ? x / sqrtSum : 0;
@@ -370,7 +571,7 @@ export default function ResultDetail() {
 
     const idealPositive: Record<string, number> = {};
     const idealNegative: Record<string, number> = {};
-    CRITERIAS.forEach((crit) => {
+    criterias.forEach((crit) => {
       const colValues = normalizedV.map((row) => row.vValues[crit.code]);
       if (crit.type === "benefit") {
         idealPositive[crit.code] = colValues.length > 0 ? Math.max(...colValues) : 0;
@@ -384,7 +585,7 @@ export default function ResultDetail() {
     return normalizedV.map((row) => {
       let dPlusSquareSum = 0;
       let dMinusSquareSum = 0;
-      CRITERIAS.forEach((crit) => {
+      criterias.forEach((crit) => {
         const v = row.vValues[crit.code];
         dPlusSquareSum += Math.pow(v - idealPositive[crit.code], 2);
         dMinusSquareSum += Math.pow(v - idealNegative[crit.code], 2);
@@ -402,7 +603,7 @@ export default function ResultDetail() {
         idealNegative,
       };
     });
-  }, [decisionMatrix, columnSquareSums, weightsMap]);
+  }, [decisionMatrix, columnSquareSums, weightsMap, criterias]);
 
   if (isLoading) {
     return (
@@ -479,7 +680,7 @@ export default function ResultDetail() {
         </span>
       </div>
 
-      <ResultInfoCard session={session} weightsMap={weightsMap} />
+      <ResultInfoCard session={session} weightsMap={weightsMap} criterias={criterias} />
 
       {/* PEMILIH METODE UTAMA (SAW, WP, TOPSIS) */}
       <div className="space-y-4">
@@ -573,6 +774,7 @@ export default function ResultDetail() {
                 activeAlternatives={activeAlternatives}
                 activeFormulaDetails={activeFormulaDetails}
                 onCellClick={handleCellClick}
+                criterias={criterias}
               />
             )}
 
@@ -590,6 +792,7 @@ export default function ResultDetail() {
                 topsisCalculations={topsisCalculations}
                 columnSquareSums={columnSquareSums}
                 weightsMap={weightsMap}
+                criterias={criterias}
               />
             )}
 

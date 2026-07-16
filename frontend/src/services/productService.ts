@@ -25,7 +25,7 @@ export const productService = {
         const batteryVal = payload.battery ? String(payload.battery).match(/[\d.]+/)?.[0] : "";
         const weightVal = payload.weight ? String(payload.weight).match(/[\d.]+/)?.[0] : "";
 
-        const apiPayload = {
+        const apiPayload: Record<string, any> = {
             // Snake Case (for store & relationships mapping)
             brands_id_brand: Number(payload.brandId ?? (payload as any).brands_id_brand ?? 1),
             stores_id_store: Number((payload as any).stores_id_store ?? 2),
@@ -50,7 +50,25 @@ export const productService = {
             subCriteriaIds: payload.subCriteriaIds ?? [],
         };
 
-        const response = await api.post("/api/superadmin/products", apiPayload);
+        const formData = new FormData();
+        
+        Object.entries(apiPayload).forEach(([key, val]) => {
+            if (key === "subCriteriaIds") {
+                formData.append(key, JSON.stringify(val));
+            } else if (val !== undefined && val !== null) {
+                formData.append(key, String(val));
+            }
+        });
+
+        if (payload.image) {
+            formData.append("image", payload.image);
+        }
+
+        const response = await api.post("/api/superadmin/products", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
         return response.data.data || response.data;
     },
 
@@ -72,7 +90,25 @@ export const productService = {
             cleanPayload.weight = weightVal ? `${weightVal}kg` : null;
         }
 
-        const response = await api.put(`/api/superadmin/products/${id}`, cleanPayload);
+        const formData = new FormData();
+
+        Object.entries(cleanPayload).forEach(([key, val]) => {
+            if (key === "image") {
+                if (val instanceof File) {
+                    formData.append("image", val);
+                }
+            } else if (key === "subCriteriaIds") {
+                formData.append(key, JSON.stringify(val));
+            } else if (val !== undefined && val !== null) {
+                formData.append(key, String(val));
+            }
+        });
+
+        const response = await api.put(`/api/superadmin/products/${id}`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
         return response.data.data || response.data;
     },
 

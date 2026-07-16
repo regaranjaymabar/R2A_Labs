@@ -10,9 +10,10 @@ interface ResultInfoCardProps {
     user_choice: string;
   };
   weightsMap: Record<string, number>;
+  criterias: Array<{ code: string; name: string; type: string; desc: string }>;
 }
 
-export function ResultInfoCard({ session, weightsMap }: ResultInfoCardProps) {
+export function ResultInfoCard({ session, weightsMap, criterias }: ResultInfoCardProps) {
   return (
     <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-xs space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
@@ -48,15 +49,26 @@ export function ResultInfoCard({ session, weightsMap }: ResultInfoCardProps) {
         </div>
 
         <div className="rounded-2xl space-y-2 text-xs">
-          <span className="font-bold text-black uppercase tracking-wider flex items-center gap-1.5">
+          <span className="font-bold text-black dark:text-white uppercase tracking-wider flex items-center gap-1.5">
             Bobot Input Kriteria
           </span>
-          <div className="grid grid-cols-5 gap-1 text-center font-mono text-[10px] font-bold">
-            <div className="bg-red-100  p-1.5 rounded-lg border border-red-100 text-red-700">Harga: {((weightsMap.C1 ?? 0) * 100).toFixed(0)}%</div>
-            <div className="bg-white p-1.5 rounded-lg border border-purple-100 text-gray-900">RAM: {((weightsMap.C2 ?? 0) * 100).toFixed(0)}%</div>
-            <div className="bg-white p-1.5 rounded-lg border border-purple-100 text-gray-900">Storage: {((weightsMap.C3 ?? 0) * 100).toFixed(0)}%</div>
-            <div className="bg-white p-1.5 rounded-lg border border-purple-100 text-gray-900">Baterai: {((weightsMap.C4 ?? 0) * 100).toFixed(0)}%</div>
-            <div className="bg-white p-1.5 rounded-lg border border-purple-100 text-gray-900">Berat: {((weightsMap.C5 ?? 0) * 100).toFixed(0)}%</div>
+          <div className="flex flex-wrap gap-1.5 justify-start text-center font-mono text-[10px] font-bold">
+            {criterias.map((crit) => {
+              const isCost = crit.type === "cost";
+              return (
+                <div
+                  key={crit.code}
+                  className={`p-1.5 rounded-lg border transition-all ${
+                    isCost
+                      ? "bg-red-50 border-red-200 text-red-700 dark:bg-red-950/20 dark:border-red-900/60"
+                      : "bg-purple-50 border-purple-200 text-purple-700 dark:bg-purple-950/20 dark:border-purple-900/60"
+                  }`}
+                  title={crit.desc}
+                >
+                  {crit.name}: {((weightsMap[crit.code] ?? 0) * 100).toFixed(0)}%
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
