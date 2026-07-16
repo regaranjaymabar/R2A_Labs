@@ -48,7 +48,7 @@ export function DecisionMatrixTable({
             <tr
               key={idx}
               className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${
-                row.is_chosen_by_user ? "bg-purple-50/30" : ""
+                row.is_chosen_by_user ? "bg-gray-100/60" : ""
               }`}
             >
               <td className="py-3.5 px-4 font-bold text-gray-900">
@@ -95,10 +95,10 @@ export function DecisionMatrixTable({
                     key={crit.code}
                     onClick={() => onCellClick(activeCellKey, formulaDesc)}
                     className={`py-3.5 px-3 text-center font-mono font-bold transition-all cursor-pointer ${
-                      isCellSelected ? "bg-purple-100 text-purple-900 ring-2 ring-purple-500/20 rounded-lg scale-95" : "text-gray-900"
+                      isCellSelected ? "bg-gray-200 text-gray-900 ring-2 ring-gray-400 rounded-lg scale-95" : "text-gray-900"
                     }`}
                   >
-                    <span className="bg-gray-100 px-2.5 py-1 rounded-lg border border-gray-200/50 block hover:bg-purple-50">
+                    <span className="bg-gray-100 px-2.5 py-1 rounded-lg border border-gray-200/50 block hover:bg-gray-200">
                       {crit.code === "C1" ? val.toFixed(3) : val}
                     </span>
                   </td>

@@ -6,11 +6,9 @@ export interface CityOption {
   label: string;
 }
 
-// Fallback daftar kota lengkap di Indonesia jika offline / jaringan gangguan
 const FALLBACK_CITIES: CityOption[] = [
 ].map((city) => ({ value: city, label: city }));
 
-// Fungsi helper untuk mengubah nama kota dari UPPERCASE menjadi Title Case rapi
 function toTitleCase(str: string): string {
   return str
     .toLowerCase()

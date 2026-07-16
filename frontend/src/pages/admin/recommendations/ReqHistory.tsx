@@ -143,9 +143,9 @@ export default function ReqHistory() {
                 Penggeseran Slider Bobot Kriteria (%):
               </span>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                <div className="p-3 rounded-xl bg-purple-50 border border-purple-200 text-center">
+                <div className="p-3 rounded-xl bg-gray-100 border border-gray-200 text-center">
                   <span className="text-[11px] font-bold text-black block">RAM</span>
-                  <span className="text-lg font-extrabold text-purple-900 font-mono">{selectedDetail.weights?.ram ?? 0}%</span>
+                  <span className="text-lg font-extrabold text-gray-900 font-mono">{selectedDetail.weights?.ram ?? 0}%</span>
                 </div>
                 <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-center">
                   <span className="text-[11px] font-bold text-amber-600 block">HARGA</span>
@@ -163,12 +163,12 @@ export default function ReqHistory() {
             </div>
 
             {/* Hasil Rekomendasi & Keputusan User */}
-            <div className="p-4 rounded-2xl bg-purple-50 border-2 border-purple-200 space-y-3">
+            <div className="p-4 rounded-2xl bg-gray-100/80 border-2 border-gray-200 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-purple-700 flex items-center gap-1">
+                <span className="text-xs font-bold text-gray-800 flex items-center gap-1">
                   <span>Rekomendasi Peringkat #1 Sistem SAW:</span>
                 </span>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-purple-600 text-white">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-gray-800 text-white">
                   Skor: {selectedDetail.top_recommendation?.saw_score ?? "-"}
                 </span>
               </div>
@@ -176,7 +176,7 @@ export default function ReqHistory() {
                 {selectedDetail.top_recommendation?.product_name ?? "-"}
               </div>
 
-              <div className="pt-3 border-t border-purple-200 flex items-center justify-between text-xs">
+              <div className="pt-3 border-t border-gray-200 flex items-center justify-between text-xs">
                 <span className="font-semibold text-gray-600">Keputusan Akhir User:</span>
                 {selectedDetail.user_choice ? (
                   <span className="inline-flex items-center gap-1 font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
@@ -191,7 +191,7 @@ export default function ReqHistory() {
             <div className="pt-2 flex justify-end">
               <Link
                 to={`/admin/recommendations/${selectedDetail.id}`}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg transition-all active:scale-95 cursor-pointer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs bg-gray-900 hover:bg-gray-800 text-white shadow-lg transition-all active:scale-95 cursor-pointer"
               >
                 <Calculator className="w-4 h-4" />
                 <span>Lihat Bedah Matriks Normalisasi SAW (Top 3)</span>

@@ -105,7 +105,7 @@ export function NormalisationMatrixTable({
 
       <div className="flex items-center justify-between text-xs text-gray-500">
         <span>* Menampilkan hasil normalisasi berdasarkan sifat kriteria (Benefit / Cost)</span>
-        <span className="font-mono text-black flex items-center gap-1 bg-purple-50 px-2.5 py-1 rounded-lg">
+        <span className="font-mono text-black flex items-center gap-1 bg-gray-100 px-2.5 py-1 rounded-lg">
           <HelpCircle className="w-3.5 h-3.5" />
           Klik sel nilai untuk melihat rumus matematika rincinya!
         </span>
@@ -125,7 +125,7 @@ export function NormalisationMatrixTable({
             }
             {activeMethod === "WP" && (
               <>
-                <th className="py-3 px-3 text-center text-purple-700 bg-purple-50/50 font-bold">Vektor S</th>
+                <th className="py-3 px-3 text-center text-gray-800 bg-gray-100/80 font-bold">Vektor S</th>
                 <th className="py-3 px-3 text-center text-emerald-700 bg-emerald-50/50 font-bold">Vektor V</th>
               </>
             )}
@@ -145,7 +145,7 @@ export function NormalisationMatrixTable({
               <tr
                 key={idx}
                 className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${
-                  row.is_chosen_by_user ? "bg-purple-50/30" : ""
+                  row.is_chosen_by_user ? "bg-gray-100/60" : ""
                 }`}
               >
                 <td className="py-3.5 px-4 font-bold text-gray-900">
@@ -176,10 +176,10 @@ export function NormalisationMatrixTable({
                       key={crit.code}
                       onClick={() => onCellClick(activeCellKey, formulaDesc)}
                       className={`py-3.5 px-3 text-center font-mono font-bold cursor-pointer ${
-                        isCellSelected ? "bg-purple-100 text-purple-900 ring-2 ring-purple-500/20 rounded-lg scale-95" : "text-gray-900"
+                        isCellSelected ? "bg-gray-200 text-gray-900 ring-2 ring-gray-400 rounded-lg scale-95" : "text-gray-900"
                       }`}
                     >
-                      <span className="bg-indigo-50 text-gray-900 px-2.5 py-1 rounded-lg border border-indigo-100 hover:bg-indigo-100 block">
+                      <span className="bg-gray-100 text-gray-900 px-2.5 py-1 rounded-lg border border-gray-200 hover:bg-gray-200 block">
                         {val.toFixed(4)}
                       </span>
                     </td>
@@ -195,7 +195,7 @@ export function NormalisationMatrixTable({
                 <tr
                   key={idx}
                   className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${
-                    row.is_chosen_by_user ? "bg-purple-50/30" : ""
+                    row.is_chosen_by_user ? "bg-gray-100/60" : ""
                   }`}
                 >
                   <td className="py-3.5 px-4 font-bold text-gray-900">
@@ -233,10 +233,10 @@ export function NormalisationMatrixTable({
                         key={crit.code}
                         onClick={() => onCellClick(activeCellKey, formulaDesc)}
                         className={`py-3.5 px-3 text-center font-mono font-bold cursor-pointer ${
-                          isCellSelected ? "bg-purple-100 text-purple-900 ring-2 ring-purple-500/20 rounded-lg scale-95" : "text-gray-900"
+                          isCellSelected ? "bg-gray-200 text-gray-900 ring-2 ring-gray-400 rounded-lg scale-95" : "text-gray-900"
                         }`}
                       >
-                        <span className="bg-purple-50 text-gray-900 px-2.5 py-1 rounded-lg border border-purple-100 hover:bg-purple-100 block">
+                        <span className="bg-gray-100 text-gray-900 px-2.5 py-1 rounded-lg border border-gray-200 hover:bg-gray-200 block">
                           {normVal.toFixed(4)}
                         </span>
                       </td>
@@ -251,9 +251,9 @@ export function NormalisationMatrixTable({
                           `Hasil Kali Seluruh Kriteria Pangkat: ${row.s.toFixed(6)}`
                       )
                     }
-                    className="py-3.5 px-3 text-center font-mono font-bold cursor-pointer bg-purple-50/30 text-purple-700"
+                    className="py-3.5 px-3 text-center font-mono font-bold cursor-pointer bg-gray-100/50 text-gray-800"
                   >
-                    <span className="bg-purple-100/50 px-2.5 py-1 rounded-lg border border-purple-200 block hover:bg-purple-200/50">
+                    <span className="bg-gray-200/60 px-2.5 py-1 rounded-lg border border-gray-300 block hover:bg-gray-300/60">
                       {row.s.toFixed(4)}
                     </span>
                   </td>
@@ -284,7 +284,7 @@ export function NormalisationMatrixTable({
                 <tr
                   key={idx}
                   className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${
-                    row.is_chosen_by_user ? "bg-purple-50/30" : ""
+                    row.is_chosen_by_user ? "bg-gray-100/60" : ""
                   }`}
                 >
                   <td className="py-3.5 px-4 font-bold text-gray-900">
@@ -312,10 +312,10 @@ export function NormalisationMatrixTable({
                         key={crit.code}
                         onClick={() => onCellClick(activeCellKey, formulaDesc)}
                         className={`py-3.5 px-3 text-center font-mono font-bold cursor-pointer ${
-                          isCellSelected ? "bg-purple-100 text-purple-900 ring-2 ring-purple-500/20 rounded-lg scale-95" : "text-gray-900"
+                          isCellSelected ? "bg-gray-200 text-gray-900 ring-2 ring-gray-400 rounded-lg scale-95" : "text-gray-900"
                         }`}
                       >
-                        <span className="bg-indigo-50 text-gray-900 px-2 py-1 rounded-lg border border-indigo-100 hover:bg-indigo-100 block">
+                        <span className="bg-gray-100 text-gray-900 px-2 py-1 rounded-lg border border-gray-200 hover:bg-gray-200 block">
                           {rVal.toFixed(4)}
                         </span>
                       </td>
@@ -345,7 +345,7 @@ export function NormalisationMatrixTable({
                 <tr
                   key={idx}
                   className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${
-                    row.is_chosen_by_user ? "bg-purple-50/30" : ""
+                    row.is_chosen_by_user ? "bg-gray-100/60" : ""
                   }`}
                 >
                   <td className="py-3.5 px-4 font-bold text-gray-900">
@@ -371,10 +371,10 @@ export function NormalisationMatrixTable({
                         key={crit.code}
                         onClick={() => onCellClick(activeCellKey, formulaDesc)}
                         className={`py-3.5 px-3 text-center font-mono font-bold cursor-pointer ${
-                          isCellSelected ? "bg-purple-100 text-purple-900 ring-2 ring-purple-500/20 rounded-lg scale-95" : "text-gray-900"
+                          isCellSelected ? "bg-gray-200 text-gray-900 ring-2 ring-gray-400 rounded-lg scale-95" : "text-gray-900"
                         }`}
                       >
-                        <span className="bg-purple-50 text-gray-900 px-2 py-1 rounded-lg border border-purple-100 hover:bg-purple-100 block">
+                        <span className="bg-gray-100 text-gray-900 px-2 py-1 rounded-lg border border-gray-200 hover:bg-gray-200 block">
                           {vVal.toFixed(4)}
                         </span>
                       </td>
@@ -384,12 +384,12 @@ export function NormalisationMatrixTable({
               ))}
 
               {/* Row A+ */}
-              <tr className="bg-purple-50/40 border-t border-gray-200 font-bold text-purple-900">
+              <tr className="bg-gray-100/60 border-t border-gray-200 font-bold text-gray-900">
                 <td className="py-3 px-4 font-bold">Ideal Positif (A⁺)</td>
                 {criterias.map((crit) => {
                   const val = topsisCalculations[0]?.idealPositive?.[crit.code] ?? 0;
                   return (
-                    <td key={crit.code} className="py-3 px-3 text-center font-mono text-purple-700">
+                    <td key={crit.code} className="py-3 px-3 text-center font-mono text-gray-800">
                       {val.toFixed(4)}
                     </td>
                   );
@@ -417,7 +417,7 @@ export function NormalisationMatrixTable({
               <tr
                 key={idx}
                 className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${
-                  row.is_chosen_by_user ? "bg-purple-50/30" : ""
+                  row.is_chosen_by_user ? "bg-gray-100/60" : ""
                 }`}
               >
                 <td className="py-3.5 px-4 font-bold text-gray-900">

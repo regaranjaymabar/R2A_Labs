@@ -96,7 +96,7 @@ export function FinalRankingList({
               <div
                 key={groupIdx}
                 className={`p-6 rounded-3xl border transition-all bg-white border-gray-200 hover:border-gray-300 ${
-                  isChosen ? "ring-2 ring-purple-500/10 border-purple-300" : ""
+                  isChosen ? "ring-2 ring-gray-400/20 border-gray-400" : ""
                 }`}
               >
                 <div className="flex flex-col md:flex-row md:items-start gap-4">
@@ -168,7 +168,6 @@ export function FinalRankingList({
         {activeMethod === "WP" &&
           wpGroups.map((group, groupIdx) => {
             const bestItem = group[0];
-            const originalLaptop = activeAlternatives.find((a) => a.name === bestItem.alternativeName);
             const isChosen = group.some((item) => {
               const original = activeAlternatives.find((a) => a.name === item.alternativeName && a.storeName === item.storeName);
               return original?.is_chosen_by_user;
@@ -179,7 +178,7 @@ export function FinalRankingList({
               <div
                 key={groupIdx}
                 className={`p-6 rounded-3xl border transition-all bg-white border-gray-200 hover:border-gray-300 ${
-                  isChosen ? "ring-2 ring-purple-500/10 border-purple-300" : ""
+                  isChosen ? "ring-2 ring-gray-400/20 border-gray-400" : ""
                 }`}
               >
                 <div className="flex flex-col md:flex-row md:items-start gap-4">
@@ -256,7 +255,6 @@ export function FinalRankingList({
         {activeMethod === "TOPSIS" &&
           topsisGroups.map((group, groupIdx) => {
             const bestItem = group[0];
-            const originalLaptop = activeAlternatives.find((a) => a.name === bestItem.alternativeName);
             const isChosen = group.some((item) => {
               const original = activeAlternatives.find((a) => a.name === item.alternativeName && a.storeName === item.storeName);
               return original?.is_chosen_by_user;
@@ -267,7 +265,7 @@ export function FinalRankingList({
               <div
                 key={groupIdx}
                 className={`p-6 rounded-3xl border transition-all bg-white border-gray-200 hover:border-gray-300 ${
-                  isChosen ? "ring-2 ring-purple-500/10 border-purple-300" : ""
+                  isChosen ? "ring-2 ring-gray-400/20 border-gray-400" : ""
                 }`}
               >
                 <div className="flex flex-col md:flex-row md:items-start gap-4">
