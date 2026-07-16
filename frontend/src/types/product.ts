@@ -11,6 +11,7 @@ export type Product = {
   weight?: string | number;
   releaseYear?: string | number;
   isActive?: number | boolean;
+  imageUrl?: string | null;
   brand?: {
     id: number;
     name: string;
@@ -37,5 +38,7 @@ export type ProductFormData = {
   releaseYear: string;
   subCriteriaIds?: number[];
   is_active?: boolean;
+  image?: File | null;
+  removeImage?: boolean;
   [key: string]: any;
 };

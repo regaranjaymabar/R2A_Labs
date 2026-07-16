@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   CheckCircle2,
   Ban,
+  Laptop,
 } from "lucide-react";
 import { Button } from "../../../components/ui/common/Button";
 import { InputText } from "../../../components/ui/common/InputText";
@@ -176,6 +177,83 @@ export default function AddStock() {
               </div>
             </div>
           </div>
+
+          {(() => {
+            const selectedProductId = watch("product_id");
+            const selectedProduct = products.find((p: any) => String(p.id) === String(selectedProductId));
+            if (!selectedProduct) return null;
+            return (
+              <div className="p-6 bg-gray-50 rounded-2xl border border-gray-200 space-y-4">
+                <div className="flex items-center gap-2 text-sm font-bold text-black">
+                  <span>Detail Spesifikasi Laptop</span>
+                </div>
+                <div className="flex flex-col md:flex-row gap-6 items-start">
+                  <div className="w-32 h-32 rounded-xl border border-gray-200 bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+                    {selectedProduct.imageUrl ? (
+                      <img
+                        src={selectedProduct.imageUrl}
+                        alt={selectedProduct.modelName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Laptop className="w-12 h-12 text-gray-300" />
+                    )}
+                  </div>
+                  
+                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+                    <div className="space-y-1">
+                      <span className="text-gray-400 font-medium block">Nama & Model</span>
+                      <span className="font-bold text-gray-900 text-sm">
+                        {selectedProduct.brand?.name || selectedProduct.brand_name || (typeof selectedProduct.brand === 'string' ? selectedProduct.brand : "-")} {selectedProduct.modelName || selectedProduct.model_name || "-"}
+                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-gray-400 font-medium block">Processor</span>
+                      <span className="font-bold text-gray-900 text-sm">
+                        {selectedProduct.processor || "-"}
+                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-gray-400 font-medium block">RAM</span>
+                      <span className="font-bold text-gray-900 text-sm">
+                        {selectedProduct.ram || "-"}
+                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-gray-400 font-medium block">Penyimpanan (Storage)</span>
+                      <span className="font-bold text-gray-900 text-sm">
+                        {selectedProduct.storage || "-"}
+                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-gray-400 font-medium block">Ukuran Layar</span>
+                      <span className="font-bold text-gray-900 text-sm">
+                        {selectedProduct.screenSize || selectedProduct.screen_size ? `${selectedProduct.screenSize || selectedProduct.screen_size}"` : "-"}
+                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-gray-400 font-medium block">Kapasitas Baterai</span>
+                      <span className="font-bold text-gray-900 text-sm">
+                        {selectedProduct.battery || "-"}
+                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-gray-400 font-medium block">Berat</span>
+                      <span className="font-bold text-gray-900 text-sm">
+                        {selectedProduct.weight ? (String(selectedProduct.weight).toLowerCase().endsWith("kg") ? selectedProduct.weight : `${selectedProduct.weight}kg`) : "-"}
+                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-gray-400 font-medium block">Tahun Rilis</span>
+                      <span className="font-bold text-gray-900 text-sm">
+                        {selectedProduct.releaseYear || selectedProduct.release_year ? String(selectedProduct.releaseYear || selectedProduct.release_year).slice(0, 4) : "-"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
 
           <div className="space-y-4 pt-2">
             <div className="flex items-center gap-2 pb-2 border-b border-gray-100 text-sm font-bold text-black">

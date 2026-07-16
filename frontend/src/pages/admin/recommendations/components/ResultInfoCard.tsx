@@ -10,9 +10,10 @@ interface ResultInfoCardProps {
     user_choice: string;
   };
   weightsMap: Record<string, number>;
+  criterias: Array<{ code: string; name: string; type: string; desc: string }>;
 }
 
-export function ResultInfoCard({ session, weightsMap }: ResultInfoCardProps) {
+export function ResultInfoCard({ session, weightsMap, criterias }: ResultInfoCardProps) {
   return (
     <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-xs space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-4">
@@ -48,18 +49,26 @@ export function ResultInfoCard({ session, weightsMap }: ResultInfoCardProps) {
         </div>
 
         <div className="rounded-2xl space-y-2 text-xs">
-          <span className="font-bold text-black uppercase tracking-wider flex items-center gap-1.5">
-            Bobot Input Kriteria (C1 - C8)
+          <span className="font-bold text-black dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+            Bobot Input Kriteria
           </span>
-          <div className="grid grid-cols-4 gap-1.5 text-center font-mono text-[10px] font-bold">
-            <div className="bg-gray-50 p-1.5 rounded-lg border border-gray-300 text-gray-800 shadow-3xs">Harga: {((weightsMap.C1 ?? 0) * 100).toFixed(0)}%</div>
-            <div className="bg-gray-50 p-1.5 rounded-lg border border-gray-300 text-gray-800 shadow-3xs">RAM: {((weightsMap.C2 ?? 0) * 100).toFixed(0)}%</div>
-            <div className="bg-gray-50 p-1.5 rounded-lg border border-gray-300 text-gray-800 shadow-3xs">Storage: {((weightsMap.C3 ?? 0) * 100).toFixed(0)}%</div>
-            <div className="bg-gray-50 p-1.5 rounded-lg border border-gray-300 text-gray-800 shadow-3xs">Baterai: {((weightsMap.C4 ?? 0) * 100).toFixed(0)}%</div>
-            <div className="bg-gray-50 p-1.5 rounded-lg border border-gray-300 text-gray-800 shadow-3xs">Berat: {((weightsMap.C5 ?? 0) * 100).toFixed(0)}%</div>
-            <div className="bg-gray-50 p-1.5 rounded-lg border border-gray-300 text-gray-800 shadow-3xs">Prosesor: {((weightsMap.C6 ?? 0) * 100).toFixed(0)}%</div>
-            <div className="bg-gray-50 p-1.5 rounded-lg border border-gray-300 text-gray-800 shadow-3xs">Layar: {((weightsMap.C7 ?? 0) * 100).toFixed(0)}%</div>
-            <div className="bg-gray-50 p-1.5 rounded-lg border border-gray-300 text-gray-800 shadow-3xs">Rilis: {((weightsMap.C8 ?? 0) * 100).toFixed(0)}%</div>
+          <div className="flex flex-wrap gap-1.5 justify-start text-center font-mono text-[10px] font-bold">
+            {criterias.map((crit) => {
+              const isCost = crit.type === "cost";
+              return (
+                <div
+                  key={crit.code}
+                  className={`p-1.5 rounded-lg border transition-all ${
+                    isCost
+                      ? "bg-red-50 border-red-200 text-red-700 dark:bg-red-950/20 dark:border-red-900/60"
+                      : "bg-purple-50 border-purple-200 text-purple-700 dark:bg-purple-950/20 dark:border-purple-900/60"
+                  }`}
+                  title={crit.desc}
+                >
+                  {crit.name}: {((weightsMap[crit.code] ?? 0) * 100).toFixed(0)}%
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
