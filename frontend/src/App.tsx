@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom"; // Ditambahkan: Outlet
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import MainLayout from "./components/layouts/MainLayouts";
 import Recommendation from "./pages/Recommendation";
 import Home from "./pages/Home";
@@ -37,17 +37,16 @@ import ProductDetail from "./pages/ProductDetail";
 import Marketplace from "./pages/Marketplace";
 import ReqHistory from "./pages/admin/recommendations/ReqHistory";
 import ResultDetail from "./pages/admin/recommendations/ResultDetail";
-
 import { Toaster } from "react-hot-toast";
 
 const queryClient = new QueryClient();
 
 // ==========================================================
-// KENDALI PROTECTED ROUTE (SWITCH)
-// Ubah ke true  -> Untuk MEMATIKAN proteksi (Bypass langsung tembus tanpa login)
-// Ubah ke false -> Untuk MENYALAKAN kembali proteksi (Wajib login)
+// KENDALI PROTECTED ROUTE
+// false = proteksi ON (wajib login)
+// true  = proteksi OFF (bypass)
 // ==========================================================
-const DISABLE_AUTH = true; 
+const DISABLE_AUTH = false; // ← ubah ke false saat production
 
 function App() {
   return (
@@ -64,55 +63,52 @@ function App() {
             padding: "14px 16px",
             fontSize: "14px",
             fontWeight: 500,
-            boxShadow:
-              "0 10px 30px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05)",
-          },
-          success: {
-            iconTheme: {
-              primary: "#22c55e",
-              secondary: "#ffffff",
-            },
-          },
-          error: {
-            iconTheme: {
-              primary: "#ef4444",
-              secondary: "#ffffff",
-            },
-          },
-          loading: {
-            iconTheme: {
-              primary: "#3b82f6",
-              secondary: "#ffffff",
-            },
+            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05)",
           },
         }}
       />
+      
       <BrowserRouter>
         <Routes>
-
-          {/* Public Routes */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/rekomendasi" element={<Recommendation />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/toko/:id" element={<Marketplace />} />
           </Route>
 
-          {/* Auth Routes */}
+
           <Route element={<AuthLayout />}>
-            <Route path='/login' element={<Login />} />
-            <Route path='/register' element={<Register />} />
-            <Route path='/admin/login' element={<AdminLogin />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
           </Route>
 
-          {/* Protected Routes dengan Fitur Bypass */}
-          <Route element={DISABLE_AUTH ? <Outlet /> : <ProtectedRoute allowedRoles={["superadmin", "superadmin", "admin", "store_admin"]} redirectTo="/admin/login" />}>
-          <Route element={DISABLE_AUTH ? <Outlet /> : <ProtectedRoute />}>
+          <Route
+            element={
+              DISABLE_AUTH ? (
+                <Outlet />
+              ) : (
+                <ProtectedRoute allowedRoles={["customer"]} redirectTo="/login" />
+              )
+            }
+          >
             <Route element={<MainLayout />}>
-              <Route path="/rekomendasi" element={<Recommendation />}/>
+              <Route path="/rekomendasi" element={<Recommendation />} />
             </Route>
           </Route>
 
+          <Route
+            element={
+              DISABLE_AUTH ? (
+                <Outlet />
+              ) : (
+                <ProtectedRoute
+                  allowedRoles={["superadmin", "super_admin", "admin", "store_admin"]}
+                  redirectTo="/admin/login"
+                />
+              )
+            }
+          >
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboard />} />
@@ -169,10 +165,8 @@ function App() {
                 <Route index element={<ReqHistory />} />
                 <Route path=":id" element={<ResultDetail />} />
               </Route>
-
             </Route>
           </Route>
-
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

@@ -37,7 +37,7 @@ export default function StoreCard({ store, laptop }: StoreCardProps) {
   };
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-black/10 bg-white/70 backdrop-blur-xl p-6">
+    <div id={`store-${store.id}`} className="relative overflow-hidden rounded-3xl border border-black/10 bg-white/50 backdrop-blur-xl p-6">
       <div className="relative z-10 flex flex-col h-full">
         {/* Header */}
         <div className="flex justify-between items-start min-h-19.5">

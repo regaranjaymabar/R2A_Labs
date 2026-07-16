@@ -1,6 +1,7 @@
 export interface Brand {
   id: number;
   name: string;
+  
 }
 
 export interface Store {
@@ -58,6 +59,7 @@ export interface Product {
   weight: string;
   releaseYear: string;
   brand: Brand;
+  imageUrl: string | null;
   productCriteria: ProductCriteria[];
   productStores: ProductStore[];
 }

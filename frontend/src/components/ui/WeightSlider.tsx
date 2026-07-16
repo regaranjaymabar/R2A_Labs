@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Criteria = {
   id: number;
@@ -7,82 +7,52 @@ type Criteria = {
   type: string;
 };
 
-type WeightSliderProps = {
+type Props = {
   criteria: Criteria[];
   onChange: (weights: { criteriaId: number; weight: number }[]) => void;
 };
 
-export default function WeightSlider({ criteria, onChange }: WeightSliderProps) {
+const STORAGE_KEY = "spk_slider_values";
+
+export default function WeightSlider({ criteria, onChange }: Props) {
   const [weights, setWeights] = useState<Record<number, number>>(() => {
-    const initial: Record<number, number> = {};
-    criteria.forEach((c) => {
-      initial[c.id] = 3; // Default: 3 (tengah)
-    });
-    return initial;
+    // Load dari localStorage dulu
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try { return JSON.parse(saved); } catch {}
+    }
+    const init: Record<number, number> = {};
+    criteria.forEach((c) => (init[c.id] = 5));
+    return init;
   });
 
-  const handleChange = (criteriaId: number, value: number) => {
-    const newWeights = { ...weights, [criteriaId]: value };
+  // Kirim ke parent + simpan ke localStorage
+  const updateWeights = (newWeights: Record<number, number>) => {
     setWeights(newWeights);
-
-    const weightArray = Object.entries(newWeights).map(([id, weight]) => ({
-      criteriaId: Number(id),
-      weight,
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(newWeights));
+    const total = Object.values(newWeights).reduce((a, b) => a + b, 0);
+    const normalized = Object.entries(newWeights).map(([k, v]) => ({
+      criteriaId: Number(k),
+      weight: total > 0 ? v / total : 0,
     }));
-    onChange(weightArray);
+    onChange(normalized);
   };
 
-  const getLabel = (value: number) => {
-    const labels: Record<number, string> = {
-      1: "Sangat Rendah",
-      2: "Rendah",
-      3: "Normal",
-      4: "Tinggi",
-      5: "Sangat Tinggi",
-    };
-    return labels[value] || "";
+  const handleChange = (id: number, val: number) => {
+    updateWeights({ ...weights, [id]: val });
   };
 
   return (
-    <div className="space-y-5">
-      <h3 className="text-xl font-semibold">Prioritas Kriteria</h3>
-      <p className="text-sm text-zinc-500">Geser slider untuk atur bobot (1-5)</p>
-
-      <div className="space-y-5">
-        {criteria.map((crit) => (
-          <div key={crit.id} className="space-y-2">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded-lg text-xs font-mono font-bold bg-black text-white">
-                  {crit.code}
-                </span>
-                <span className="font-medium text-sm">{crit.name}</span>
-              </div>
-              <div className="text-right">
-                <span className="font-bold text-sm">{weights[crit.id]}</span>
-                <span className="text-[10px] text-zinc-400 ml-1">
-                  {getLabel(weights[crit.id])}
-                </span>
-              </div>
-            </div>
-
-            <input
-              type="range"
-              min="1"
-              max="5"
-              step="1"
-              value={weights[crit.id]}
-              onChange={(e) => handleChange(crit.id, Number(e.target.value))}
-              className="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer accent-black"
-            />
-
-            <div className="flex justify-between text-[10px] text-zinc-400">
-              <span>1</span>
-              <span>2</span>
-              <span>3</span>
-              <span>4</span>
-              <span>5</span>
-            </div>
+    <div>
+      <h4 className="text-sm font-semibold mb-3">Prioritas (1-10)</h4>
+      <div className="grid grid-cols-2 gap-3">
+        {criteria.map((c) => (
+          <div key={c.id} className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-zinc-700 min-w-20">{c.name}</span>
+            <input type="range" min="1" max="10" value={weights[c.id] || 5}
+              onChange={(e) => handleChange(c.id, Number(e.target.value))}
+              className="w-full h-1.5 accent-black cursor-pointer" />
+            <span className="text-xs font-bold w-6">{weights[c.id] || 5}</span>
           </div>
         ))}
       </div>

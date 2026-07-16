@@ -64,6 +64,7 @@ export default function ProductSection({
               id={laptop.id}
               name={laptop.modelName}
               cpu={laptop.processor}
+              image={laptop.imageUrl || undefined} 
               ram={laptop.ram}
               storage={laptop.storage}
               price={getPrice(laptop)}
