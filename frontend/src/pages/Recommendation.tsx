@@ -101,8 +101,6 @@ export default function Recommendation() {
 
   const displayedLaptops = filteredLaptops.slice(0, visibleCount);
   const hasMore = visibleCount < filteredLaptops.length;
-  const remaining = filteredLaptops.length - visibleCount;
-
   const handleReset = () => {
     setActiveBudget(""); setVisibleCount(ITEMS_PER_PAGE);
     setSpkResults(null); setShowSpkResults(false);

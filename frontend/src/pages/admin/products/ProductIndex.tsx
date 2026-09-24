@@ -120,7 +120,7 @@
 // }
 
 import { Link } from "react-router-dom";
-import { AlertCircle, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { productService } from "../../../services/productService";
 import { TabelProductIndex } from "./components/TabelProductIndex";
@@ -134,7 +134,6 @@ export default function ProductIndex() {
   const {
     data: products = [],
     isLoading,
-    isError,
   } = useQuery<Product[]>({
     queryKey: ["products"],
     queryFn: async () => {

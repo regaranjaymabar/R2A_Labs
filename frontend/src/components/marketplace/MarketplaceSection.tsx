@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { catalogService } from "../../pages/services/catalog.service";
 import StoreCard from "./StoreCard";
 import { calculateDistance } from "../../utils/haversine";
-import type { ProductDetail, ProductStore } from "../../types/catalog";
+import type { ProductStore } from "../../types/catalog";
 
 type Props = {
   laptopId: number;

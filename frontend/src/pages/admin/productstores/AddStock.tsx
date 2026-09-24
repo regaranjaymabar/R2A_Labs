@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, CheckCircle2, Ban } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Ban, Laptop } from "lucide-react";
 import { Button } from "../../../components/ui/common/Button";
 import { InputText } from "../../../components/ui/common/InputText";
 import { InputSearchSelect } from "../../../components/ui/common/InputSearchSelect";
@@ -38,7 +38,6 @@ export default function AddStock() {
   const { data: stores = [], isLoading: isStoresLoading } = useGet({
     queryKey: ["stores"],
     queryFn: storeService.getAll,
-    offlineFallbackData: initialStores,
     enabled: isSuperAdmin, // Hanya jalankan query jika Super Admin
   });
 
@@ -145,7 +144,7 @@ export default function AddStock() {
                   label="Pilih Produk Laptop"
                   name="product_id"
                   control={control}
-                  options={products.map((p: any) => ({
+                  options={products.map((p) => ({
                     value: p.id,
                     label: `#${p.id} - ${
                       p.brand?.name || p.brand_name || ""
@@ -163,7 +162,7 @@ export default function AddStock() {
 
           {(() => {
             const selectedProductId = watch("product_id");
-            const selectedProduct = products.find((p: any) => String(p.id) === String(selectedProductId));
+            const selectedProduct = products.find((p) => String(p.id) === String(selectedProductId));
             if (!selectedProduct) return null;
             return (
               <div className="p-6 bg-gray-50 rounded-2xl border border-gray-200 space-y-4">

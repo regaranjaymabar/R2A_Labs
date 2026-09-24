@@ -1,5 +1,3 @@
-import { useEffect, useRef } from "react";
-import Footer from "../components/Footer";
 import { 
   Sparkles, 
   Target, 
@@ -12,8 +10,6 @@ import {
 } from "lucide-react";
 
 export default function About() {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
   return (
     <div className="bg-white">
       {/* HERO — Fullscreen */}

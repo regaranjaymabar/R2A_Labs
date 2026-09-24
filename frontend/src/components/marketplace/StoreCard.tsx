@@ -27,9 +27,10 @@ type LaptopData = {
 type StoreCardProps = {
   store: StoreCardData;
   laptop?: LaptopData;
+  isCheapest?: boolean;
 };
 
-export default function StoreCard({ store, laptop }: StoreCardProps) {
+export default function StoreCard({ store, laptop, isCheapest = false }: StoreCardProps) {
   const saving = laptop ? laptop.price - store.price : 0;
 
   const formatPrice = (value: number) => {
@@ -70,7 +71,10 @@ export default function StoreCard({ store, laptop }: StoreCardProps) {
               </p>
             )}
 
-            <h2 className="text-3xl font-bold">{formatPrice(store.price)}</h2>
+            <h2 className="text-3xl font-bold">
+              {formatPrice(store.price)}
+              {isCheapest && <span className="ml-2 text-sm text-green-600">Termurah</span>}
+            </h2>
 
             {saving > 0 && (
               <p className="mt-2 text-green-600 font-semibold">
