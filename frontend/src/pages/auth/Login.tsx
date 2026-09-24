@@ -56,7 +56,7 @@ export default function Login() {
       const from = (location.state as { from?: string } | null)?.from || (result.type === "admin" ? "/admin/dashboard" : "/");
       if (result.type === "admin") {
         const allowedAdminRoles = ["superadmin", "super_admin", "admin", "store_admin"];
-        if (!allowedAdminRoles.includes(result.data.user.role)) {
+        if (!allowedAdminRoles.includes(result.data.user.role ?? "")) {
           toast.error("Gagal Login: Hak akses Anda telah dicabut!");
           return;
         }

@@ -148,7 +148,7 @@ export default function AddStock() {
                     value: p.id,
                     label: `#${p.id} - ${
                       p.brand?.name || p.brand_name || ""
-                    } ${p.modelName || p.model_name || p.name || "Model Laptop"}`,
+                      } ${p.modelName || p.model_name || "Model Laptop"}`,
                   }))}
                   placeholder={isProductsLoading ? "Memuat Produk..." : "Cari Model atau Brand Laptop"}
                   isLoading={isProductsLoading}
