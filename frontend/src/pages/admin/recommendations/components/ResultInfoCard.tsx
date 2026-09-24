@@ -27,12 +27,6 @@ export function ResultInfoCard({ session, weightsMap, criterias }: ResultInfoCar
             </p>
           </div>
         </div>
-
-        {/* <div className="flex items-center gap-2">
-          <span className="px-3.5 py-1.5 rounded-xl text-xs font-bold font-mono bg-gray-50 text-gray-500   border border-gray-200/60 flex items-center gap-1.5">
-            Pilihan User: {session.user_choice || "-"}
-          </span>
-        </div> */}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -49,7 +43,7 @@ export function ResultInfoCard({ session, weightsMap, criterias }: ResultInfoCar
         </div>
 
         <div className="rounded-2xl space-y-2 text-xs">
-          <span className="font-bold text-black dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+          <span className="font-bold text-black uppercase tracking-wider flex items-center gap-1.5">
             Bobot Input Kriteria
           </span>
           <div className="flex flex-wrap gap-1.5 justify-start text-center font-mono text-[10px] font-bold">
@@ -60,8 +54,8 @@ export function ResultInfoCard({ session, weightsMap, criterias }: ResultInfoCar
                   key={crit.code}
                   className={`p-1.5 rounded-lg border transition-all ${
                     isCost
-                      ? "bg-red-50 border-red-200 text-red-700 dark:bg-red-950/20 dark:border-red-900/60"
-                      : "bg-purple-50 border-purple-200 text-purple-700 dark:bg-purple-950/20 dark:border-purple-900/60"
+                      ? "bg-red-50 border-gray-300 text-black"
+                      : " border-gray-300 text-black"
                   }`}
                   title={crit.desc}
                 >

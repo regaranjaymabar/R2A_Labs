@@ -28,14 +28,6 @@ export default function Hero() {
               >
                 Jelajahi Laptop →
               </Link>
-
-              <Link
-                to="/spk/request"
-                className="px-8 py-4 rounded-full bg-white/60 backdrop-blur-xl border border-white/30 hover:bg-white/80 transition-colors font-semibold text-purple-800 text-center flex items-center justify-center gap-1.5"
-              >
-                <span>Rekomendasi SPK</span>
-                <span className="text-xs">🤖</span>
-              </Link>
             </div>
           </div>
 

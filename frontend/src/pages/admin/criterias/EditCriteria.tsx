@@ -83,7 +83,7 @@ export default function EditCriteria({
       onClose={onClose}
       maxWidth="lg"
       badge={
-        <span className="text-black dark:text-gray-400">
+        <span className="text-black ">
           Update Dimensi Penilaian
         </span>
       }
@@ -109,7 +109,7 @@ export default function EditCriteria({
           />
 
           <div className="space-y-2">
-            <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 items-center gap-1.5">
+            <label className="block text-xs font-bold text-gray-700 items-center gap-1.5">
               <span>
                 Tipe Atribut Algoritma SAW (
                 <code className="font-mono text-[11px]">type</code>)
@@ -122,8 +122,8 @@ export default function EditCriteria({
                 onClick={() => setEditType("benefit")}
                 className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col gap-1 ${
                   editType === "benefit"
-                    ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-900 dark:text-emerald-300 ring-2 ring-emerald-500/20"
-                    : "bg-gray-50 dark:bg-[#181519] border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-gray-300"
+                    ? "bg-emerald-50 border-emerald-500 text-emerald-900 ring-2 ring-emerald-500/20"
+                    : "bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300"
                 }`}
               >
                 <div className="flex items-center gap-2 font-bold text-xs">
@@ -144,8 +144,8 @@ export default function EditCriteria({
                 onClick={() => setEditType("cost")}
                 className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col gap-1 ${
                   editType === "cost"
-                    ? "bg-red-50 dark:bg-red-950/40 border-red-500 text-red-900 dark:text-red-300 ring-2 ring-red-500/20"
-                    : "bg-gray-50 dark:bg-[#181519] border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:border-gray-300"
+                    ? "bg-red-50 border-red-500 text-red-900 ring-2 ring-red-500/20"
+                    : "bg-gray-50 border-gray-200 text-gray-600 hover:border-gray-300"
                 }`}
               >
                 <div className="flex items-center gap-2 font-bold text-xs">
@@ -163,13 +163,13 @@ export default function EditCriteria({
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200 dark:border-gray-800">
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-200">
             <Button
               type="button"
               variant="secondary"
               onClick={onClose}
               label="Batal"
-              className="!text-xs! py-2! px-5! rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 cursor-pointer"
+              className="!text-xs! py-2! px-5! rounded-xl cursor-pointer"
             />
             <Button
               type="submit"

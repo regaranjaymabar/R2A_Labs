@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { storeAdminService, type StoreProfileData } from "../../../services/storeAdminService";
-import { Loader2, Save, Navigation, Info } from "lucide-react";
+import { Loader2, Navigation, Info } from "lucide-react";
 import { InputText } from "../../../components/ui/common/InputText";
 import { TextArea } from "../../../components/ui/common/TextArea";
 import { InputSearchSelect } from "../../../components/ui/common/InputSearchSelect";
@@ -378,7 +378,6 @@ export default function MyStoreProfile() {
                             variant="primary"
                             isLoading={updateMutation.isPending}
                             label="Simpan Perubahan Profil"
-                            icon={<Save className="w-4 h-4" />}
                         />
                     </div>
                 </form>

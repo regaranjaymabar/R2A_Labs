@@ -38,13 +38,14 @@ export function TabelManageAccess({
                     return (
                         <div className="flex items-center gap-3 py-1">
                             <div>
-                                <span className="font-bold text-gray-900 text-base block">
-                                    {info.getValue()}
-                                </span>
                                 <span className="text-xs text-gray-500 font-mono flex items-center gap-1 mt-0.5">
                                     <span>{item.user_email}</span>
-                                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-blue-100 text-blue-700 font-bold">
-                                        store_admin
+                                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                                        item.is_active 
+                                            ? "bg-blue-100 text-blue-700" 
+                                            : "bg-rose-100 text-rose-700 line-through"
+                                    }`}>
+                                        {item.is_active ? "store_admin" : "akses dicabut"}
                                     </span>
                                 </span>
                             </div>

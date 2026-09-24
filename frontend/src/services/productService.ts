@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { api } from "../lib/axios";
 import type { Product, ProductFormData } from "../types/product";
@@ -64,13 +65,9 @@ export const productService = {
             formData.append("image", payload.image);
         }
 
-        const response = await api.post("/api/superadmin/products", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        });
-        return response.data.data || response.data;
-    },
+        const response = await api.post("/api/superadmin/products", formData);
+            return response.data.data || response.data;
+        },
 
     update: async (id: number | string, payload: any): Promise<any> => {
         const cleanPayload = { ...payload };
@@ -104,13 +101,9 @@ export const productService = {
             }
         });
 
-        const response = await api.put(`/api/superadmin/products/${id}`, formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        });
-        return response.data.data || response.data;
-    },
+        const response = await api.put(`/api/superadmin/products/${id}`, formData);
+            return response.data.data || response.data;
+        },
 
     delete: async (id: number | string): Promise<any> => {
         const response = await api.delete(`/api/superadmin/products/${id}`);

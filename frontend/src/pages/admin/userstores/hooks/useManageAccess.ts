@@ -49,7 +49,7 @@ export function useManageAccess() {
   const data: UserStoreAccess[] = useMemo(() => {
     if (!usersData) return [];
     return usersData
-      .filter((u) => u.role === "admin" || u.role === "store_admin" || u.storeId || u.store)
+      .filter((u) => u.role === "admin" || u.role === "store_admin" || u.role === "user" || u.storeId || u.store)
       .map((u) => {
         const storeId = u.storeId || u.store?.id || 0;
         const storeObj = storesData?.find((s) => s.id === storeId);
@@ -61,7 +61,7 @@ export function useManageAccess() {
           store_id: storeId,
           store_name: storeObj?.name || u.store?.name || (storeId ? `Toko #${storeId}` : "Belum Ditugaskan"),
           store_city: storeObj?.city || "-",
-          is_active: Boolean(u.isActive ?? u.is_active ?? true),
+          is_active: u.role !== "user",
           assigned_at: u.createdAt || u.created_at || new Date().toISOString().slice(0, 19).replace("T", " "),
         };
       });
@@ -102,11 +102,12 @@ export function useManageAccess() {
       setIsSubmitting(true);
       const targetUser = usersData?.find((u) => u.id === revokeTarget.user_id);
       if (targetUser) {
+        const nextRole = revokeTarget.is_active ? "user" : "admin";
         await userService.update(targetUser.id, {
           storeId: revokeTarget.store_id,
           name: targetUser.name,
           email: targetUser.email,
-          role: targetUser.role as any,
+          role: nextRole as any,
         });
         await queryClient.invalidateQueries({ queryKey: ["users"] });
       }

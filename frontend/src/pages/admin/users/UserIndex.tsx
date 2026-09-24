@@ -195,12 +195,11 @@ export default function UserIndex() {
             <Filter className="w-3.5 h-3.5" />
             <span>Filter Role:</span>
           </span>
-          {(["all", "superadmin", "admin", "user"] as const).map((role) => {
+          {(["all", "superadmin", "admin"] as const).map((role) => {
             const labels = {
               all: "Semua Role",
               superadmin: "Super Admin",
               admin: "Admin Toko",
-              user: "User Biasa",
             };
             const isActive = filterRole === role;
             return (

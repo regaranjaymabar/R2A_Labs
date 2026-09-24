@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 type Criteria = {
   id: number;
@@ -16,10 +16,10 @@ const STORAGE_KEY = "spk_slider_values";
 
 export default function WeightSlider({ criteria, onChange }: Props) {
   const [weights, setWeights] = useState<Record<number, number>>(() => {
-    // Load dari localStorage dulu
+    
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      try { return JSON.parse(saved); } catch {}
+      try { return JSON.parse(saved); } catch { /* empty */ }
     }
     const init: Record<number, number> = {};
     criteria.forEach((c) => (init[c.id] = 5));

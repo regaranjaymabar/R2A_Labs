@@ -54,10 +54,10 @@ export default function CriteriaIndex() {
 
   return (
     <div className="space-y-6 pb-12">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-2xl font-bold text-gray-900">
               Dimensi Penilaian (Kriteria SPK)
             </h1>
           </div>
@@ -65,7 +65,7 @@ export default function CriteriaIndex() {
         <div>
           <Link
             to="/admin/criterias/add"
-            className="inline-flex items-center gap-2 bg-[#151216] dark:bg-white text-white dark:text-gray-900 hover:bg-[#262128] dark:hover:bg-gray-200 font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all active:scale-95 text-sm"
+            className="inline-flex items-center gap-2 bg-[#151216]text-white hover:bg-[#262128] font-semibold px-4 py-2.5 rounded-xl shadow-sm transition-all active:scale-95 text-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Kriteria Baru</span>
@@ -74,11 +74,11 @@ export default function CriteriaIndex() {
       </div>
 
       {isDummyData && (
-        <div className="bg-amber-50 dark:bg-amber-950/25 border border-amber-200 dark:border-amber-900/60 p-4 rounded-2xl flex items-start gap-3 text-amber-900 dark:text-amber-300">
-          <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+        <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-start gap-3 text-amber-900">
+          <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
           <div>
             <h4 className="font-semibold text-sm">Mode Demo / Offline</h4>
-            <p className="text-xs mt-0.5 text-amber-700 dark:text-amber-400">
+            <p className="text-xs mt-0.5 text-amber-700">
               Gagal terhubung ke API backend. Data sub-kriteria yang ditampilkan di bawah ini adalah <strong>data dummy lokal</strong> untuk keperluan demonstrasi UI.
             </p>
           </div>
@@ -107,7 +107,7 @@ export default function CriteriaIndex() {
         title="Hapus Dimensi Penilaian?"
         message={
           <span>
-            Apakah kamu yakin ingin menghapus dimensi penilaian <strong className="font-bold text-gray-900 dark:text-white">{deleteTarget?.name}</strong>? Seluruh sub-kriteria dan bobot produk yang terkait akan terpengaruh.
+            Apakah kamu yakin ingin menghapus dimensi penilaian <strong className="font-bold text-gray-900">{deleteTarget?.name}</strong>? Seluruh sub-kriteria dan bobot produk yang terkait akan terpengaruh.
           </span>
         }
         confirmLabel="Ya, Hapus Kriteria"

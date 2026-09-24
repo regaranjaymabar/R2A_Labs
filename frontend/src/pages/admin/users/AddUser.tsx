@@ -106,12 +106,11 @@ export default function AddUser() {
               <span>Pembagian Peran (Role)</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {(
                 [
                   { id: "admin", label: "Admin Toko / Staff", desc: "Mengelola stok & harga cabang", color: "blue" },
                   { id: "superadmin", label: "Super Admin", desc: "Kontrol penuh sistem SPK", color: "purple" },
-                  { id: "user", label: "User Biasa", desc: "Konsumen pencari laptop", color: "gray" },
                 ] as const
               ).map((roleOpt) => {
                 const isSelected = selectedRole === roleOpt.id;

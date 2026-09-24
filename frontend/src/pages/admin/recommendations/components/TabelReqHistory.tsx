@@ -29,7 +29,7 @@ export function TabelReqHistory({
             columnHelper.accessor("id", {
                 header: () => <span className="font-semibold">ID</span>,
                 cell: (info) => (
-                    <span className="text-gray-500 dark:text-gray-400 font-mono font-medium">
+                    <span className="text-gray-500 font-mono font-medium">
                         #{info.getValue()}
                     </span>
                 ),
@@ -45,10 +45,10 @@ export function TabelReqHistory({
                     return (
                         <div className="flex items-center gap-3">
                             <div>
-                                <span className="font-bold text-gray-900 dark:text-white text-base block">
+                                <span className="font-bold text-gray-900 text-base block">
                                     {userName}
                                 </span>
-                                <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">
+                                <span className="text-xs text-gray-500 font-mono">
                                     {userEmail}
                                 </span>
                             </div>
@@ -94,7 +94,7 @@ export function TabelReqHistory({
                             return "bg-gray-100 text-gray-700 border-gray-200";
                         }
                         if (term.includes("processor") || term.includes("cpu") || term.includes("c6")) {
-                            return "bg-blue-100 text-blue-700 border-blue-200";
+                            return "bg-gray-100 text-gray-700 border-gray-200";
                         }
                         if (term.includes("storage") || term.includes("c3")) {
                             return "bg-gray-100 text-gray-700 border-gray-200";
@@ -124,7 +124,7 @@ export function TabelReqHistory({
                 header: ({ column }) => <DataTableColumnHeader column={column} title="Rekomendasi" />,
                 cell: (info) => {
                     const results = info.getValue();
-                    if (!results || !Array.isArray(results) || results.length === 0) return <span className="text-gray-400 dark:text-gray-600 font-mono text-xs">-</span>;
+                    if (!results || !Array.isArray(results) || results.length === 0) return <span className="text-gray-400 font-mono text-xs">-</span>;
                     
                     const topSaw = results.find(
                         (r: any) =>

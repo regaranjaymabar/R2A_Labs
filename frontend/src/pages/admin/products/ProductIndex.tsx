@@ -157,9 +157,6 @@ export default function ProductIndex() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Daftar Produk</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Kelola katalog spesifikasi laptop (`model_name`, `processor`, `ram`, `storage`, `is_active`) di sistem R2A LABS.
-          </p>
         </div>
         <div>
           <Link
@@ -171,18 +168,6 @@ export default function ProductIndex() {
           </Link>
         </div>
       </div>
-
-      {isError && (
-        <div className="bg-red-50 border border-red-200 p-4 rounded-2xl flex items-start gap-3 text-red-900">
-          <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-          <div>
-            <h4 className="font-semibold text-sm">Gagal Memuat Data</h4>
-            <p className="text-xs mt-0.5 text-red-700">
-              Terjadi kesalahan saat menghubungi server. Silakan coba lagi.
-            </p>
-          </div>
-        </div>
-      )}
 
       <TabelProductIndex
         data={products}

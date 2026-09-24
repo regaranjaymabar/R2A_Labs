@@ -6,11 +6,40 @@ export interface CityOption {
   label: string;
 }
 
-// Fallback daftar kota lengkap di Indonesia jika offline / jaringan gangguan
 const FALLBACK_CITIES: CityOption[] = [
+  "Kabupaten Tegal",
+  "Slawi",
+  "Kota Tegal",
+  "Kabupaten Brebes",
+  "Kabupaten Pemalang",
+  "Kabupaten Pekalongan",
+  "Kota Pekalongan",
+  "Kota Semarang",
+  "Kabupaten Banyumas",
+  "Kota Surakarta",
+  "Kota Yogyakarta",
+  "Kota Jakarta Barat",
+  "Kota Jakarta Pusat",
+  "Kota Jakarta Selatan",
+  "Kota Jakarta Timur",
+  "Kota Jakarta Utara",
+  "Kota Bandung",
+  "Kota Surabaya",
+  "Kota Tangerang",
+  "Kota Bekasi",
+  "Kota Depok",
+  "Kota Bogor",
+  "Kota Cirebon",
+  "Kota Malang",
+  "Kota Denpasar",
+  "Kota Makassar",
+  "Kota Medan",
+  "Kota Palembang",
+  "Kota Pontianak",
+  "Kota Samarinda",
+  "Kota Balikpapan"
 ].map((city) => ({ value: city, label: city }));
 
-// Fungsi helper untuk mengubah nama kota dari UPPERCASE menjadi Title Case rapi
 function toTitleCase(str: string): string {
   return str
     .toLowerCase()

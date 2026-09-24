@@ -38,6 +38,7 @@ import Marketplace from "./pages/Marketplace";
 import ReqHistory from "./pages/admin/recommendations/ReqHistory";
 import ResultDetail from "./pages/admin/recommendations/ResultDetail";
 import { Toaster } from "react-hot-toast";
+import Tentang from "./pages/Tentang";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,7 @@ function App() {
         <Routes>
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
+            <Route path="/tentang" element={<Tentang />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/toko/:id" element={<Marketplace />} />
           </Route>

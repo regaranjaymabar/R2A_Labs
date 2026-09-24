@@ -1,4 +1,4 @@
-import { Search, CircleUserRound, ChevronDown, LogOut, User, Settings } from "lucide-react";
+import { Search, CircleUserRound, ChevronDown, LogOut, Clock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { useAuthStore } from "../store/useAuthStore";
@@ -53,7 +53,7 @@ export default function Header({ search, setSearch, visible = true }: HeaderProp
           <nav className="hidden lg:flex items-center gap-10 text-sm font-medium">
             <Link to="/" className="transition-transform duration-300 hover:scale-105">Home</Link>
             <Link to="/rekomendasi" className="transition-transform duration-300 hover:scale-105">Rekomendasi</Link>
-            <Link to="/" className="transition-transform duration-300 hover:scale-105">Tentang</Link>
+            <Link to="/tentang" className="transition-transform duration-300 hover:scale-105">Tentang</Link>
           </nav>
 
           {/* Search + User */}
@@ -101,11 +101,18 @@ export default function Header({ search, setSearch, visible = true }: HeaderProp
                       {/* Menu */}
                       <div className="py-2 px-2">
                         <button
-                          onClick={() => { setDropdownOpen(false); navigate("/profile"); }}
+                          onClick={() => {
+                            setDropdownOpen(false);
+                            navigate("/rekomendasi");
+                            // Scroll ke SpkHistory setelah navigasi
+                            setTimeout(() => {
+                              document.getElementById("spk-history")?.scrollIntoView({ behavior: "smooth" });
+                            }, 500);
+                          }}
                           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-100/80 transition font-medium"
                         >
-                          <User size={18} className="text-gray-500" />
-                          Profil Saya
+                          <Clock size={18} className="text-gray-500" />
+                          Riwayat Rekomendasi
                         </button>
                         
                         <div className="my-1 border-t border-gray-100/50" />

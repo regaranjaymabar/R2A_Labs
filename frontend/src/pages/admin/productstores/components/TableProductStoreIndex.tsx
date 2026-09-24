@@ -15,6 +15,7 @@ export interface TableProductStoreIndexProps {
   onEdit: (item: ProductStore) => void;
   onDelete: (id: number, productName: string, storeName?: string) => void;
   deletingId?: number | null;
+  showStoreColumn?: boolean;
 }
 
 const formatIDR = (value: number) => {
@@ -33,6 +34,7 @@ export function TableProductStoreIndex({
   onEdit,
   onDelete,
   deletingId = null,
+  showStoreColumn = true,
 }: TableProductStoreIndexProps) {
   const columns = useMemo(
     () => [
@@ -45,32 +47,36 @@ export function TableProductStoreIndex({
         ),
         size: 60,
       }),
-      columnHelper.accessor(
-        (row: any) => {
-          const storeId = row.storeId ?? row.store_id ?? 1;
-          const storeName = row.store?.name || row.store_name || row.storeName || `Store ID #${storeId}`;
-          return `${storeName} ${storeId}`;
-        },
-        {
-          id: "store_info",
-          header: ({ column }) => <DataTableColumnHeader column={column} title="Cabang Toko" />,
-          cell: (info) => {
-            const item: any = info.row.original;
-            const storeId = item.storeId ?? item.store_id ?? 1;
-            const storeName = item.store?.name || item.store_name || item.storeName || `Store ID #${storeId}`;
-            return (
-              <div className="flex items-center gap-2.5">
-                <div>
-                  <span className="font-semibold text-gray-900 text-sm block">
-                    {storeName}
-                  </span>
-                  <span className="text-[11px] text-gray-500 font-mono">store_id: {storeId}</span>
-                </div>
-              </div>
-            );
-          },
-        }
-      ),
+      ...(showStoreColumn
+        ? [
+            columnHelper.accessor(
+              (row: any) => {
+                const storeId = row.storeId ?? row.store_id ?? 1;
+                const storeName = row.store?.name || row.store_name || row.storeName || `Store ID #${storeId}`;
+                return `${storeName} ${storeId}`;
+              },
+              {
+                id: "store_info",
+                header: ({ column }) => <DataTableColumnHeader column={column} title="Cabang Toko" />,
+                cell: (info) => {
+                  const item: any = info.row.original;
+                  const storeId = item.storeId ?? item.store_id ?? 1;
+                  const storeName = item.store?.name || item.store_name || item.storeName || `Store ID #${storeId}`;
+                  return (
+                    <div className="flex items-center gap-2.5">
+                      <div>
+                        <span className="font-semibold text-gray-900 text-sm block">
+                          {storeName}
+                        </span>
+                        <span className="text-[11px] text-gray-500 font-mono">store_id: {storeId}</span>
+                      </div>
+                    </div>
+                  );
+                },
+              }
+            ),
+          ]
+        : []),
       columnHelper.accessor(
         (row: any) => {
           const productId = row.productId ?? row.product_id;
@@ -190,14 +196,14 @@ export function TableProductStoreIndex({
         },
       }),
     ],
-    [deletingId, onDelete, onEdit]
+    [deletingId, onDelete, onEdit, showStoreColumn]
   );
 
   return (
     <DataTable
       columns={columns}
       data={data}
-      searchPlaceholder="Cari model laptop, ID, atau cabang toko..."
+      searchPlaceholder={showStoreColumn ? "Cari model laptop, ID, atau cabang toko..." : "Cari model laptop atau ID..."}
       emptyMessage={isLoading ? "Sedang memuat data stok & harga..." : "Tidak ada data stok & harga yang ditemukan"}
     />
   );

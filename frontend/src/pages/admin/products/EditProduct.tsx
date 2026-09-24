@@ -115,7 +115,7 @@ export default function EditProduct() {
 
                         <div className="flex flex-col sm:flex-row items-center gap-6">
                             {/* Preview Box */}
-                            <div className="w-64 h-64 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex items-center justify-center overflow-hidden flex-shrink-0 relative group shadow-inner">
+                            <div className="w-64 h-64 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center overflow-hidden shrink-0 relative group shadow-inner">
                                 {previewUrl ? (
                                     <img
                                         src={previewUrl}

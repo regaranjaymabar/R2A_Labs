@@ -1,5 +1,7 @@
 import { api } from "../lib/axios";
 import type { ProductStore } from "../types/productStore";
+import { storeLogger } from "../utils/storeLogger";
+import { useAuthStore } from "../store/useAuthStore";
 
 export const productStoreService = {
 
@@ -31,6 +33,31 @@ export const productStoreService = {
             isAvailable: payload.is_available ? 1 : 0,
         };
         const response = await api.post("/api/admin/inventory/add", formattedPayload);
+        
+        try {
+            const storeId = (useAuthStore.getState().user as any)?.store?.id || "default";
+            let title = payload.productName ? `Tambah Inventaris: ${payload.productName}` : "Menambahkan Laptop Baru";
+            let desc = `${payload.specs ? payload.specs + " — " : ""}Harga: Rp ${formattedPayload.price.toLocaleString("id-ID")} (Stok: ${formattedPayload.stock} Unit)`;
+            
+            if (!payload.productName) {
+                try {
+                    const globalProducts = await productStoreService.getGlobalProducts();
+                    const found = globalProducts.find((p: any) => Number(p.id) === Number(formattedPayload.productId));
+                    if (found) {
+                        const brandName = found.brand?.name || found.brand_name || "";
+                        const modelName = found.modelName || found.name || found.model_name || `Produk #${found.id}`;
+                        title = `Tambah Inventaris: ${[brandName, modelName].filter(Boolean).join(" ")}`;
+                        const specs = [found.processor, found.ram, found.storage].filter(Boolean).join(" • ");
+                        if (specs) desc = `${specs} — Harga: Rp ${formattedPayload.price.toLocaleString("id-ID")} (Stok: ${formattedPayload.stock} Unit)`;
+                    }
+                } catch (_) {}
+            }
+
+            storeLogger.addLog(title, desc, "add", storeId);
+        } catch (e) {
+            console.error("Log error:", e);
+        }
+
         return response.data.data || response.data;
     },
 
@@ -42,12 +69,51 @@ export const productStoreService = {
             isAvailable: payload.isAvailable !== undefined ? Number(payload.isAvailable) : (payload.is_available ? 1 : 0),
         };
         const response = await api.put(`/api/admin/inventory/${id}`, formattedPayload);
+        
+        try {
+            const storeId = (useAuthStore.getState().user as any)?.store?.id || "default";
+            let title = payload.productName ? `Update Inventaris: ${payload.productName}` : "Memperbarui Stok & Harga";
+            let desc = `${payload.specs ? payload.specs + " — " : ""}Harga: Rp ${formattedPayload.price.toLocaleString("id-ID")} (Stok: ${formattedPayload.stock} Unit • ${formattedPayload.isAvailable ? "Tersedia" : "Nonaktif"})`;
+
+            if (!payload.productName) {
+                try {
+                    const item = await productStoreService.getById(id);
+                    if (item) {
+                        const brandName = item.product?.brand?.name || item.brand_name || "";
+                        const modelName = item.product?.modelName || item.product?.name || item.model_name || `Produk #${item.productId || id}`;
+                        title = `Update Inventaris: ${[brandName, modelName].filter(Boolean).join(" ")}`;
+                        const specs = [item.product?.processor || item.processor, item.product?.ram || item.ram, item.product?.storage || item.storage].filter(Boolean).join(" • ");
+                        if (specs) desc = `${specs} — Harga: Rp ${formattedPayload.price.toLocaleString("id-ID")} (Stok: ${formattedPayload.stock} Unit • ${formattedPayload.isAvailable ? "Tersedia" : "Nonaktif"})`;
+                    }
+                } catch (_) {}
+            }
+
+            storeLogger.addLog(title, desc, "update", storeId);
+        } catch (e) {
+            console.error("Log error:", e);
+        }
+
         return response.data.data || response.data;
     },
 
     // 6. Hapus item dari inventaris toko (DELETE /api/admin/inventory/:id)
-    delete: async (id: number | string): Promise<any> => {
+    delete: async (id: number | string, itemTitle?: string): Promise<any> => {
         const response = await api.delete(`/api/admin/inventory/${id}`);
+        
+        try {
+            const storeId = (useAuthStore.getState().user as any)?.store?.id || "default";
+            const title = itemTitle ? `Hapus Inventaris: ${itemTitle.replace(/"/g, "")}` : "Menghapus Item Inventaris";
+            storeLogger.addLog(
+                title,
+                `Menghapus item laptop dari daftar katalog toko cabang`,
+                "delete",
+                storeId
+            );
+        } catch (e) {
+            console.error("Log error:", e);
+        }
+
         return response.data;
     },
 };
+

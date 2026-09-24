@@ -25,7 +25,7 @@ export function DecisionMatrixTable({
     <div className="space-y-4">
       <div className="flex items-center justify-between text-xs text-gray-500">
         <span>* Menunjukkan konversi nilai spesifikasi ke skala numerik [1 sampai 5] (kecuali C1 Harga menggunakan rupiah asli)</span>
-        <span className="font-mono text-purple-600 flex items-center gap-1 bg-purple-50 px-2.5 py-1 rounded-lg">
+        <span className="font-mono text-black flex items-center gap-1 px-2.5 py-1 rounded-lg">
           <HelpCircle className="w-3.5 h-3.5" />
           Klik sel nilai untuk melihat spesifikasi mentahnya!
         </span>
@@ -48,7 +48,7 @@ export function DecisionMatrixTable({
             <tr
               key={idx}
               className={`border-b border-gray-100 hover:bg-gray-50/50 transition ${
-                row.is_chosen_by_user ? "bg-purple-50/30" : ""
+                row.is_chosen_by_user ? "bg-gray-100/60" : ""
               }`}
             >
               <td className="py-3.5 px-4 font-bold text-gray-900">
@@ -61,7 +61,7 @@ export function DecisionMatrixTable({
                   )}
                 </div>
                 <span className="text-[10px] text-gray-400 font-medium block">
-                  {row.brand} | Toko: <span className="text-purple-600 font-semibold">{row.storeName}</span>
+                  {row.brand} | Toko: <span className="text-black font-semibold">{row.storeName}</span>
                 </span>
               </td>
               {criterias.map((crit) => {
@@ -102,7 +102,7 @@ export function DecisionMatrixTable({
                       )
                     }
                     className={`py-3.5 px-3 text-center font-mono font-bold transition-all cursor-pointer ${
-                      isCellSelected ? "bg-purple-100 text-purple-900 ring-2 ring-purple-500/20 rounded-lg scale-95" : "text-gray-900"
+                      isCellSelected ? "bg-gray-200 text-gray-900 ring-2 ring-gray-400 rounded-lg scale-95" : "text-gray-900"
                     }`}
                   >
                     <span className="bg-gray-100 px-2.5 py-1 rounded-lg border border-gray-200/50 block hover:bg-purple-50">

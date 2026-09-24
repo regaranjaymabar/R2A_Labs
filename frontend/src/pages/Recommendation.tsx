@@ -25,13 +25,6 @@ const budgets = [
   { label: "> 20 Juta", value: ">20" },
 ];
 
-const methods = [
-  { value: "ALL", label: "Semua" },
-  { value: "SAW", label: "SAW" },
-  { value: "WP", label: "WP" },
-  { value: "TOPSIS", label: "TOPSIS" },
-];
-
 type OutletContextType = {
   search: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
@@ -46,7 +39,6 @@ export default function Recommendation() {
   const [budgetMin, setBudgetMin] = useState("");
   const [budgetMax, setBudgetMax] = useState("");
   const [weights, setWeights] = useState<{ criteriaId: number; weight: number }[]>([]);
-  const [selectedMethod, setSelectedMethod] = useState("ALL");
   const [isCalculating, setIsCalculating] = useState(false);
   const [spkResults, setSpkResults] = useState<any>(null);
   const [showSpkResults, setShowSpkResults] = useState(false);
@@ -57,24 +49,20 @@ export default function Recommendation() {
     queryFn: criteriaCustomerService.getAll,
   });
 
-  // ✅ Load from localStorage
   useEffect(() => {
     setKebutuhan(localStorage.getItem("spk_kebutuhan") || "");
     setBudgetMin(localStorage.getItem("spk_budgetMin") || "");
     setBudgetMax(localStorage.getItem("spk_budgetMax") || "");
     const savedWeights = localStorage.getItem("spk_weights");
     if (savedWeights) { try { setWeights(JSON.parse(savedWeights)); } catch {} }
-    setSelectedMethod(localStorage.getItem("spk_method") || "ALL");
   }, []);
 
-  // ✅ Save to localStorage
   useEffect(() => {
     if (kebutuhan) localStorage.setItem("spk_kebutuhan", kebutuhan);
     if (budgetMin) localStorage.setItem("spk_budgetMin", budgetMin);
     if (budgetMax) localStorage.setItem("spk_budgetMax", budgetMax);
     if (weights.length > 0) localStorage.setItem("spk_weights", JSON.stringify(weights));
-    localStorage.setItem("spk_method", selectedMethod);
-  }, [kebutuhan, budgetMin, budgetMax, weights, selectedMethod]);
+  }, [kebutuhan, budgetMin, budgetMax, weights]);
 
   const productStoreMap = useMemo(() => {
     const map: Record<number, number> = {};
@@ -121,7 +109,7 @@ export default function Recommendation() {
     setKebutuhan(""); setBudgetMin(""); setBudgetMax(""); setWeights([]);
     localStorage.removeItem("spk_kebutuhan");
     localStorage.removeItem("spk_budgetMin"); localStorage.removeItem("spk_budgetMax");
-    localStorage.removeItem("spk_weights"); localStorage.removeItem("spk_method");
+    localStorage.removeItem("spk_weights");
   };
 
   const handleLoadMore = () => setVisibleCount((prev) => prev + ITEMS_PER_PAGE);
@@ -169,7 +157,6 @@ export default function Recommendation() {
           <div className="mt-8 pt-6 border-t border-white/10 space-y-6">
             <h3 className="text-xl font-semibold">SPK Rekomendasi</h3>
 
-            {/* ✅ Field Kebutuhan */}
             <div>
               <label className="text-sm font-medium">Kebutuhan Anda</label>
               <textarea
@@ -186,14 +173,7 @@ export default function Recommendation() {
               <InputRupiah label="Budget Max" value={budgetMax} onChange={setBudgetMax} placeholder="Rp 15.000.000" />
             </div>
             {criterias.length > 0 && <WeightSlider criteria={criterias} onChange={setWeights} />}
-            <div>
-              <h4 className="text-sm font-semibold mb-2">Metode SPK</h4>
-              <div className="grid grid-cols-4 gap-2">
-                {methods.map((m) => (
-                  <button key={m.value} onClick={() => setSelectedMethod(m.value)} className={`py-2 rounded-full text-sm font-medium transition-all ${selectedMethod === m.value ? "bg-black text-white" : "bg-white/10 hover:bg-white/20"}`}>{m.label}</button>
-                ))}
-              </div>
-            </div>
+            
             <button onClick={handleSpkSubmit} disabled={isCalculating || !kebutuhan.trim() || !budgetMin || !budgetMax || weights.length === 0} className="w-full py-4 rounded-full bg-black text-white font-semibold text-lg hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed">
               {isCalculating ? "Menghitung..." : "Cari Rekomendasi"}
             </button>
@@ -212,10 +192,10 @@ export default function Recommendation() {
         {showSpkResults && spkResults?.recommendationResults ? (
           <div id="spk-results" className="mb-20">
             <div className="flex items-center justify-between mb-8">
-              <div><h2 className="text-4xl font-bold">Hasil Rekomendasi</h2><p className="text-zinc-500 mt-2">Metode: {selectedMethod === "ALL" ? "SAW + WP + TOPSIS" : selectedMethod}</p></div>
-              <button onClick={handleReset} className="px-6 py-3 bg-zinc-200 rounded-full text-sm hover:bg-zinc-300 transition">← Kembali ke Katalog</button>
+              <div><h2 className="text-4xl font-bold">Hasil Rekomendasi</h2><p className="text-zinc-500 mt-2">SAW + WP + TOPSIS</p></div>
+              <button onClick={handleReset} className="px-6 py-3 bg-zinc-200 rounded-full text-sm hover:bg-zinc-300 transition">Kembali ke Katalog</button>
             </div>
-            {spkResults.recommendationResults.filter((m: any) => selectedMethod === "ALL" || m.method === selectedMethod).map((method: any) => (
+            {spkResults.recommendationResults.map((method: any) => (
               <div key={method.method} className="mb-10">
                 <h3 className="text-2xl font-bold mb-4 flex items-center gap-2"><span className="px-3 py-1 bg-black text-white text-sm rounded-full">{method.method}</span></h3>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -233,7 +213,7 @@ export default function Recommendation() {
                             <div key={store.productStoreId} className="flex justify-between items-center text-sm"><span className="text-zinc-600 truncate max-w-[60%]">{store.store_name}</span><span className="font-bold">Rp {store.price?.toLocaleString('id-ID')}</span></div>
                           ))}
                         </div>
-                        <Link to={`/product/${productId}`} className="mt-4 flex items-center justify-center gap-2 w-full py-2.5 rounded-full bg-black text-white text-sm font-medium hover:opacity-90 transition">Lihat Detail →</Link>
+                        <Link to={`/product/${productId}`} className="mt-4 flex items-center justify-center gap-2 w-full py-2.5 rounded-full bg-black text-white text-sm font-medium hover:opacity-90 transition">Lihat Detail</Link>
                       </div>
                     );
                   })}
